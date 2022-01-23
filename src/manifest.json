@@ -1,23 +1,40 @@
 {
   "manifest_version": 3,
   "name": "WebCourt",
+  "author": "Lu",
   "version": "0.0.1",
   "description": "Extract and collect login page features and classify the web sites",
   "content_scripts": [
     {
-      "matches": "<all_urls>",
-      "css": ["content/styles.css"],
-      "js": ["content/script.js"]
+      "matches": ["<all_urls>"],
+      "css": ["content/style.css"],
+      "js": ["content/script.js"],
+      "all_frames": true
     }
   ],
   "background": {
     "service_worker": "background.js"
   },
+  "icons": {
+    "16": "assets/icons/16.png",
+    "48": "assets/icons/48.png",
+    "128": "assets/icons/128.png"
+  },
   "permissions": [
     "storage",
     "unlimitedStorage"
   ],
+  "action": {
+    "default_icon": {
+      "16": "assets/icons/16.png",
+      "24": "assets/icons/24.png",
+      "32": "assets/icons/32.png"
+    },
+    "default_title": "Web Court",
+    "default_popup": "pages/popover/popover.html"
+  },
   "options_ui": {
-    "page": "pages/options.html"
+    "page": "pages/options/options.html",
+    "open_in_tab": true
   }
 }

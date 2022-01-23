@@ -1,24 +1,63 @@
+const HtmlWebpackPlugin = require('html-webpack-plugin');
+const CopyWebpackPlugin = require('copy-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+
 const getBuildFilePathAndName = (chunkName) => {
-  if (chunkName === 'background') {
-    return 'background.js';
-  } else if (chunkName === 'script') {
-    return 'content/script.js';
-  } else if (chunkName === 'options') {
-    return 'pages/options.js';
-  } else {
-    return 'bundle.js';
+  switch (chunkName) {
+    case 'background':
+      return 'background.js';
+    case 'script':
+      return 'content/script.js';
+    case 'options':
+      return 'pages/options/options.js';
+    case 'popover':
+      return 'pages/popover/popover.js';
+    default:
+      return 'bundle.js';
   }
 };
 
-const getHtmlFilePathAndName = (entry) => {
-  if (entry === 'options') {
-    return 'pages/options.html';
-  } else {
-    return 'index.html';
+const pageChunks = [
+  {
+    chunk: 'options',
+    filePath: 'pages/options/options'
+  },
+  {
+    chunk: 'popover',
+    filePath: 'pages/popover/popover'
   }
-}
+];
+
+const htmlWebpackPlugins = pageChunks.map(config => new HtmlWebpackPlugin({
+  chunks: [config.chunk],
+  title: config.chunk,
+  filename: `${config.filePath}.html`,
+  inject: 'body'
+}));
+
+const miniCssExtractPluginForPages = new MiniCssExtractPlugin({
+  filename: ({ chunk }) => `pages/${chunk.name}/${chunk.name}.css`
+});
+
+const copyWebpackPlugin = new CopyWebpackPlugin({
+  patterns: [
+    {
+      from: './src/manifest.json'
+    },
+    {
+      from: './src/content/style.css',
+      to: './content'
+    },
+    {
+      from: './src/assets',
+      to: './assets'
+    }
+  ]
+});
 
 module.exports = {
   getBuildFilePathAndName,
-  getHtmlFilePathAndName,
+  htmlWebpackPlugins,
+  copyWebpackPlugin,
+  miniCssExtractPluginForPages
 };

@@ -1,6 +1,6 @@
 const path = require('path');
-const HtmlWebpackPlugin = require('html-webpack-plugin');
-const { getBuildFilePathAndName, getHtmlFilePathAndName } = require('./tools/build-utils');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+const { getBuildFilePathAndName, htmlWebpackPlugins, copyWebpackPlugin, miniCssExtractPluginForPages } = require('./tools/build-utils');
 
 const config = {
   mode: 'development',
@@ -8,29 +8,24 @@ const config = {
   entry: {
     background: './src/background.ts',
     script: './src/content/script.ts',
-    options: './src/pages/options.ts'
+    options: './src/pages/options/options.ts',
+    popover: './src/pages/popover/popover.ts'
   },
   output: {
     path: path.resolve(__dirname, './dist'),
     filename: (pathData) => getBuildFilePathAndName(pathData.chunk.name),
     clean: true
+  },
+  module: {
+    rules: [
+      {
+        test: /\.css$/i,
+        use: [MiniCssExtractPlugin.loader, 'css-loader'],
+      },
+    ],
   }
 };
 
-const htmlPluginConfig = [
-  {
-    chunk: 'options',
-    filePath: 'pages/options'
-  }
-];
-
-const htmlPlugins = htmlPluginConfig.map(config => new HtmlWebpackPlugin({
-  chunks: [config.chunk],
-  title: config.chunk,
-  filename: `${config.filePath}.html`,
-  inject: 'body'
-}));
-
-config.plugins = [].concat(htmlPlugins);
+config.plugins = [...htmlWebpackPlugins, copyWebpackPlugin, miniCssExtractPluginForPages];
 
 module.exports = config;

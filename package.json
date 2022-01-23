@@ -7,8 +7,8 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build": "parcel build src/parcel-holder.html",
-    "buildwp": "npx webpack --config webpack.config.dev.js",
+    "build:dev": "npx webpack --config webpack.config.dev.js",
+    "build:prod": "npx webpack --config webpack.config.prod.js",
     "watch": "parcel watch [input.ts] --public-url ./",
     "lint": "web-ext lint"
   },
@@ -17,8 +17,12 @@
   },
   "devDependencies": {
     "@types/webextension-polyfill": "^0.8.2",
+    "copy-webpack-plugin": "^10.2.1",
+    "css-loader": "^6.5.1",
+    "css-minimizer-webpack-plugin": "^3.4.1",
     "eslint": "^8.7.0",
     "html-webpack-plugin": "^5.5.0",
+    "mini-css-extract-plugin": "^2.5.2",
     "typescript": "^4.5.4",
     "web-ext": "^6.6.0",
     "webpack": "^5.67.0",
