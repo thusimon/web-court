@@ -1,7 +1,12 @@
 import { findVisibleInputs } from './utils/dom';
-import { getInputFieldsFeature } from './feature';
+import { getInputFieldsFeatures, getPageFeatures } from './feature';
 
 const inputs = findVisibleInputs();
-const features = getInputFieldsFeature(inputs);
+const inputFeatures = getInputFieldsFeatures(inputs);
+const pageFeatures = getPageFeatures(inputs);
 
-console.log(features);
+console.log('showing input features');
+console.log(inputFeatures);
+
+console.log('showing page features');
+console.log(pageFeatures);

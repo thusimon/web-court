@@ -1,27 +1,55 @@
-import { getDomAttribute } from './utils/dom';
-import { GeoSpacialType, getNomalizedRects, getNearestRect } from './utils/geo';
+import { getDomAttribute, DomAttributeType } from './utils/dom';
+import { getGeoFeatures, getNearestRectInfo, getSpacialStatistics, GeoType, SpacialStatisticType, NearestType } from './utils/geo';
 
 export type InputRawType = {
   input: HTMLInputElement;
 };
 
-export type InputFeature = GeoSpacialType & InputRawType;
+export type InputFeature = GeoType & InputRawType & NearestType & DomAttributeType;
 
-export const getInputFieldsFeature = (inputs: HTMLInputElement[]): InputFeature[] => {
+export type PageFeature = SpacialStatisticType;
+
+export type AllFeature = {
+  inputFeatures: InputFeature[],
+  pageFeature: PageFeature
+}
+
+export const getInputFieldsFeatures = (inputs: HTMLInputElement[]): InputFeature[] => {
   // get geo features
-  const inputGeoRects = getNomalizedRects(inputs);
-  const inputGeoFeatures = inputGeoRects.map(f => getNearestRect(f, inputGeoRects));
+  const inputGeoFeatures: GeoType[] = getGeoFeatures(inputs);
   
   // get dom features
-  const inputDomFeatures = getDomAttribute(inputs);
+  const inputDomFeatures: DomAttributeType[] = getDomAttribute(inputs);
 
+  // get nearest features
+  const inputNearestFeatures: NearestType[] = inputGeoFeatures.map(geo => {
+    const nearestInfo = getNearestRectInfo(geo, inputGeoFeatures);
+    if (nearestInfo.distN < 0) {
+      return nearestInfo
+    }
+    nearestInfo.typeN = !!inputDomFeatures[nearestInfo.idxN] ? inputDomFeatures[nearestInfo.idxN].type : 'NONE';
+    return nearestInfo;
+  });
   // merge all the features
   const inputFeatures: InputFeature[] = inputs.map((input, idx) => {
     return {
       input,
       ...inputGeoFeatures[idx],
-      ...inputDomFeatures[idx]
+      ...inputDomFeatures[idx],
+      ...inputNearestFeatures[idx]
     }
   })
+
   return inputFeatures;
+}
+
+export const getPageFeatures = (inputs: HTMLInputElement[]): PageFeature => {
+  const inputGeoFeatures: GeoType[] = getGeoFeatures(inputs);
+
+  // get spacial feature
+  const spacialStatisticsFeature = getSpacialStatistics(inputGeoFeatures);
+
+  return {
+    ...spacialStatisticsFeature
+  }
 }
