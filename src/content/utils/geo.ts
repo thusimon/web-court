@@ -1,23 +1,5 @@
 import { mean, standardDeviation } from 'simple-statistics'
-
-/**
- * get geological features, for one input, return
- * {
- *   top: x
- *   topp: x%
- *   left: x
- *   leftp: x%
- *   width: x
- *   widthp: x%
- *   height: x
- *   heightp: x%
- *   cx: x
- *   cxp: x%
- *   cy: x
- *   cyp: x%
- * }
- * @param inputs
- */
+import { INPUT_TYPE_NONE } from '../../constants';
 export type GeoType = {
   top: number;
   topP: number;
@@ -41,15 +23,32 @@ export type SpacialStatisticType = {
 }
 
 export type NearestType = {
-  typeN: string;
-  distN: number;
-  idxN: number;
+  typeNearestX: string;
+  typeNearestY: string;
+  distNearestX: number;
+  distNearestY: number;
+  idxNearestX: number;
+  idxNearestY: number;
 }
 
+/**
+ * get geometry features, for one input, return
+ * {
+ *   top: x
+ *   topp: x%
+ *   left: x
+ *   leftp: x%
+ *   width: x
+ *   widthp: x%
+ *   height: x
+ *   heightp: x%
+ * }
+ * @param inputs
+ */
 export const getGeoFeatures = (inputs: HTMLInputElement[]): GeoType[] => {
   const bodyRect = document.body.getBoundingClientRect();
   if (bodyRect.height === 0 || bodyRect.width === 0) {
-    console.warn('document body size = 0');
+    console.log('document body size = 0');
     return inputs.map(input => {
       const rect = input.getBoundingClientRect();
       return {
@@ -80,8 +79,10 @@ export const getGeoFeatures = (inputs: HTMLInputElement[]): GeoType[] => {
 };
 
 export const getNearestRectInfo = (rect: GeoType, rects: GeoType[]): NearestType => {
-  let idxN = -1;
-  let distN = Number.MAX_SAFE_INTEGER;
+  let idxNearestX = -1;
+  let idxNearestY = -1;
+  let distNearestX = Number.MAX_SAFE_INTEGER;
+  let distNearestY = Number.MAX_SAFE_INTEGER;
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
   rects.forEach((r, i) => {
@@ -90,16 +91,28 @@ export const getNearestRectInfo = (rect: GeoType, rects: GeoType[]): NearestType
     }
     const rcx = r.left + r.width / 2;
     const rcy = r.top + r.height / 2;
-    const distR2R = Math.sqrt(Math.pow(rcx - cx, 2) + Math.pow(rcy - cy, 2));
-    if (distR2R < distN) {
-      distN = distR2R;
-      idxN = i;
+    // distance from rect to r
+    // please note that the distance is directional
+    // if distance > 0: the nearest input is on the RIGHT/BOTTOM of the target
+    // if distance < 0: the nearest input is on the LEFT/TOP of the target
+    const distX = rcx - cx;
+    const distY = rcy - cy;
+    if (Math.abs(distX) < Math.abs(distNearestX)) {
+      distNearestX = distX;
+      idxNearestX = i;
+    }
+    if (Math.abs(distY) < Math.abs(distNearestY)) {
+      distNearestY = distY;
+      idxNearestY = i;
     }
   });
   return {
-    idxN,
-    distN,
-    typeN: 'NONE'
+    idxNearestX,
+    idxNearestY,
+    distNearestX,
+    distNearestY,
+    typeNearestX: INPUT_TYPE_NONE,
+    typeNearestY: INPUT_TYPE_NONE
   };
 }
 

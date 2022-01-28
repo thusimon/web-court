@@ -2,7 +2,7 @@
   "name": "web-court",
   "version": "0.0.1",
   "description": "Extract feature of web page and classify it",
-  "repository": "https://github.com/thusimon/WebCourt",
+  "repository": "https://github.com/thusimon/web-court",
   "author": "Lu",
   "license": "MIT",
   "private": true,

@@ -21,6 +21,7 @@
     "128": "assets/icons/128.png"
   },
   "permissions": [
+    "contextMenus",
     "storage",
     "unlimitedStorage"
   ],

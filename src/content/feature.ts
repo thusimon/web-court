@@ -1,5 +1,6 @@
 import { getDomAttribute, DomAttributeType } from './utils/dom';
 import { getGeoFeatures, getNearestRectInfo, getSpacialStatistics, GeoType, SpacialStatisticType, NearestType } from './utils/geo';
+import { INPUT_TYPE_NONE } from '../constants';
 
 export type InputRawType = {
   input: HTMLInputElement;
@@ -24,10 +25,14 @@ export const getInputFieldsFeatures = (inputs: HTMLInputElement[]): InputFeature
   // get nearest features
   const inputNearestFeatures: NearestType[] = inputGeoFeatures.map(geo => {
     const nearestInfo = getNearestRectInfo(geo, inputGeoFeatures);
-    if (nearestInfo.distN < 0) {
-      return nearestInfo
+    if (nearestInfo.idxNearestX > -1) {
+      nearestInfo.typeNearestX = !!inputDomFeatures[nearestInfo.idxNearestX] ?
+        inputDomFeatures[nearestInfo.idxNearestX].type : INPUT_TYPE_NONE;
     }
-    nearestInfo.typeN = !!inputDomFeatures[nearestInfo.idxN] ? inputDomFeatures[nearestInfo.idxN].type : 'NONE';
+    if (nearestInfo.idxNearestY > -1) {
+      nearestInfo.typeNearestY = !!inputDomFeatures[nearestInfo.idxNearestY] ?
+        inputDomFeatures[nearestInfo.idxNearestY].type : INPUT_TYPE_NONE;
+    }
     return nearestInfo;
   });
   // merge all the features

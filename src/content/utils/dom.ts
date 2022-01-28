@@ -39,6 +39,8 @@ export type DomAttributeType = {
   hasName: boolean,
   hasId: boolean,
   hasClass: boolean,
+  hasText: boolean,
+  disabled: boolean,
 }
 
 export const getDomAttribute = (inputs: HTMLInputElement[]): DomAttributeType[] => {
@@ -47,7 +49,17 @@ export const getDomAttribute = (inputs: HTMLInputElement[]): DomAttributeType[] 
       type: input.type,
       hasName: !!input.name,
       hasId: !!input.id,
-      hasClass: !!input.className
+      hasClass: !!input.className,
+      hasText: !!input.textContent.trim(),
+      disabled: !!input.disabled
     }
   });
+}
+
+export const highLightPendingDom = (dom: HTMLElement) => {
+  dom.style.setProperty('border', '2px solid red', 'important');
+}
+
+export const highLightLabeledDom = (dom: HTMLElement) => {
+  dom.style.setProperty('border', '2px solid blue', 'important');
 }

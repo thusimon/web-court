@@ -1,4 +1,4 @@
-import { findVisibleInputs } from './utils/dom';
+import { findVisibleInputs, highLightPendingDom, highLightLabeledDom } from './utils/dom';
 import { getInputFieldsFeatures, getPageFeatures } from './feature';
 
 const inputs = findVisibleInputs();
@@ -10,3 +10,13 @@ console.log(inputFeatures);
 
 console.log('showing page features');
 console.log(pageFeatures);
+
+
+document.addEventListener('contextmenu', (evt) => {
+  const target = evt.target;
+  if (!target || !(target instanceof HTMLElement)) {
+    console.log('Not HTMLElement');
+    return;
+  }
+  highLightPendingDom(target);
+});
