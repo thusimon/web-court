@@ -13,6 +13,8 @@
     "lint": "web-ext lint"
   },
   "dependencies": {
+    "@webcomponents/webcomponentsjs": "^2.6.0",
+    "lit": "^2.1.2",
     "simple-statistics": "^7.7.3",
     "webextension-polyfill": "^0.8.0"
   },
@@ -29,5 +31,8 @@
     "web-ext": "^6.6.0",
     "webpack": "^5.67.0",
     "webpack-cli": "^4.9.1"
-  }
+  },
+  "browserslist": [
+    "last 2 Chrome versions"
+  ]
 }

@@ -1,3 +1,5 @@
+export const WEBCOURT_UID = 'SrElXAlR4zOvfv8P';
+
 export const MIN_INPUT_SIZE = {
   WIDTH: 2,
   HEIGHT: 2

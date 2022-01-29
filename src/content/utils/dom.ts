@@ -56,10 +56,27 @@ export const getDomAttribute = (inputs: HTMLInputElement[]): DomAttributeType[] 
   });
 }
 
-export const highLightPendingDom = (dom: HTMLElement) => {
+export const highlightPendingDom = (dom: HTMLElement) => {
+  if (!dom) {
+    return;
+  }
   dom.style.setProperty('border', '2px solid red', 'important');
 }
 
-export const highLightLabeledDom = (dom: HTMLElement) => {
+export const highlightLabeledDom = (dom: HTMLElement) => {
+  if (!dom) {
+    return;
+  }
   dom.style.setProperty('border', '2px solid blue', 'important');
+}
+
+export const restoreDomHighlight = (dom: HTMLElement) => {
+  if (!dom) {
+    return;
+  }
+  dom.style.setProperty('border', '');
+}
+
+export const addBasicInfoUnderDom = (dom: HTMLElement) => {
+  
 }
