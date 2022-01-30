@@ -1,31 +1,53 @@
 import * as browser from 'webextension-polyfill';
 import { Menus, Tabs } from 'webextension-polyfill';
-import { CONTEXT_MENU_IDS } from './constants';
-
-const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
-  console.log(info, tab);
-}
+import { CONTEXT_MENU_IDS, MessageType } from './constants';
 
 // create context menu
 browser.contextMenus.create({
-  title: 'Label Username', 
+  title: 'Label Field', 
   contexts:['all'], 
-  id: CONTEXT_MENU_IDS.LABLE_USERNAME
-});
+  id: CONTEXT_MENU_IDS.LABEL_FIELD
+}, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
-  title: 'Yes',
+  title: 'Username',
   contexts:['all'],
-  parentId: CONTEXT_MENU_IDS.LABLE_USERNAME,
-  id: CONTEXT_MENU_IDS.LABEL_USERNAME_YES
-});
+  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
+  id: CONTEXT_MENU_IDS.LABEL_USERNAME
+}, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
-  title: 'No',
+  title: 'Password',
   contexts:['all'],
-  parentId: CONTEXT_MENU_IDS.LABLE_USERNAME,
-  id: CONTEXT_MENU_IDS.LABEL_USERNAME_NO
-});
+  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
+  id: CONTEXT_MENU_IDS.LABEL_PASSWORD
+}, () => browser.runtime.lastError);
 
+browser.contextMenus.create({
+  title: 'Submit button',
+  contexts:['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
+  id: CONTEXT_MENU_IDS.LABEL_SUBMIT
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Unknown',
+  contexts:['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
+  id: CONTEXT_MENU_IDS.LABEL_FIELD_UNKNOWN
+}, () => browser.runtime.lastError);
+
+const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
+  if (!tab.id) {
+    console.log('no tab id, bail');
+  }
+  browser.tabs.sendMessage(tab.id, {
+    type: MessageType.CONTEXT_CLICK,
+    action: info.menuItemId,
+    data: {
+      url: tab.url
+    }
+  });
+};
 
 browser.contextMenus.onClicked.addListener(contextMenuClickHandler);

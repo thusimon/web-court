@@ -1,30 +1,22 @@
 import '@webcomponents/webcomponentsjs';
-import { findVisibleInputs,
+import * as browser from 'webextension-polyfill';
+import {
   highlightPendingDom,
   highlightLabeledDom,
   restoreDomHighlight,
   addTooltipUnderDom,
 } from './utils/dom';
-import { getInputFieldsFeatures, getPageFeatures } from './feature';
+import { handleLabel } from './message';
 import './components/overlay';
 import Overlay from './components/overlay';
-import { WEBCOURT_UID } from '../constants';
-
-const inputs = findVisibleInputs();
-const inputFeatures = getInputFieldsFeatures(inputs);
-const pageFeatures = getPageFeatures(inputs);
-
-console.log('showing input features');
-console.log(inputFeatures);
-
-console.log('showing page features');
-console.log(pageFeatures);
+import { WEBCOURT_UID, Message, MessageType } from '../constants';
 
 let currentSelectedDom: HTMLElement;
 document.addEventListener('contextmenu', (evt) => {
   if (currentSelectedDom) {
     restoreDomHighlight(currentSelectedDom);
   }
+  overlay.clearOverlay();
   const target = evt.target as HTMLElement;
   if (!target) {
     console.log('No HTMLElement');
@@ -32,7 +24,6 @@ document.addEventListener('contextmenu', (evt) => {
   }
   currentSelectedDom = target;
   highlightPendingDom(currentSelectedDom);
-  overlay.clearOverlay();
   addTooltipUnderDom(currentSelectedDom, overlay);
 });
 
@@ -44,3 +35,18 @@ document.addEventListener('keyup', (evt) => {
 const overlay = document.createElement('wc-overlay') as Overlay;
 overlay.id = `${WEBCOURT_UID}-overlay`;
 document.body.append(overlay);
+
+// register message listener
+browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime.MessageSender) => {
+  switch (message.type) {
+    case MessageType.CONTEXT_CLICK: {
+      handleLabel(message, currentSelectedDom)
+      .then(() => {
+        highlightLabeledDom(currentSelectedDom);
+      })
+      break;
+    }
+    default:
+      break;
+  }
+});

@@ -1,12 +1,31 @@
-import { getDomAttribute, DomAttributeType } from './utils/dom';
-import { getGeoFeatures, getNearestRectInfo, getSpacialStatistics, GeoType, SpacialStatisticType, NearestType } from './utils/geo';
+import { 
+  DomAttributeType,
+  CSSPropertyType,
+  findVisibleInputs,
+  getDomAttributes,
+  getCSSProperties
+} from './utils/dom';
+import {
+  GeoType,
+  NearestType,
+  getGeoFeature,
+  getNearestInfo
+} from './utils/geo';
+import {
+  SpacialStatisticType,
+  getSpacialStatistics,
+} from './utils/statistics';
 import { INPUT_TYPE_NONE } from '../constants';
 
 export type InputRawType = {
   input: HTMLInputElement;
 };
 
-export type InputFeature = GeoType & InputRawType & NearestType & DomAttributeType;
+export type InputFeature = GeoType &
+  NearestType &
+  DomAttributeType &
+  CSSPropertyType;
+
 
 export type PageFeature = SpacialStatisticType;
 
@@ -15,44 +34,32 @@ export type AllFeature = {
   pageFeature: PageFeature
 }
 
-export const getInputFieldsFeatures = (inputs: HTMLInputElement[]): InputFeature[] => {
+export const getInputFieldFeatures = (input: HTMLInputElement): InputFeature => {
+  const allVisiableInputs = findVisibleInputs();
   // get geo features
-  const inputGeoFeatures: GeoType[] = getGeoFeatures(inputs);
-  
+  const inputGeoFeatures = getGeoFeature(input);
   // get dom features
-  const inputDomFeatures: DomAttributeType[] = getDomAttribute(inputs);
-
+  const inputDomFeatures = getDomAttributes(input);
   // get nearest features
-  const inputNearestFeatures: NearestType[] = inputGeoFeatures.map(geo => {
-    const nearestInfo = getNearestRectInfo(geo, inputGeoFeatures);
-    if (nearestInfo.idxNearestX > -1) {
-      nearestInfo.typeNearestX = !!inputDomFeatures[nearestInfo.idxNearestX] ?
-        inputDomFeatures[nearestInfo.idxNearestX].type : INPUT_TYPE_NONE;
-    }
-    if (nearestInfo.idxNearestY > -1) {
-      nearestInfo.typeNearestY = !!inputDomFeatures[nearestInfo.idxNearestY] ?
-        inputDomFeatures[nearestInfo.idxNearestY].type : INPUT_TYPE_NONE;
-    }
-    return nearestInfo;
-  });
-  // merge all the features
-  const inputFeatures: InputFeature[] = inputs.map((input, idx) => {
-    return {
-      input,
-      ...inputGeoFeatures[idx],
-      ...inputDomFeatures[idx],
-      ...inputNearestFeatures[idx]
-    }
-  })
+  const inputNearestFeatures = getNearestInfo(input, allVisiableInputs);
+  // get css features
+  const inputCSSFeatures = getCSSProperties(input);
 
-  return inputFeatures;
+  // merge all the features
+  return {
+    ...inputDomFeatures,
+    ...inputGeoFeatures,
+    ...inputNearestFeatures,
+    ...inputCSSFeatures,
+  }
 }
 
-export const getPageFeatures = (inputs: HTMLInputElement[]): PageFeature => {
-  const inputGeoFeatures: GeoType[] = getGeoFeatures(inputs);
+export const getPageFeatures = (): PageFeature => {
+  const allVisiableInputs = findVisibleInputs();
+  const inputsGeoFeatures = allVisiableInputs.map(input => getGeoFeature(input));
 
   // get spacial feature
-  const spacialStatisticsFeature = getSpacialStatistics(inputGeoFeatures);
+  const spacialStatisticsFeature = getSpacialStatistics(inputsGeoFeatures);
 
   return {
     ...spacialStatisticsFeature

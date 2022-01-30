@@ -1,10 +1,23 @@
 import { MIN_INPUT_SIZE, MIN_INPUT_OPACITY, OVERLAY_MODE } from  '../../constants';
 import Overlay, { OverlaySettingsType } from '../components/overlay';
 
+export type DomAttributeType = {
+  type: string;
+  hasName: boolean,
+  hasId: boolean,
+  hasClass: boolean,
+  hasText: boolean,
+  disabled: boolean,
+};
+
+export type CSSPropertyType = {
+  textSecurity: string,
+};
+
 export const findAllInputFields = (): HTMLInputElement[] => {
   const inputs = <HTMLCollectionOf<HTMLInputElement>>document.getElementsByTagName('INPUT');
   return Array.from(inputs);
-}
+};
 
 export const findVisibleInputs = (): HTMLInputElement[] => {
   const inputs = findAllInputFields(); 
@@ -33,50 +46,47 @@ export const findVisibleInputs = (): HTMLInputElement[] => {
     }
     return true;
   });
-}
+};
 
-export type DomAttributeType = {
-  type: string;
-  hasName: boolean,
-  hasId: boolean,
-  hasClass: boolean,
-  hasText: boolean,
-  disabled: boolean,
-}
+export const getDomAttributes = (input: HTMLInputElement): DomAttributeType => {
+  return {
+    type: input.type,
+    hasName: !!input.name,
+    hasId: !!input.id,
+    hasClass: !!input.className,
+    hasText: !!input.textContent.trim(),
+    disabled: !!input.disabled
+  }
+};
 
-export const getDomAttribute = (inputs: HTMLInputElement[]): DomAttributeType[] => {
-  return inputs.map(input => {
-    return {
-      type: input.type,
-      hasName: !!input.name,
-      hasId: !!input.id,
-      hasClass: !!input.className,
-      hasText: !!input.textContent.trim(),
-      disabled: !!input.disabled
-    }
-  });
-}
+export const getCSSProperties = (input: HTMLElement): CSSPropertyType => {
+  const cssStyle = window.getComputedStyle(input);
+  const textSecurity = cssStyle.getPropertyValue('-webkit-text-security');
+  return {
+    textSecurity
+  };
+};
 
 export const highlightPendingDom = (dom: HTMLElement) => {
   if (!dom) {
     return;
   }
   dom.style.setProperty('border', '2px solid red', 'important');
-}
+};
 
 export const highlightLabeledDom = (dom: HTMLElement) => {
   if (!dom) {
     return;
   }
   dom.style.setProperty('border', '2px solid blue', 'important');
-}
+};
 
 export const restoreDomHighlight = (dom: HTMLElement) => {
   if (!dom) {
     return;
   }
   dom.style.setProperty('border', '');
-}
+};
 
 let positionTooltipTimer: ReturnType<typeof setInterval>;
 export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
@@ -98,4 +108,4 @@ export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
     }
     overlay.updateSettings(overlaySettings);
   }, 200);
-}
+};
