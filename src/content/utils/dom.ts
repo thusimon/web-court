@@ -1,4 +1,5 @@
-import { MIN_INPUT_SIZE, MIN_INPUT_OPACITY } from  '../../constants';
+import { MIN_INPUT_SIZE, MIN_INPUT_OPACITY, OVERLAY_MODE } from  '../../constants';
+import Overlay, { OverlaySettingsType } from '../components/overlay';
 
 export const findAllInputFields = (): HTMLInputElement[] => {
   const inputs = <HTMLCollectionOf<HTMLInputElement>>document.getElementsByTagName('INPUT');
@@ -77,6 +78,24 @@ export const restoreDomHighlight = (dom: HTMLElement) => {
   dom.style.setProperty('border', '');
 }
 
-export const addBasicInfoUnderDom = (dom: HTMLElement) => {
-  
+let positionTooltipTimer: ReturnType<typeof setInterval>;
+export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
+  if (positionTooltipTimer) {
+    clearInterval(positionTooltipTimer);
+  }
+  const tagStr = dom.tagName.toLocaleLowerCase();
+  const idStr = dom.id ? `#${dom.id}` : '';
+  const classStr = typeof dom.className === 'string' ? `.${dom.className.split(' ').join('.')}` : '';
+  const text = `${tagStr}${idStr}${classStr}`;
+  positionTooltipTimer = setInterval(() => {
+    const domRect = dom.getBoundingClientRect();
+    const overlayRect = overlay.getBoundingClientRect();
+    const overlaySettings: OverlaySettingsType = {
+      top: domRect.top - overlayRect.top + domRect.height + 5,
+      left: domRect.left - overlayRect.left,
+      mode: OVERLAY_MODE.TOOLTIP,
+      text: text
+    }
+    overlay.updateSettings(overlaySettings);
+  }, 200);
 }

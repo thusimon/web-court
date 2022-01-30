@@ -14,3 +14,15 @@ export const CONTEXT_MENU_IDS = {
   LABEL_USERNAME_YES: 'LABEL_USERNAME_YES',
   LABEL_USERNAME_NO: 'LABEL_USERNAME_NO'
 }
+
+export enum OVERLAY_MODE {
+  TOOLTIP,
+  EMPTY
+}
+
+export const DEFAULT_OVERLAY_SETTINGS = {
+  mode: OVERLAY_MODE.EMPTY,
+  text: '',
+  top: 0,
+  left: 0
+}
