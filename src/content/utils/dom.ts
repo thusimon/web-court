@@ -88,16 +88,16 @@ export const restoreDomHighlight = (dom: HTMLElement) => {
   dom.style.setProperty('border', '');
 };
 
-let positionTooltipTimer: ReturnType<typeof setInterval>;
+let positionTimer: ReturnType<typeof setInterval>;
 export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
-  if (positionTooltipTimer) {
-    clearInterval(positionTooltipTimer);
+  if (positionTimer) {
+    clearInterval(positionTimer);
   }
   const tagStr = dom.tagName.toLocaleLowerCase();
   const idStr = dom.id ? `#${dom.id}` : '';
   const classStr = typeof dom.className === 'string' ? `.${dom.className.split(' ').join('.')}` : '';
   const text = `${tagStr}${idStr}${classStr}`;
-  positionTooltipTimer = setInterval(() => {
+  positionTimer = setInterval(() => {
     const domRect = dom.getBoundingClientRect();
     const overlayRect = overlay.getBoundingClientRect();
     const overlaySettings: OverlaySettingsType = {
@@ -108,4 +108,11 @@ export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
     }
     overlay.updateSettings(overlaySettings);
   }, 200);
+};
+
+export const clearOverlay = (overlay: Overlay) => {
+  if (positionTimer) {
+    clearInterval(positionTimer);
+  }
+  overlay.clear();
 };

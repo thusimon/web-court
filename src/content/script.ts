@@ -5,6 +5,7 @@ import {
   highlightLabeledDom,
   restoreDomHighlight,
   addTooltipUnderDom,
+  clearOverlay
 } from './utils/dom';
 import { handleLabel } from './message';
 import './components/overlay';
@@ -16,7 +17,7 @@ document.addEventListener('contextmenu', (evt) => {
   if (currentSelectedDom) {
     restoreDomHighlight(currentSelectedDom);
   }
-  overlay.clearOverlay();
+  clearOverlay(overlay);
   const target = evt.target as HTMLElement;
   if (!target) {
     console.log('No HTMLElement');
@@ -29,6 +30,14 @@ document.addEventListener('contextmenu', (evt) => {
 
 document.addEventListener('keyup', (evt) => {
   //TODO use +/- to navigate to parent/children
+});
+
+document.addEventListener('click', (evt) => {
+  // clear everything
+  if (currentSelectedDom) {
+    restoreDomHighlight(currentSelectedDom);
+  }
+  clearOverlay(overlay);
 });
 
 // add overlay at the bottom of the body

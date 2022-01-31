@@ -57,7 +57,7 @@ class Overlay extends LitElement {
     this.settings = settings;
   }
 
-  clearOverlay() {
+  clear() {
     this.settings = DEFAULT_OVERLAY_SETTINGS;
   }
 }
