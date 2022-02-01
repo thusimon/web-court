@@ -37,6 +37,12 @@ browser.contextMenus.create({
   id: CONTEXT_MENU_IDS.LABEL_FIELD_UNKNOWN
 }, () => browser.runtime.lastError);
 
+browser.contextMenus.create({
+  title: 'Clear all', 
+  contexts:['all'], 
+  id: CONTEXT_MENU_IDS.LABEL_CLEAR_ALL
+}, () => browser.runtime.lastError);
+
 const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
   if (!tab.id) {
     console.log('no tab id, bail');

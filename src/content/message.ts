@@ -1,6 +1,12 @@
 import { getInputFieldFeatures } from './feature';
 import { addInputFeature } from './utils/storage';
+import {
+  highlightLabeledDom,
+  restoreDomHighlight,
+  clearOverlay
+} from './utils/dom';
 import { Message, CONTEXT_MENU_IDS, FieldLabelResult, PageLabelResult } from '../constants';
+import Overlay from './components/overlay';
 
 const contextMenuActions = [
   CONTEXT_MENU_IDS.LABEL_USERNAME,
@@ -11,6 +17,7 @@ const contextMenuActions = [
   CONTEXT_MENU_IDS.LABEL_CHANGE_PASS,
   CONTEXT_MENU_IDS.LABEL_SIGNUP,
   CONTEXT_MENU_IDS.LABEL_PAGE_UNKNOWN,
+  CONTEXT_MENU_IDS.LABEL_CLEAR_ALL
 ]
 
 export interface LabelData {
@@ -18,7 +25,10 @@ export interface LabelData {
   label?: FieldLabelResult | PageLabelResult 
 };
 
-export const handleLabel = (message: Message, input: HTMLElement) => {
+export const handleLabel = (message: Message, input: HTMLElement, overlay: Overlay) => {
+  if (!input) {
+    return;
+  }
   const action = message.action;
   const data = message.data as LabelData;
   if (!contextMenuActions.includes(action)) {
@@ -32,7 +42,10 @@ export const handleLabel = (message: Message, input: HTMLElement) => {
         ...inputFeatures,
         label: FieldLabelResult.username
       }
-      return addInputFeature(featureLabled);
+      return addInputFeature(featureLabled)
+      .then(() => {
+        highlightLabeledDom(input);
+      });
     }
     case CONTEXT_MENU_IDS.LABEL_PASSWORD: {
       const inputFeatures = getInputFieldFeatures(input as HTMLInputElement);
@@ -41,7 +54,10 @@ export const handleLabel = (message: Message, input: HTMLElement) => {
         ...inputFeatures,
         label: FieldLabelResult.password
       }
-      return addInputFeature(featureLabled);
+      return addInputFeature(featureLabled)
+      .then(() => {
+        highlightLabeledDom(input);
+      });;
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT: {
       return Promise.resolve(true);
@@ -53,7 +69,15 @@ export const handleLabel = (message: Message, input: HTMLElement) => {
         ...inputFeatures,
         label: FieldLabelResult.unknown
       }
-      return addInputFeature(featureLabled);
+      return addInputFeature(featureLabled)
+      .then(() => {
+        highlightLabeledDom(input);
+      });;
+    }
+    case CONTEXT_MENU_IDS.LABEL_CLEAR_ALL: {
+      restoreDomHighlight(input);
+      clearOverlay(overlay);
+      return Promise.resolve(true);
     }
     default:
       break;

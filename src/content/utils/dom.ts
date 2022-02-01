@@ -8,6 +8,8 @@ export type DomAttributeType = {
   hasClass: boolean,
   hasText: boolean,
   disabled: boolean,
+  tag: string,
+  tagDiscriptor: string //this is only used to view the feature, should not be applied in training
 };
 
 export type CSSPropertyType = {
@@ -55,7 +57,9 @@ export const getDomAttributes = (input: HTMLInputElement): DomAttributeType => {
     hasId: !!input.id,
     hasClass: !!input.className,
     hasText: !!input.textContent.trim(),
-    disabled: !!input.disabled
+    disabled: !!input.disabled,
+    tag: input.tagName.toLocaleLowerCase(),
+    tagDiscriptor: getTagDescriptor(input)
   }
 };
 
@@ -88,15 +92,18 @@ export const restoreDomHighlight = (dom: HTMLElement) => {
   dom.style.setProperty('border', '');
 };
 
+export const getTagDescriptor = (dom: HTMLElement) => {
+  const tagStr = dom.tagName.toLocaleLowerCase();
+  const idStr = dom.id ? `#${dom.id}` : '';
+  const classStr = typeof dom.className === 'string' ? `.${dom.className.split(' ').join('.')}` : '';
+  return `${tagStr}${idStr}${classStr}`;
+};
+
 let positionTimer: ReturnType<typeof setInterval>;
 export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
   if (positionTimer) {
     clearInterval(positionTimer);
   }
-  const tagStr = dom.tagName.toLocaleLowerCase();
-  const idStr = dom.id ? `#${dom.id}` : '';
-  const classStr = typeof dom.className === 'string' ? `.${dom.className.split(' ').join('.')}` : '';
-  const text = `${tagStr}${idStr}${classStr}`;
   positionTimer = setInterval(() => {
     const domRect = dom.getBoundingClientRect();
     const overlayRect = overlay.getBoundingClientRect();
@@ -104,7 +111,7 @@ export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
       top: domRect.top - overlayRect.top + domRect.height + 5,
       left: domRect.left - overlayRect.left,
       mode: OVERLAY_MODE.TOOLTIP,
-      text: text
+      text: getTagDescriptor(dom)
     }
     overlay.updateSettings(overlaySettings);
   }, 200);

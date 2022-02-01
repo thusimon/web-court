@@ -10,6 +10,7 @@ const config = {
     background: './src/background.ts',
     script: './src/content/script.ts',
     options: './src/pages/options/options.ts',
+    features: './src/pages/features/features.ts',
     popover: './src/pages/popover/popover.ts'
   },
   output: {

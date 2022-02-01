@@ -2,7 +2,6 @@ import '@webcomponents/webcomponentsjs';
 import * as browser from 'webextension-polyfill';
 import {
   highlightPendingDom,
-  highlightLabeledDom,
   restoreDomHighlight,
   addTooltipUnderDom,
   clearOverlay
@@ -32,14 +31,6 @@ document.addEventListener('keyup', (evt) => {
   //TODO use +/- to navigate to parent/children
 });
 
-document.addEventListener('click', (evt) => {
-  // clear everything
-  if (currentSelectedDom) {
-    restoreDomHighlight(currentSelectedDom);
-  }
-  clearOverlay(overlay);
-});
-
 // add overlay at the bottom of the body
 const overlay = document.createElement('wc-overlay') as Overlay;
 overlay.id = `${WEBCOURT_UID}-overlay`;
@@ -49,10 +40,7 @@ document.body.append(overlay);
 browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime.MessageSender) => {
   switch (message.type) {
     case MessageType.CONTEXT_CLICK: {
-      handleLabel(message, currentSelectedDom)
-      .then(() => {
-        highlightLabeledDom(currentSelectedDom);
-      })
+      handleLabel(message, currentSelectedDom, overlay);
       break;
     }
     default:

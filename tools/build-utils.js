@@ -10,6 +10,8 @@ const getBuildFilePathAndName = (chunkName) => {
       return 'content/script.js';
     case 'options':
       return 'pages/options/options.js';
+    case 'features':
+      return 'pages/features/features.js';
     case 'popover':
       return 'pages/popover/popover.js';
     default:
@@ -21,6 +23,10 @@ const pageChunks = [
   {
     chunk: 'options',
     filePath: 'pages/options/options'
+  },
+  {
+    chunk: 'features',
+    filePath: 'pages/features/features'
   },
   {
     chunk: 'popover',

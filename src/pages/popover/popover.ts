@@ -1,3 +1,6 @@
 import './popover.css';
 
-console.log('popover');
+const container = document.createElement('div');
+container.id = 'container';
+
+document.body.append(container);
