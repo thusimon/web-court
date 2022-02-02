@@ -17,20 +17,11 @@ export const addInputFeature = async (inputFeature: InputFeatureLabeled) => {
   }
 };
 
-export const getFieldFeatures = async () => {
+export const getFeatures = async (category: FeatureCategory) => {
   try {
-    const storageGet = await storage.local.get(FeatureCategory.Field);
-    return storageGet[FeatureCategory.Field] || [];
+    const storageGet = await storage.local.get(category);
+    return storageGet[category] || [];
   } catch (e) {
     return [];
   }
 };
-
-export const getPageFeatures = async () => {
-  try {
-    const storageGet = await storage.local.get(FeatureCategory.Page);
-    return storageGet[FeatureCategory.Page] || [];
-  } catch (e) {
-    return [];
-  }
-}

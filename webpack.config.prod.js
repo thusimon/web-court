@@ -10,7 +10,7 @@ const config = {
     background: './src/background.ts',
     script: './src/content/script.ts',
     options: './src/pages/options/options.ts',
-    features: './src/pages/features/features.ts',
+    features: './src/pages/features/features.tsx',
     popover: './src/pages/popover/popover.ts'
   },
   output: {
@@ -21,7 +21,7 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.ts$/,
+        test: /\.tsx?$/,
         use: 'ts-loader',
         exclude: /node_modules/,
       },
@@ -32,7 +32,7 @@ const config = {
     ],
   },
   resolve: {
-    extensions: ['.ts', '.js']
+    extensions: ['.ts', '.tsx', '.js']
   },
   experiments: {
     topLevelAwait: true

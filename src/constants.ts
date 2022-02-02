@@ -59,7 +59,7 @@ export enum PageLabelResult {
   unknown
 };
 
-export const FeatureCategory = {
-  Field: 'Field',
-  Page: 'Page'
+export enum FeatureCategory {
+  Field = 'Field',
+  Page = 'Page'
 };

@@ -38,6 +38,7 @@ const htmlWebpackPlugins = pageChunks.map(config => new HtmlWebpackPlugin({
   chunks: [config.chunk],
   title: config.chunk,
   filename: `${config.filePath}.html`,
+  template: './src/pages/template.html',
   inject: 'body'
 }));
 
