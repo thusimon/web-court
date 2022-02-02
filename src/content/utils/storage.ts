@@ -20,9 +20,17 @@ export const addInputFeature = async (inputFeature: InputFeatureLabeled) => {
 export const getFieldFeatures = async () => {
   try {
     const storageGet = await storage.local.get(FeatureCategory.Field);
-    const currentFieldFeatures = storageGet[FeatureCategory.Field] || [];
-    return currentFieldFeatures;
+    return storageGet[FeatureCategory.Field] || [];
   } catch (e) {
     return [];
   }
 };
+
+export const getPageFeatures = async () => {
+  try {
+    const storageGet = await storage.local.get(FeatureCategory.Page);
+    return storageGet[FeatureCategory.Page] || [];
+  } catch (e) {
+    return [];
+  }
+}

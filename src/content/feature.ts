@@ -15,7 +15,6 @@ import {
   SpacialStatisticType,
   getSpacialStatistics,
 } from './utils/statistics';
-import { INPUT_TYPE_NONE } from '../constants';
 
 export type InputRawType = {
   input: HTMLInputElement;

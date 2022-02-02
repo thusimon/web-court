@@ -32,6 +32,9 @@ const config = {
   },
   resolve: {
     extensions: ['.ts', '.js']
+  },
+  experiments: {
+    topLevelAwait: true
   }
 };
 
