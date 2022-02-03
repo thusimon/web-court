@@ -1,22 +1,22 @@
-import { getInputFieldFeatures } from './feature';
-import { addInputFeature } from './utils/storage';
+import { getInputFieldFeatures, getPageFeatures } from './feature';
+import { addFeature, PageFeatureLabeled } from './utils/storage';
 import {
   highlightLabeledDom,
   restoreDomHighlight,
   clearOverlay
 } from './utils/dom';
-import { Message, CONTEXT_MENU_IDS, FieldLabelResult, PageLabelResult } from '../constants';
+import { Message, CONTEXT_MENU_IDS, FieldLabelResult, PageLabelResult, FeatureCategory } from '../constants';
 import Overlay from './components/overlay';
 
 const contextMenuActions = [
   CONTEXT_MENU_IDS.LABEL_USERNAME,
   CONTEXT_MENU_IDS.LABEL_PASSWORD,
   CONTEXT_MENU_IDS.LABEL_SUBMIT,
-  CONTEXT_MENU_IDS.LABEL_FIELD_UNKNOWN,
+  CONTEXT_MENU_IDS.LABEL_FIELD_OTHER,
   CONTEXT_MENU_IDS.LABEL_LOGIN,
   CONTEXT_MENU_IDS.LABEL_CHANGE_PASS,
   CONTEXT_MENU_IDS.LABEL_SIGNUP,
-  CONTEXT_MENU_IDS.LABEL_PAGE_UNKNOWN,
+  CONTEXT_MENU_IDS.LABEL_PAGE_OTHER,
   CONTEXT_MENU_IDS.LABEL_CLEAR_ALL
 ]
 
@@ -25,8 +25,8 @@ export interface LabelData {
   label?: FieldLabelResult | PageLabelResult 
 };
 
-export const handleLabel = (message: Message, input: HTMLElement, overlay: Overlay) => {
-  if (!input) {
+export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay) => {
+  if (!dom) {
     return;
   }
   const action = message.action;
@@ -36,46 +36,98 @@ export const handleLabel = (message: Message, input: HTMLElement, overlay: Overl
   }
   switch (action) {
     case CONTEXT_MENU_IDS.LABEL_USERNAME: {
-      const inputFeatures = getInputFieldFeatures(input as HTMLInputElement);
-      const featureLabled = {
+      const inputFeatures = getInputFieldFeatures(dom as HTMLInputElement);
+      const featureLabeled = {
         ...data,
         ...inputFeatures,
         label: FieldLabelResult.username
       }
-      return addInputFeature(featureLabled)
+      return addFeature(FeatureCategory.Field, featureLabeled)
       .then(() => {
-        highlightLabeledDom(input);
+        highlightLabeledDom(dom);
       });
     }
     case CONTEXT_MENU_IDS.LABEL_PASSWORD: {
-      const inputFeatures = getInputFieldFeatures(input as HTMLInputElement);
-      const featureLabled = {
+      const inputFeatures = getInputFieldFeatures(dom as HTMLInputElement);
+      const featureLabeled = {
         ...data,
         ...inputFeatures,
         label: FieldLabelResult.password
       }
-      return addInputFeature(featureLabled)
+      return addFeature(FeatureCategory.Field, featureLabeled)
       .then(() => {
-        highlightLabeledDom(input);
+        highlightLabeledDom(dom);
       });;
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT: {
       return Promise.resolve(true);
     }
-    case CONTEXT_MENU_IDS.LABEL_FIELD_UNKNOWN: {
-      const inputFeatures = getInputFieldFeatures(input as HTMLInputElement);
-      const featureLabled = {
+    case CONTEXT_MENU_IDS.LABEL_FIELD_OTHER: {
+      const inputFeatures = getInputFieldFeatures(dom as HTMLInputElement);
+      const featureLabeled = {
         ...data,
         ...inputFeatures,
         label: FieldLabelResult.unknown
       }
-      return addInputFeature(featureLabled)
+      return addFeature(FeatureCategory.Field, featureLabeled)
       .then(() => {
-        highlightLabeledDom(input);
+        highlightLabeledDom(dom);
       });;
     }
+    case CONTEXT_MENU_IDS.LABEL_LOGIN: {
+      const pageFeatures = getPageFeatures();
+      const featureLabeled = {
+        ...data,
+        ...pageFeatures,
+        label: PageLabelResult.login
+      } as PageFeatureLabeled;
+      return addFeature(FeatureCategory.Page, featureLabeled)
+      .then(() => {
+        restoreDomHighlight(dom),
+        clearOverlay(overlay);
+      });
+    }
+    case CONTEXT_MENU_IDS.LABEL_CHANGE_PASS: {
+      const pageFeatures = getPageFeatures();
+      const featureLabeled = {
+        ...data,
+        ...pageFeatures,
+        label: PageLabelResult.change_pass
+      } as PageFeatureLabeled;
+      return addFeature(FeatureCategory.Page, featureLabeled)
+      .then(() => {
+        restoreDomHighlight(dom),
+        clearOverlay(overlay);
+      });
+    }
+    case CONTEXT_MENU_IDS.LABEL_SIGNUP: {
+      const pageFeatures = getPageFeatures();
+      const featureLabeled = {
+        ...data,
+        ...pageFeatures,
+        label: PageLabelResult.signup
+      } as PageFeatureLabeled;
+      return addFeature(FeatureCategory.Page, featureLabeled)
+      .then(() => {
+        restoreDomHighlight(dom),
+        clearOverlay(overlay);
+      });
+    }
+    case CONTEXT_MENU_IDS.LABEL_PAGE_OTHER: {
+      const pageFeatures = getPageFeatures();
+      const featureLabeled = {
+        ...data,
+        ...pageFeatures,
+        label: PageLabelResult.unknown
+      } as PageFeatureLabeled;
+      return addFeature(FeatureCategory.Page, featureLabeled)
+      .then(() => {
+        restoreDomHighlight(dom),
+        clearOverlay(overlay);
+      });
+    }
     case CONTEXT_MENU_IDS.LABEL_CLEAR_ALL: {
-      restoreDomHighlight(input);
+      restoreDomHighlight(dom);
       clearOverlay(overlay);
       return Promise.resolve(true);
     }

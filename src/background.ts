@@ -31,10 +31,44 @@ browser.contextMenus.create({
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
-  title: 'Unknown',
+  title: 'Other',
   contexts:['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
-  id: CONTEXT_MENU_IDS.LABEL_FIELD_UNKNOWN
+  id: CONTEXT_MENU_IDS.LABEL_FIELD_OTHER
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Label Page', 
+  contexts:['all'], 
+  id: CONTEXT_MENU_IDS.LABEL_PAGE
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Login', 
+  contexts:['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
+  id: CONTEXT_MENU_IDS.LABEL_LOGIN
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Change Password', 
+  contexts:['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
+  id: CONTEXT_MENU_IDS.LABEL_CHANGE_PASS
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Sign Up', 
+  contexts:['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
+  id: CONTEXT_MENU_IDS.LABEL_SIGNUP
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Other', 
+  contexts:['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
+  id: CONTEXT_MENU_IDS.LABEL_PAGE_OTHER
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({

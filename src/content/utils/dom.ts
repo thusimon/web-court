@@ -14,6 +14,7 @@ export type DomAttributeType = {
 
 export type CSSPropertyType = {
   textSecurity: string,
+  fontFamily: string
 };
 
 export const findAllInputFields = (): HTMLInputElement[] => {
@@ -50,6 +51,52 @@ export const findVisibleInputs = (): HTMLInputElement[] => {
   });
 };
 
+export const findUsernameInputs = (inputs: HTMLInputElement[]): HTMLInputElement[] => {
+  return inputs.filter(input => {
+    if (input.type != 'text' && input.type != 'email' && input.type != 'tel') {
+      return false;
+    }
+    // find the css selector
+    const cssStyle = getCSSProperties(input);
+    if (cssStyle.textSecurity === 'disc' ||
+      cssStyle.textSecurity === 'circle' ||
+      cssStyle.textSecurity === 'square') {
+      return false;
+    }
+    // font maybe customized
+    if (cssStyle.fontFamily === 'text-security-disc' ||
+      cssStyle.fontFamily === 'text-security-circle' ||
+      cssStyle.fontFamily === 'text-security-square') {
+      return false;
+    }
+    return true;
+  });
+};
+
+export const findPasswordInputs = (inputs: HTMLInputElement[]): HTMLInputElement[] => {
+  return inputs.filter(input => {
+    if (input.type === 'password') {
+      return true;
+    }
+    if (input.type === 'text') {
+      // find the css selector
+      const cssStyle = getCSSProperties(input);
+      if (cssStyle.textSecurity === 'disc' ||
+        cssStyle.textSecurity === 'circle' ||
+        cssStyle.textSecurity === 'square') {
+        return true;
+      }
+      // font maybe customized
+      if (cssStyle.fontFamily === 'text-security-disc' ||
+        cssStyle.fontFamily === 'text-security-circle' ||
+        cssStyle.fontFamily === 'text-security-square') {
+        return true;
+      }
+    }
+    return false;
+  });
+};
+
 export const getDomAttributes = (input: HTMLInputElement): DomAttributeType => {
   return {
     type: input.type,
@@ -66,8 +113,10 @@ export const getDomAttributes = (input: HTMLInputElement): DomAttributeType => {
 export const getCSSProperties = (input: HTMLElement): CSSPropertyType => {
   const cssStyle = window.getComputedStyle(input);
   const textSecurity = cssStyle.getPropertyValue('-webkit-text-security');
+  const fontFamily = cssStyle.getPropertyValue('font-family');
   return {
-    textSecurity
+    textSecurity,
+    fontFamily
   };
 };
 
