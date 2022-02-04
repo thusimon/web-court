@@ -1,5 +1,5 @@
 import { getInputFieldFeatures, getPageFeatures } from './feature';
-import { addFeature, PageFeatureLabeled } from './utils/storage';
+import { addFeature } from './utils/storage';
 import {
   highlightLabeledDom,
   restoreDomHighlight,
@@ -67,7 +67,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
       const featureLabeled = {
         ...data,
         ...inputFeatures,
-        label: FieldLabelResult.unknown
+        label: FieldLabelResult.other
       }
       return addFeature(FeatureCategory.Field, featureLabeled)
       .then(() => {
@@ -77,10 +77,10 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
     case CONTEXT_MENU_IDS.LABEL_LOGIN: {
       const pageFeatures = getPageFeatures();
       const featureLabeled = {
+        label: PageLabelResult.login,
         ...data,
-        ...pageFeatures,
-        label: PageLabelResult.login
-      } as PageFeatureLabeled;
+        ...pageFeatures
+      };
       return addFeature(FeatureCategory.Page, featureLabeled)
       .then(() => {
         restoreDomHighlight(dom),
@@ -90,10 +90,10 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
     case CONTEXT_MENU_IDS.LABEL_CHANGE_PASS: {
       const pageFeatures = getPageFeatures();
       const featureLabeled = {
+        label: PageLabelResult.change_pass,
         ...data,
-        ...pageFeatures,
-        label: PageLabelResult.change_pass
-      } as PageFeatureLabeled;
+        ...pageFeatures
+      };
       return addFeature(FeatureCategory.Page, featureLabeled)
       .then(() => {
         restoreDomHighlight(dom),
@@ -103,10 +103,10 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
     case CONTEXT_MENU_IDS.LABEL_SIGNUP: {
       const pageFeatures = getPageFeatures();
       const featureLabeled = {
+        label: PageLabelResult.signup,
         ...data,
-        ...pageFeatures,
-        label: PageLabelResult.signup
-      } as PageFeatureLabeled;
+        ...pageFeatures
+      };
       return addFeature(FeatureCategory.Page, featureLabeled)
       .then(() => {
         restoreDomHighlight(dom),
@@ -116,10 +116,10 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
     case CONTEXT_MENU_IDS.LABEL_PAGE_OTHER: {
       const pageFeatures = getPageFeatures();
       const featureLabeled = {
+        label: PageLabelResult.other,
         ...data,
-        ...pageFeatures,
-        label: PageLabelResult.unknown
-      } as PageFeatureLabeled;
+        ...pageFeatures
+      };
       return addFeature(FeatureCategory.Page, featureLabeled)
       .then(() => {
         restoreDomHighlight(dom),

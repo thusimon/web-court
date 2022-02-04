@@ -1,20 +1,20 @@
 import { MIN_INPUT_SIZE, MIN_INPUT_OPACITY, OVERLAY_MODE } from  '../../constants';
 import Overlay, { OverlaySettingsType } from '../components/overlay';
 
-export type DomAttributeType = {
+export interface DomAttributeType {
   type: string;
-  hasName: boolean,
-  hasId: boolean,
-  hasClass: boolean,
-  hasText: boolean,
-  disabled: boolean,
-  tag: string,
-  tagDiscriptor: string //this is only used to view the feature, should not be applied in training
+  hasName: boolean;
+  hasId: boolean;
+  hasClass: boolean;
+  hasText: boolean;
+  disabled: boolean;
+  tag: string;
+  tagDiscriptor: string; //this is only used to view the feature, should not be applied in training
 };
 
-export type CSSPropertyType = {
-  textSecurity: string,
-  fontFamily: string
+export interface CSSPropertyType {
+  textSecurity: string;
+  fontFamily: string;
 };
 
 export const findAllInputFields = (): HTMLInputElement[] => {

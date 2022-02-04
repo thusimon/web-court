@@ -1,12 +1,14 @@
 import React from 'react';
+import { constructPageFeatureOrdered } from '../../../content/feature';
+import { GeneralFeatureLabeled } from '../../../content/utils/storage';
 
-const FeatureTable = ({ features } : { features: Array<Object> }) => {
+const FeatureTable = ({ features } : { features: GeneralFeatureLabeled[] }) => {
   return (<table className='feature-table'>
     <thead>
       <tr>
         { 
           features && features.length > 0 ?
-          Object.keys(features[0]).map(key => <th key={key}>{key}</th>) :
+          constructPageFeatureOrdered(features[0]).key.map(key => <th key={key}>{key}</th>) :
           <th></th>
         }
       </tr>
@@ -14,7 +16,7 @@ const FeatureTable = ({ features } : { features: Array<Object> }) => {
     <tbody>
     {
       features && features.length > 0 ?
-      features.map((f, fidx) => <tr key={`${fidx}`}>{ Object.values(f).map((fv, fvidx) => <td key={`${fidx}-${fvidx}`}>{`${fv}`}</td>) }</tr>) :
+      features.map((feature, fidx) => <tr key={`${fidx}`}>{ constructPageFeatureOrdered(feature).value.map((fv, fvidx) => <td key={`${fidx}-${fvidx}`}>{`${fv}`}</td>) }</tr>) :
       <tr></tr>
     }
     </tbody>
@@ -22,32 +24,3 @@ const FeatureTable = ({ features } : { features: Array<Object> }) => {
 };
 
 export default FeatureTable;
-
-// const container = document.createElement('div');
-// container.id = 'container';
-
-// const headers = document.createElement('div');
-// headers.id = 'headers'
-
-// const features = document.createElement('div');
-// features.id = 'features';
-
-// const featurePageTable = document.createElement('table');
-// featurePageTable.id = 'page-feature-table';
-// featurePageTable.classList.add('feature-table');
-
-// const featureFieldTable = document.createElement('table');
-// featureFieldTable.id = 'field-feature-table';
-// featureFieldTable.classList.add('feature-table');
-
-// const pageFeatures = await getPageFeatures();
-// const fieldFeatures = await getFieldFeatures();
-
-// buildFeatures(featurePageTable, pageFeatures);
-// buildFeatures(featureFieldTable, fieldFeatures);
-
-// features.append(featurePageTable, featureFieldTable);
-
-// container.append(headers, features);
-
-// document.body.append(container);

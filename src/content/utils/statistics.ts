@@ -1,7 +1,8 @@
 import { mean, standardDeviation, min, max } from 'simple-statistics'
+import { GeneralFeature } from '../feature';
 import { getGeoFeature } from './geo';
 
-export type SpacialStatisticType = {
+export interface SpacialStatisticType {
   ux: number; // mean of x
   uxP: number; // mean of x percentage
   uy: number; // mean of y
@@ -28,13 +29,15 @@ export type SpacialStatisticType = {
   minLeftP: number; // leftmost percentage
 };
 
-export type CountStatisticsType = {
-  inputCount: number,
-  usernameCount: number,
-  passwordCount: number
+export type SpacialStatisticKeyType = keyof SpacialStatisticType
+
+export interface CountStatisticsType {
+  inputCount: number;
+  usernameCount: number;
+  passwordCount: number;
 }
 
-export const getSpacialStatistics = (inputs: HTMLInputElement[]): SpacialStatisticType => {
+export const getSpacialStatistics = (inputs: HTMLInputElement[]): GeneralFeature => {
   const rects = inputs.map(input => getGeoFeature(input));
   if (rects.length === 0) {
     return {

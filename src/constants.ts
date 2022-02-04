@@ -49,14 +49,14 @@ export enum FieldLabelResult {
   username,
   password,
   submit,
-  unknown
+  other
 };
 
 export enum PageLabelResult {
   login,
   change_pass,
   signup,
-  unknown
+  other
 };
 
 export enum FeatureCategory {

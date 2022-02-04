@@ -1,12 +1,11 @@
 import { storage } from 'webextension-polyfill';
-import { InputFeature, PageFeature } from '../feature';
+import { GeneralFeature } from '../feature';
 import { LabelData } from '../message';
 import { FeatureCategory } from '../../constants';
 
-export type InputFeatureLabeled = InputFeature & LabelData
-export type PageFeatureLabeled = PageFeature & LabelData
+export type GeneralFeatureLabeled = GeneralFeature & LabelData;
 
-export const addFeature = async (category: FeatureCategory, feature: InputFeatureLabeled | PageFeatureLabeled) => {
+export const addFeature = async (category: FeatureCategory, feature: GeneralFeature) => {
   try {
     const storageGet = await storage.local.get(category);
     const currentFieldFeatures = storageGet[category] || [];
@@ -18,7 +17,7 @@ export const addFeature = async (category: FeatureCategory, feature: InputFeatur
   }
 };
 
-export const getFeatures = async (category: FeatureCategory) => {
+export const getFeatures = async (category: FeatureCategory): Promise<Array<GeneralFeature>> => {
   try {
     const storageGet = await storage.local.get(category);
     return storageGet[category] || [];

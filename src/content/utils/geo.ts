@@ -1,6 +1,6 @@
 import { INPUT_TYPE_NONE } from '../../constants';
 
-export type GeoType = {
+export interface GeoType {
   top: number;
   topP: number;
   left: number;
@@ -11,7 +11,7 @@ export type GeoType = {
   heightP: number
 };
 
-export type NearestType = {
+export interface NearestType {
   typeNearestX: string;
   typeNearestY: string;
   distNearestX: number;

@@ -14,31 +14,23 @@ import {
   getNearestInfo
 } from './utils/geo';
 import {
-  SpacialStatisticType,
   getSpacialStatistics,
 } from './utils/statistics';
 
-export type InputRawType = {
-  input: HTMLInputElement;
-};
+export interface InputFeature extends GeoType, NearestType, DomAttributeType, CSSPropertyType {}
 
-export type InputFeature = GeoType &
-  NearestType &
-  DomAttributeType &
-  CSSPropertyType;
-
-export type GeneralNumberFeature = {
-  [key: string]: number;
+export interface GeneralFeature {
+  [key: string]: number | string | boolean;
 }
 
-export type PageFeature = GeneralNumberFeature;
+export interface PageFeature extends GeneralFeature {}
 
-export type AllFeature = {
-  inputFeatures: InputFeature[],
-  pageFeature: PageFeature
+export interface AllFeature {
+  inputFeatures: GeneralFeature[],
+  pageFeature: GeneralFeature
 }
 
-export const getInputFieldFeatures = (input: HTMLInputElement): InputFeature => {
+export const getInputFieldFeatures = (input: HTMLInputElement): GeneralFeature => {
   const allVisiableInputs = findVisibleInputs();
   // get geo features
   const inputGeoFeatures = getGeoFeature(input);
@@ -58,15 +50,15 @@ export const getInputFieldFeatures = (input: HTMLInputElement): InputFeature => 
   }
 }
 
-export const appendFeatureNames = (prefix: string, features: GeneralNumberFeature) => {
-  const appendedFeatures: GeneralNumberFeature = {}
-  for (const key in features) {
+export const appendFeatureNames = (prefix: string, features: GeneralFeature) => {
+  const appendedFeatures: GeneralFeature = {}
+  for (const key  in features) {
     appendedFeatures[`${prefix}${key}`] = features[key];
   }
   return appendedFeatures;
 }
 
-export const getPageFeatures = (): GeneralNumberFeature => {
+export const getPageFeatures = (): GeneralFeature => {
   // get spacial feature for all inputs
   const allVisiableInputs = findVisibleInputs();
   const spacialStatisticsAll = getSpacialStatistics(allVisiableInputs);
@@ -96,3 +88,18 @@ export const getPageFeatures = (): GeneralNumberFeature => {
     ...inputCounts
   };
 }
+
+export const constructPageFeatureOrdered = (feature: GeneralFeature) => {
+  // extract the ordered key and value
+  const orderedKeys = ['label', 'url'];
+  Object.keys(feature).forEach(key => {
+    if (!orderedKeys.includes(key)) {
+      orderedKeys.push(key);
+    }
+  });
+  const orderedValues = orderedKeys.map(key => feature[key]);
+  return {
+    key: orderedKeys,
+    value: orderedValues
+  };
+};
