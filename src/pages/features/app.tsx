@@ -1,12 +1,16 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useContext} from 'react';
 import FeatureTable from './components/feature-table';
 import { getFeatures } from '../../content/utils/storage';
 import { FeatureCategory } from '../../constants';
+import Nav from './components/nav';
+import { AppContext } from './context-provider';
+
 const App = () => {
   const [features, setFeatures] = useState({
     page: [],
     field: []
   });
+  const { state } = useContext(AppContext);
 
   useEffect(() => {
     (async () => {
@@ -20,12 +24,9 @@ const App = () => {
   }, []);
 
   return (<div id='container'>
-    <div id='page-feature'>
-      <FeatureTable features={features.page}></FeatureTable>
-    </div>
-    <hr />
-    <div id='field-feature'>
-      <FeatureTable features={features.field}></FeatureTable>
+    <Nav />
+    <div id='feature'>
+      <FeatureTable features={state.featureTableType === FeatureCategory.Page ? features.page : features.field}></FeatureTable>
     </div>
   </div>);
 };

@@ -1,7 +1,12 @@
 import ReactDOM from 'react-dom';
+import { ContextProvider } from './context-provider';
 import App from './app';
 
+import './features.css';
+
 ReactDOM.render(
-  <App />,
+  <ContextProvider>
+    <App />
+  </ContextProvider>,
   document.getElementById('app')
 );

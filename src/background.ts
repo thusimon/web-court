@@ -91,3 +91,7 @@ const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
 };
 
 browser.contextMenus.onClicked.addListener(contextMenuClickHandler);
+
+browser.action.onClicked.addListener(async (tab) => {
+  await browser.tabs.create({ url: browser.runtime.getURL('pages/options/options.html') })
+})

@@ -7,11 +7,11 @@ const config = {
   mode: 'production',
   devtool: false,
   entry: {
-    background: './src/background.ts',
-    script: './src/content/script.ts',
-    options: './src/pages/options/options.ts',
-    features: './src/pages/features/features.tsx',
-    popover: './src/pages/popover/popover.ts'
+    background: './src/background',
+    script: './src/content/script',
+    options: './src/pages/options/options',
+    features: './src/pages/features/features',
+    popover: './src/pages/popover/popover'
   },
   output: {
     path: path.resolve(__dirname, './dist'),
