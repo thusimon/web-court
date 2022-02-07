@@ -24,10 +24,15 @@ const App = () => {
     })();
   }, []);
 
+  const selectedFeature = state.featureTableType === FeatureCategory.Page ? features.page : features.field;
   return (<div id='container'>
     <Nav />
     <div id='feature'>
-      <FeatureTable features={state.featureTableType === FeatureCategory.Page ? features.page : features.field}></FeatureTable>
+      {
+        selectedFeature && selectedFeature.length > 0 ?
+        <FeatureTable features={selectedFeature}></FeatureTable> :
+        <div>No feature collected</div>
+      }
     </div>
   </div>);
 };
