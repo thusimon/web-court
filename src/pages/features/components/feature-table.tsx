@@ -1,6 +1,7 @@
 import React from 'react';
 import { constructPageFeatureOrdered } from '../../../content/feature';
 import { GeneralFeatureLabeled } from '../../../content/utils/storage';
+import './feature-table.scss';
 
 const FeatureTable = ({ features } : { features: GeneralFeatureLabeled[] }) => {
   return (<table className='feature-table'>
@@ -16,7 +17,7 @@ const FeatureTable = ({ features } : { features: GeneralFeatureLabeled[] }) => {
     <tbody>
     {
       features && features.length > 0 ?
-      features.map((feature, fidx) => <tr key={`${fidx}`}>{ constructPageFeatureOrdered(feature).value.map((fv, fvidx) => <td key={`${fidx}-${fvidx}`}>{`${fv}`}</td>) }</tr>) :
+      features.map((feature, fidx) => <tr key={`${fidx}`}>{ constructPageFeatureOrdered(feature).value.map((fv, fvidx) => <td key={`${fidx}-${fvidx}`} title={`${fv}`}>{`${fv}`}</td>) }</tr>) :
       <tr></tr>
     }
     </tbody>

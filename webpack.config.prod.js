@@ -1,7 +1,6 @@
 const path = require('path');
 const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const { getBuildFilePathAndName, htmlWebpackPlugins, copyWebpackPlugin, miniCssExtractPluginForPages } = require('./tools/build-utils');
+const { getBuildFilePathAndName, htmlWebpackPlugins, copyWebpackPlugin } = require('./tools/build-utils');
 
 const config = {
   mode: 'production',
@@ -26,10 +25,25 @@ const config = {
         exclude: /node_modules/,
       },
       {
-        test: /\.css$/i,
-        use: [MiniCssExtractPlugin.loader, 'css-loader'],
-      },
-    ],
+        test: /\.s[ac]ss$/i,
+        use: [
+          // Creates `style` nodes from JS strings
+          'style-loader',
+          // Translates CSS into CommonJS
+          'css-loader',
+          // Compiles Sass to CSS
+          {
+            loader: "sass-loader",
+            options: {
+              sourceMap: false,
+              sassOptions: {
+                outputStyle: "compressed",
+              },
+            }
+          }
+        ]
+      }
+    ]
   },
   resolve: {
     extensions: ['.ts', '.tsx', '.js']
@@ -39,7 +53,7 @@ const config = {
   }
 };
 
-config.plugins = [...htmlWebpackPlugins, copyWebpackPlugin, miniCssExtractPluginForPages];
+config.plugins = [...htmlWebpackPlugins, copyWebpackPlugin];
 
 config.optimization = {
   minimizer: [

@@ -2,6 +2,7 @@ import React, { useContext } from 'react'
 import { AppContext } from '../context-provider';
 import { FeatureCategory } from '../../../constants';
 import { Actions } from '../constants';
+import './nav.scss'
 
 const Nav = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -14,7 +15,8 @@ const Nav = () => {
   }
   return (
     <header>
-      <select value={state.featureTableType} onChange={onChangeHandler}>
+      <label htmlFor='feature-select'>Feature Category</label>
+      <select value={state.featureTableType} onChange={onChangeHandler} id='feature-select'>
         {Object.values(FeatureCategory).map(fname => <option key={fname} value={fname}>{fname}</option>)}
       </select>
     </header>

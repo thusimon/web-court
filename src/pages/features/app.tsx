@@ -4,6 +4,7 @@ import { getFeatures } from '../../content/utils/storage';
 import { FeatureCategory } from '../../constants';
 import Nav from './components/nav';
 import { AppContext } from './context-provider';
+import './app.scss';
 
 const App = () => {
   const [features, setFeatures] = useState({

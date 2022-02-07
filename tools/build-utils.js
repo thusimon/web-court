@@ -1,6 +1,5 @@
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 
 const getBuildFilePathAndName = (chunkName) => {
   switch (chunkName) {
@@ -42,10 +41,6 @@ const htmlWebpackPlugins = pageChunks.map(config => new HtmlWebpackPlugin({
   inject: 'body'
 }));
 
-const miniCssExtractPluginForPages = new MiniCssExtractPlugin({
-  filename: ({ chunk }) => `pages/${chunk.name}/${chunk.name}.css`
-});
-
 const copyWebpackPlugin = new CopyWebpackPlugin({
   patterns: [
     {
@@ -65,6 +60,5 @@ const copyWebpackPlugin = new CopyWebpackPlugin({
 module.exports = {
   getBuildFilePathAndName,
   htmlWebpackPlugins,
-  copyWebpackPlugin,
-  miniCssExtractPluginForPages
+  copyWebpackPlugin
 };

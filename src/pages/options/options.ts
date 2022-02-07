@@ -1,4 +1,4 @@
-import './options.css';
+import './options.scss';
 
 console.log('options!');
 
