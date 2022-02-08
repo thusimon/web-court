@@ -32,7 +32,8 @@
       "24": "assets/icons/24.png",
       "32": "assets/icons/32.png"
     },
-    "default_title": "Web Court"
+    "default_title": "Web Court",
+    "default_popup": "pages/popover/popover.html"
   },
   "options_ui": {
     "page": "pages/options/options.html",

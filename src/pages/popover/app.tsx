@@ -1,8 +1,12 @@
 import React from 'react';
+import Content from './components/content';
+
+import './app.scss';
 
 const App = () => {
   return (<div id='container'>
-    Hello popover 
+    <header>Web Court</header>
+    <Content />
   </div>);
 };
 
