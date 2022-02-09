@@ -33,7 +33,7 @@ export type SpacialStatisticKeyType = keyof SpacialStatisticType
 
 export interface CountStatisticsType {
   inputCount: number;
-  usernameCount: number;
+  textCount: number;
   passwordCount: number;
 }
 

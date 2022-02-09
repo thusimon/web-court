@@ -1,6 +1,9 @@
 import '@webcomponents/webcomponentsjs';
 import * as browser from 'webextension-polyfill';
 import {
+  findVisibleInputs,
+  findtextInputs,
+  findPasswordInputs,
   highlightPendingDom,
   restoreDomHighlight,
   addTooltipUnderDom,
@@ -14,7 +17,7 @@ import { WEBCOURT_UID, Message, MessageType } from '../constants';
 let currentSelectedDom: HTMLElement;
 document.addEventListener('contextmenu', (evt) => {
   if (currentSelectedDom) {
-    restoreDomHighlight(currentSelectedDom);
+    //restoreDomHighlight(currentSelectedDom);
   }
   clearOverlay(overlay);
   const target = evt.target as HTMLElement;
@@ -23,9 +26,16 @@ document.addEventListener('contextmenu', (evt) => {
     return;
   }
   currentSelectedDom = target;
-  highlightPendingDom(currentSelectedDom);
+  //highlightPendingDom(currentSelectedDom);
   addTooltipUnderDom(currentSelectedDom, overlay);
 });
+
+setInterval(() => {
+  const allVisiableInputs = findVisibleInputs();
+  const textInputs = findtextInputs(allVisiableInputs);
+  const passwordInputs = findPasswordInputs(allVisiableInputs);
+  [...textInputs, ...passwordInputs].forEach(vi => highlightPendingDom(vi));
+}, 1000);
 
 document.addEventListener('keyup', (evt) => {
   //TODO use +/- to navigate to parent/children

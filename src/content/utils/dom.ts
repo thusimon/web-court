@@ -51,7 +51,7 @@ export const findVisibleInputs = (): HTMLInputElement[] => {
   });
 };
 
-export const findUsernameInputs = (inputs: HTMLInputElement[]): HTMLInputElement[] => {
+export const findtextInputs = (inputs: HTMLInputElement[]): HTMLInputElement[] => {
   return inputs.filter(input => {
     if (input.type != 'text' && input.type != 'email' && input.type != 'tel') {
       return false;
@@ -124,7 +124,7 @@ export const highlightPendingDom = (dom: HTMLElement) => {
   if (!dom) {
     return;
   }
-  dom.style.setProperty('border', '2px solid red', 'important');
+  dom.style.setProperty('border', '4px solid red', 'important');
 };
 
 export const highlightLabeledDom = (dom: HTMLElement) => {

@@ -12,6 +12,7 @@
     "lint": "web-ext --source-dir src lint"
   },
   "dependencies": {
+    "@tensorflow/tfjs": "^3.13.0",
     "@webcomponents/webcomponentsjs": "^2.6.0",
     "lit": "^2.1.2",
     "react": "^17.0.2",
