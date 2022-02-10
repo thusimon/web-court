@@ -2,7 +2,7 @@ import {
   DomAttributeType,
   CSSPropertyType,
   findVisibleInputs,
-  findtextInputs,
+  findUsernameInputs,
   findPasswordInputs,
   getDomAttributes,
   getCSSProperties
@@ -65,7 +65,7 @@ export const getPageFeatures = (): GeneralFeature => {
   //const spacialStatisticsAllFeature = appendFeatureNames('a-', spacialStatisticsAll);
 
   // get spacial feature for all username inputs
-  const usernameInputs = findtextInputs(allVisiableInputs);
+  const usernameInputs = findUsernameInputs(allVisiableInputs);
   const spacialStatisticsUsername = getSpacialStatistics(usernameInputs);
   const spacialStatisticsUsernameFeature = appendFeatureNames('u-', spacialStatisticsUsername);
 

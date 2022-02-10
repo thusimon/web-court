@@ -63,3 +63,15 @@ export enum FeatureCategory {
   Field = 'Field',
   Page = 'Page'
 };
+
+export enum InputFieldType {
+  other,
+  username,
+  password,
+  options,
+  submit,
+  time,
+  values
+};
+
+export const PageInputMaxCount = 10; // collect 10 inputs at max 

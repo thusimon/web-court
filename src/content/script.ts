@@ -2,7 +2,7 @@ import '@webcomponents/webcomponentsjs';
 import * as browser from 'webextension-polyfill';
 import {
   findVisibleInputs,
-  findtextInputs,
+  findUsernameInputs,
   findPasswordInputs,
   highlightPendingDom,
   restoreDomHighlight,
@@ -32,7 +32,7 @@ document.addEventListener('contextmenu', (evt) => {
 
 setInterval(() => {
   const allVisiableInputs = findVisibleInputs();
-  const textInputs = findtextInputs(allVisiableInputs);
+  const textInputs = findUsernameInputs(allVisiableInputs);
   const passwordInputs = findPasswordInputs(allVisiableInputs);
   [...textInputs, ...passwordInputs].forEach(vi => highlightPendingDom(vi));
 }, 1000);

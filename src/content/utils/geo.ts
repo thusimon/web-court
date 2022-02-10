@@ -1,4 +1,5 @@
-import { INPUT_TYPE_NONE } from '../../constants';
+import { InputFieldType, INPUT_TYPE_NONE, PageInputMaxCount } from '../../constants';
+import { findPasswordInputs, findUsernameInputs, getInputType } from './dom';
 
 export interface GeoType {
   top: number;
@@ -17,6 +18,14 @@ export interface NearestType {
   distNearestX: number;
   distNearestY: number;
 };
+
+export interface SpacialType {
+  xP: number; // coordinate x percentage
+  yP: number; // coordinate y percentage
+  wP: number; // width percentage
+  hP: number; // height percentage
+  type: InputFieldType; // it is username input or password input
+}
 
 /**
  * get geometry features, for one input, return
@@ -96,4 +105,37 @@ export const getNearestInfo = (input: HTMLInputElement, inputs: HTMLInputElement
     typeNearestX,
     typeNearestY
   };
+};
+
+export const getUsernamePasswordGeoVector = (inputs: HTMLInputElement[]): SpacialType[] => {
+  const usernameInputs = findUsernameInputs(inputs);
+  const passwordInputs = findPasswordInputs(inputs);
+
+  const usernameGeo = usernameInputs.map(input => getGeoFeature(input));
+  const passwordGeo = passwordInputs.map(input => getGeoFeature(input));
+
+  const usernameFeature = usernameGeo.map(geo => ({
+    xP: geo.leftP,
+    yP: geo.topP,
+    wP: geo.widthP,
+    hP: geo.heightP,
+    type: InputFieldType.username
+  }));
+
+  const passwordFeature = passwordGeo.map(geo => ({
+    xP: geo.leftP,
+    yP: geo.topP,
+    wP: geo.widthP,
+    hP: geo.heightP,
+    type: InputFieldType.password
+  }));
+
+  let allInputFeature: SpacialType[] = [];
+  if (usernameFeature.length + passwordFeature.length <= PageInputMaxCount) {
+    allInputFeature = [...usernameFeature, ...passwordFeature];
+  }
+
+  // sort the inputs from top to bottom
+  allInputFeature.sort(feature => feature.yP);
+  return allInputFeature;
 };

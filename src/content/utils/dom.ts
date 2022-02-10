@@ -1,4 +1,4 @@
-import { MIN_INPUT_SIZE, MIN_INPUT_OPACITY, OVERLAY_MODE } from  '../../constants';
+import { MIN_INPUT_SIZE, MIN_INPUT_OPACITY, OVERLAY_MODE, InputFieldType } from  '../../constants';
 import Overlay, { OverlaySettingsType } from '../components/overlay';
 
 export interface DomAttributeType {
@@ -51,50 +51,51 @@ export const findVisibleInputs = (): HTMLInputElement[] => {
   });
 };
 
-export const findtextInputs = (inputs: HTMLInputElement[]): HTMLInputElement[] => {
-  return inputs.filter(input => {
-    if (input.type != 'text' && input.type != 'email' && input.type != 'tel') {
-      return false;
-    }
-    // find the css selector
-    const cssStyle = getCSSProperties(input);
-    if (cssStyle.textSecurity === 'disc' ||
-      cssStyle.textSecurity === 'circle' ||
-      cssStyle.textSecurity === 'square') {
-      return false;
-    }
-    // font maybe customized
-    if (cssStyle.fontFamily === 'text-security-disc' ||
-      cssStyle.fontFamily === 'text-security-circle' ||
-      cssStyle.fontFamily === 'text-security-square') {
-      return false;
-    }
+export const inputHasPasswordStyling = (input: HTMLInputElement): boolean => {
+  const cssStyle = getCSSProperties(input);
+  if (cssStyle.textSecurity === 'disc' ||
+    cssStyle.textSecurity === 'circle' ||
+    cssStyle.textSecurity === 'square') {
     return true;
-  });
+  }
+  // font maybe customized
+  if (cssStyle.fontFamily === 'text-security-disc' ||
+    cssStyle.fontFamily === 'text-security-circle' ||
+    cssStyle.fontFamily === 'text-security-square') {
+    return true;
+  }
+  return false;
+}
+
+export const getInputType = (input: HTMLInputElement): InputFieldType => {
+  const type = input.type;
+  if (type === 'password') {
+    return InputFieldType.password;
+  } else if (type === 'text' || type === 'email' || type === 'tel') {
+    if (inputHasPasswordStyling(input)) {
+      return InputFieldType.password;
+    } else {
+      return InputFieldType.username;
+    }
+  } else if (type === 'button' || type === 'submit' || type === 'image') {
+    return InputFieldType.submit;
+  } else if (type === 'checkbox' || type === 'radio') {
+    return InputFieldType.options;
+  } else if (type === 'date' || type === 'datetime-local' || type === 'month' || type === 'week' || type === 'time') {
+    return InputFieldType.time;
+  } else if (type === 'range' || type === 'number') {
+    return InputFieldType.values;
+  } else {
+    return InputFieldType.other;
+  }
+};
+
+export const findUsernameInputs = (inputs: HTMLInputElement[]): HTMLInputElement[] => {
+  return inputs.filter(input => getInputType(input) == InputFieldType.username);
 };
 
 export const findPasswordInputs = (inputs: HTMLInputElement[]): HTMLInputElement[] => {
-  return inputs.filter(input => {
-    if (input.type === 'password') {
-      return true;
-    }
-    if (input.type === 'text') {
-      // find the css selector
-      const cssStyle = getCSSProperties(input);
-      if (cssStyle.textSecurity === 'disc' ||
-        cssStyle.textSecurity === 'circle' ||
-        cssStyle.textSecurity === 'square') {
-        return true;
-      }
-      // font maybe customized
-      if (cssStyle.fontFamily === 'text-security-disc' ||
-        cssStyle.fontFamily === 'text-security-circle' ||
-        cssStyle.fontFamily === 'text-security-square') {
-        return true;
-      }
-    }
-    return false;
-  });
+  return inputs.filter(input => getInputType(input) == InputFieldType.password);
 };
 
 export const getDomAttributes = (input: HTMLInputElement): DomAttributeType => {
