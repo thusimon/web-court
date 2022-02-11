@@ -107,6 +107,14 @@ export const getNearestInfo = (input: HTMLInputElement, inputs: HTMLInputElement
   };
 };
 
+export const PaddingSpacialFeature: SpacialType = {
+  xP: 0,
+  yP: 0,
+  wP: 0,
+  hP: 0,
+  type: InputFieldType.other
+};
+
 export const getUsernamePasswordGeoVector = (inputs: HTMLInputElement[]): SpacialType[] => {
   const usernameInputs = findUsernameInputs(inputs);
   const passwordInputs = findPasswordInputs(inputs);
@@ -131,8 +139,33 @@ export const getUsernamePasswordGeoVector = (inputs: HTMLInputElement[]): Spacia
   }));
 
   let allInputFeature: SpacialType[] = [];
-  if (usernameFeature.length + passwordFeature.length <= PageInputMaxCount) {
-    allInputFeature = [...usernameFeature, ...passwordFeature];
+  const allInputCount = usernameFeature.length + passwordFeature.length;
+  if (allInputCount <= PageInputMaxCount) {
+    allInputFeature = [...usernameFeature, ...passwordFeature].concat(Array(PageInputMaxCount-allInputCount).fill(PaddingSpacialFeature));
+  } else {
+    // username + password input count is larger than 10, add each of them
+    let inputAdded = 0;
+    let usernameIdx = 0;
+    let passwordIdx = 0;
+    let featureIdx = 0
+    while (inputAdded < PageInputMaxCount) {
+      const username = usernameFeature[usernameIdx];
+      const password = passwordFeature[passwordIdx];
+      if (featureIdx % 2 == 0) {
+        if (username) {
+          allInputFeature.push(username);
+          inputAdded++;
+          usernameIdx++
+        }
+      } else {
+        if (password) {
+          allInputFeature.push(password);
+          inputAdded++;
+          passwordIdx++
+        }
+      }
+      featureIdx++;
+    }
   }
 
   // sort the inputs from top to bottom
