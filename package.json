@@ -45,5 +45,8 @@
   },
   "browserslist": [
     "last 2 Chrome versions"
-  ]
+  ],
+  "resolutions": {
+    "jest/**/jsdom": "^19.0.0"
+  }
 }

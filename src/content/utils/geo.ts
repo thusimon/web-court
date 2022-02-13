@@ -1,5 +1,5 @@
 import { InputFieldType, INPUT_TYPE_NONE, PageInputMaxCount } from '../../constants';
-import { findPasswordInputs, findUsernameInputs, getInputType } from './dom';
+import { findPasswordInputs, findUsernameInputs, findVisibleInputs, getInputType } from './dom';
 
 export interface GeoType {
   top: number;
@@ -109,15 +109,16 @@ export const getNearestInfo = (input: HTMLInputElement, inputs: HTMLInputElement
 
 export const PaddingSpacialFeature: SpacialType = {
   xP: 0,
-  yP: 0,
+  yP: 1,
   wP: 0,
   hP: 0,
   type: InputFieldType.other
 };
 
-export const getUsernamePasswordGeoVector = (inputs: HTMLInputElement[]): SpacialType[] => {
-  const usernameInputs = findUsernameInputs(inputs);
-  const passwordInputs = findPasswordInputs(inputs);
+export const getUsernamePasswordGeoFeature = (): SpacialType[] => {
+  const visibleInputs = findVisibleInputs();
+  const usernameInputs = findUsernameInputs(visibleInputs);
+  const passwordInputs = findPasswordInputs(visibleInputs);
 
   const usernameGeo = usernameInputs.map(input => getGeoFeature(input));
   const passwordGeo = passwordInputs.map(input => getGeoFeature(input));
@@ -169,6 +170,6 @@ export const getUsernamePasswordGeoVector = (inputs: HTMLInputElement[]): Spacia
   }
 
   // sort the inputs from top to bottom
-  allInputFeature.sort(feature => feature.yP);
+  allInputFeature.sort((a, b) => a.yP - b.yP);
   return allInputFeature;
 };
