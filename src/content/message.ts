@@ -1,4 +1,4 @@
-import { getInputFieldFeatures, getPageFeatures } from './feature';
+import { getInputFieldFeatures, getPageFeatures, getPageUsernamePasswordGeoFeatures } from './feature';
 import { addFeature } from './utils/storage';
 import {
   highlightLabeledDom,
@@ -25,7 +25,7 @@ export interface LabelData {
   label?: FieldLabelResult | PageLabelResult 
 };
 
-export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay) => {
+export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay): Promise<void> => {
   if (!dom) {
     return;
   }
@@ -60,7 +60,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
       });;
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT: {
-      return Promise.resolve(true);
+      return Promise.resolve();
     }
     case CONTEXT_MENU_IDS.LABEL_FIELD_OTHER: {
       const inputFeatures = getInputFieldFeatures(dom as HTMLInputElement);
@@ -75,7 +75,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
       });;
     }
     case CONTEXT_MENU_IDS.LABEL_LOGIN: {
-      const pageFeatures = getPageFeatures();
+      const pageFeatures = getPageUsernamePasswordGeoFeatures();
       const featureLabeled = {
         label: PageLabelResult.login,
         ...data,
@@ -88,7 +88,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
       });
     }
     case CONTEXT_MENU_IDS.LABEL_CHANGE_PASS: {
-      const pageFeatures = getPageFeatures();
+      const pageFeatures = getPageUsernamePasswordGeoFeatures();
       const featureLabeled = {
         label: PageLabelResult.change_pass,
         ...data,
@@ -101,7 +101,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
       });
     }
     case CONTEXT_MENU_IDS.LABEL_SIGNUP: {
-      const pageFeatures = getPageFeatures();
+      const pageFeatures = getPageUsernamePasswordGeoFeatures();
       const featureLabeled = {
         label: PageLabelResult.signup,
         ...data,
@@ -114,7 +114,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
       });
     }
     case CONTEXT_MENU_IDS.LABEL_PAGE_OTHER: {
-      const pageFeatures = getPageFeatures();
+      const pageFeatures = getPageUsernamePasswordGeoFeatures();
       const featureLabeled = {
         label: PageLabelResult.other,
         ...data,
@@ -129,7 +129,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
     case CONTEXT_MENU_IDS.LABEL_CLEAR_ALL: {
       restoreDomHighlight(dom);
       clearOverlay(overlay);
-      return Promise.resolve(true);
+      return Promise.resolve();
     }
     default:
       break;

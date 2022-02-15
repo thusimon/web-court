@@ -115,8 +115,7 @@ export const PaddingSpacialFeature: SpacialType = {
   type: InputFieldType.other
 };
 
-export const getUsernamePasswordGeoFeature = (): SpacialType[] => {
-  const visibleInputs = findVisibleInputs();
+export const getUsernamePasswordGeoFeature = (visibleInputs: HTMLInputElement[]): SpacialType[] => {
   const usernameInputs = findUsernameInputs(visibleInputs);
   const passwordInputs = findPasswordInputs(visibleInputs);
 
@@ -142,7 +141,8 @@ export const getUsernamePasswordGeoFeature = (): SpacialType[] => {
   let allInputFeature: SpacialType[] = [];
   const allInputCount = usernameFeature.length + passwordFeature.length;
   if (allInputCount <= PageInputMaxCount) {
-    allInputFeature = [...usernameFeature, ...passwordFeature].concat(Array(PageInputMaxCount-allInputCount).fill(PaddingSpacialFeature));
+    allInputFeature = [...usernameFeature, ...passwordFeature]
+      .concat(Array(PageInputMaxCount-allInputCount).fill(PaddingSpacialFeature));
   } else {
     // username + password input count is larger than 10, add each of them
     let inputAdded = 0;

@@ -11,7 +11,9 @@ import {
   GeoType,
   NearestType,
   getGeoFeature,
-  getNearestInfo
+  getNearestInfo,
+  getUsernamePasswordGeoFeature,
+  SpacialType
 } from './utils/geo';
 import {
   getSpacialStatistics,
@@ -86,6 +88,18 @@ export const getPageFeatures = (): GeneralFeature => {
     ...spacialStatisticsPasswordFeature,
     ...inputCounts
   };
+}
+
+export const getPageUsernamePasswordGeoFeatures = (): GeneralFeature => {
+  const visibleInputs = findVisibleInputs();
+  const feature = getUsernamePasswordGeoFeature(visibleInputs);
+  const pageFeatureMapped: GeneralFeature = {};
+  feature.forEach((f, idx) => {
+    Object.keys(f).forEach((key: keyof SpacialType) => {
+      pageFeatureMapped[`${idx}${key}`] = f[key];
+    })
+  });
+  return pageFeatureMapped;
 }
 
 export const constructPageFeatureOrdered = (feature: GeneralFeature) => {

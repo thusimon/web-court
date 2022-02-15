@@ -9,6 +9,14 @@ browser.contextMenus.create({
   id: CONTEXT_MENU_IDS.LABEL_FIELD
 }, () => browser.runtime.lastError);
 
+// Field feature menues
+browser.contextMenus.create({
+  title: 'Other',
+  contexts:['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
+  id: CONTEXT_MENU_IDS.LABEL_FIELD_OTHER
+}, () => browser.runtime.lastError);
+
 browser.contextMenus.create({
   title: 'Username',
   contexts:['all'],
@@ -31,16 +39,17 @@ browser.contextMenus.create({
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
-  title: 'Other',
-  contexts:['all'],
-  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
-  id: CONTEXT_MENU_IDS.LABEL_FIELD_OTHER
-}, () => browser.runtime.lastError);
-
-browser.contextMenus.create({
   title: 'Label Page', 
   contexts:['all'], 
   id: CONTEXT_MENU_IDS.LABEL_PAGE
+}, () => browser.runtime.lastError);
+
+// Page feature context menus
+browser.contextMenus.create({
+  title: 'Other', 
+  contexts:['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
+  id: CONTEXT_MENU_IDS.LABEL_PAGE_OTHER
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
@@ -62,13 +71,6 @@ browser.contextMenus.create({
   contexts:['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
   id: CONTEXT_MENU_IDS.LABEL_SIGNUP
-}, () => browser.runtime.lastError);
-
-browser.contextMenus.create({
-  title: 'Other', 
-  contexts:['all'],
-  parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
-  id: CONTEXT_MENU_IDS.LABEL_PAGE_OTHER
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
