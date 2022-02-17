@@ -3,11 +3,17 @@ import { FeatureCategory } from "../../constants";
 import { Actions, ActionType } from './constants';
 
 export const initContextState = {
-  featureTableType: FeatureCategory.Page
+  featureTableType: FeatureCategory.Page,
+  clickButton: '',
+  selectFeatureIdx: -1,
+  changing: false
 };
 
 export interface AppContextType {
-  featureTableType: FeatureCategory
+  featureTableType: FeatureCategory;
+  clickButton: string;
+  selectFeatureIdx: number;
+  changing: boolean;
 }
 
 export const AppContext = createContext<{
@@ -26,6 +32,28 @@ export const reducer = (state: AppContextType, action: ActionType) => {
         ...state,
         ...{
           featureTableType: newTableType
+        }
+      };
+    }
+    case Actions.ButtonClick: {
+      state.clickButton = action.data as string;
+      return {
+        ...state,
+        ...{
+          changing: true
+        }
+      };
+    }
+    case Actions.SelectFeature: {
+      state.selectFeatureIdx = action.data as number;
+      return state;
+    }
+    case Actions.UpdateChanging: {
+      return {
+        ...state,
+        ...{
+          changing: false,
+          selectFeatureIdx: -1
         }
       };
     }

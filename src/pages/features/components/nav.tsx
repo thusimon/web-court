@@ -11,14 +11,28 @@ const Nav = () => {
     dispatch({
       type: Actions.UpdateFeatureTable,
       data: evt.target.value as FeatureCategory,
-    })
+    });
   }
+  const onClickHander = (evt: React.MouseEvent<HTMLButtonElement>) => {
+    const name = evt.currentTarget.name;
+    dispatch({
+      type: Actions.ButtonClick,
+      data: name,
+    });
+  }
+
   return (
     <header>
-      <label htmlFor='feature-select'>Feature Category</label>
-      <select value={state.featureTableType} onChange={onChangeHandler} id='feature-select'>
-        {Object.values(FeatureCategory).map(fname => <option key={fname} value={fname}>{fname}</option>)}
-      </select>
+      <div className='controls'>
+        <label htmlFor='feature-select'>Feature Category</label>
+        <select value={state.featureTableType} onChange={onChangeHandler} id='feature-select'>
+          {Object.values(FeatureCategory).map(fname => <option key={fname} value={fname}>{fname}</option>)}
+        </select>
+      </div>
+      |
+      <div className='controls'>
+        <button title='Delete' name='delete' onClick={onClickHander}>🗑</button>
+      </div>
     </header>
   );
 };

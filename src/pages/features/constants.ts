@@ -1,10 +1,13 @@
 import { FeatureCategory } from "../../constants";
 
 export enum Actions {
-  UpdateFeatureTable
+  UpdateFeatureTable,
+  ButtonClick,
+  SelectFeature,
+  UpdateChanging
 }
 
 export interface ActionType {
   type: Actions;
-  data: FeatureCategory;
+  data: number | string | boolean;
 }

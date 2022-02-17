@@ -25,3 +25,19 @@ export const getFeatures = async (category: FeatureCategory): Promise<Array<Gene
     return [];
   }
 };
+
+export const setFeatures = async (category: FeatureCategory, features: Array<GeneralFeature>): Promise<Array<GeneralFeature>> => {
+  try {
+    await storage.local.set({[category]: features});
+    return features
+  } catch (e) {
+    return features;
+  }
+};
+
+export const deleteFeature = async (category: FeatureCategory, idx: number): Promise<Array<GeneralFeature>> => {
+  const features = await getFeatures(category);
+  features.splice(idx, 1);
+  const updated = await setFeatures(category, features);
+  return updated;
+}

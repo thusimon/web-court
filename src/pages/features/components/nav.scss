@@ -1,6 +1,10 @@
 header {
-  label {
+  .controls {
     margin: 0px 10px;
+    display: inline-block;
+  }
+  label {
+    margin: 0px 10px 0px 0px;
   }
   select {
     width: 6rem;

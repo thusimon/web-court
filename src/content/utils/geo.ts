@@ -1,6 +1,6 @@
 import { InputFieldType, INPUT_TYPE_NONE, PageInputMaxCount } from '../../constants';
 import { findPasswordInputs, findUsernameInputs, findVisibleInputs, getInputType } from './dom';
-
+import { toPrecision } from './numbers';
 export interface GeoType {
   top: number;
   topP: number;
@@ -123,18 +123,18 @@ export const getUsernamePasswordGeoFeature = (visibleInputs: HTMLInputElement[])
   const passwordGeo = passwordInputs.map(input => getGeoFeature(input));
 
   const usernameFeature = usernameGeo.map(geo => ({
-    xP: geo.leftP,
-    yP: geo.topP,
-    wP: geo.widthP,
-    hP: geo.heightP,
+    xP: toPrecision(geo.leftP),
+    yP: toPrecision(geo.topP),
+    wP: toPrecision(geo.widthP),
+    hP: toPrecision(geo.heightP),
     type: InputFieldType.username
   }));
 
   const passwordFeature = passwordGeo.map(geo => ({
-    xP: geo.leftP,
-    yP: geo.topP,
-    wP: geo.widthP,
-    hP: geo.heightP,
+    xP: toPrecision(geo.leftP),
+    yP: toPrecision(geo.topP),
+    wP: toPrecision(geo.widthP),
+    hP: toPrecision(geo.heightP),
     type: InputFieldType.password
   }));
 
