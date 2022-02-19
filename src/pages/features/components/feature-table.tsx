@@ -2,22 +2,19 @@ import React, { useState, useContext } from 'react';
 import { AppContext } from '../context-provider';
 import { FeatureCategory } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
-import { GeneralFeatureLabeled } from '../../../content/utils/storage';
-import { Actions } from '../constants';
+import { Actions, FeaturesType } from '../constants';
 
 import './feature-table.scss';
 
 export interface FeatureTablePropsType {
-  features: {
-    page: GeneralFeatureLabeled[];
-    field: GeneralFeatureLabeled[];
-  }
+  features: FeaturesType;
   featureTableType: FeatureCategory;
+  selectFeatureIdx: number;
 }
 
-const FeatureTable = ({ features, featureTableType } : FeatureTablePropsType) => {
-  const selectedTable = featureTableType === FeatureCategory.Page ? features.page : features.field;
-  const [selectedFeatureIdx, setSelectedFeatureIdx] = useState(-1);
+const FeatureTable = ({ features, featureTableType, selectFeatureIdx } : FeatureTablePropsType) => {
+  const selectedTable = features[featureTableType];
+  const [selectedFeatureIdx, setSelectedFeatureIdx] = useState(selectFeatureIdx);
   const { dispatch } = useContext(AppContext);
 
   const onClickFeature = (evt: React.MouseEvent<HTMLTableRowElement>, idx: number) => {

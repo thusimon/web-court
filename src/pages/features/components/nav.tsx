@@ -33,6 +33,14 @@ const Nav = () => {
       <div className='controls'>
         <button title='Delete' name='delete' onClick={onClickHander}>🗑</button>
       </div>
+      |
+      <div className='controls'>
+        <button title='Information' name='info' onClick={onClickHander}>🛈</button>
+      </div>
+      |
+      <div className='controls'>
+        <button title='Train' name='train' onClick={onClickHander}>🚅</button>
+      </div>
     </header>
   );
 };

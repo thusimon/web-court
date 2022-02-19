@@ -4,7 +4,7 @@ import { Actions, ActionType } from './constants';
 
 export const initContextState = {
   featureTableType: FeatureCategory.Page,
-  clickButton: '',
+  clickButton: 'info',
   selectFeatureIdx: -1,
   changing: false
 };
@@ -37,12 +37,21 @@ export const reducer = (state: AppContextType, action: ActionType) => {
     }
     case Actions.ButtonClick: {
       state.clickButton = action.data as string;
-      return {
-        ...state,
-        ...{
-          changing: true
-        }
-      };
+      if (state.clickButton === 'delete') {
+        return {
+          ...state,
+          ...{
+            changing: true
+          }
+        };
+      } else {
+        return {
+          ...state,
+          ...{
+            selectFeatureIdx: -1
+          }
+        };
+      }
     }
     case Actions.SelectFeature: {
       state.selectFeatureIdx = action.data as number;
