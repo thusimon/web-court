@@ -1,12 +1,14 @@
 import * as tf from '@tensorflow/tfjs';
-import { GeneralFeatureLabeled } from "@srccontent/utils/storage"
+import { GeneralFeatureLabeled } from '../../../../content/utils/storage'
+import { PageLabelResult } from '../../../../constants';
 
 export const convertFeatureToArray = (features: GeneralFeatureLabeled[]): (number|string|boolean)[][] => {
+  const excludeProps = ['label', 'url'];
   return features.map(feature => {
-    const label = feature.label;
-    delete feature.label;
-    delete feature.url;
-    const featureValues = Object.values(feature);
+    // TODO multiple classes
+    const label = feature.label === PageLabelResult.login ? 0 : 1;
+    const featureKeys = Object.keys(feature).filter(key => !excludeProps.includes(key));
+    const featureValues = featureKeys.map(k => feature[k]);
     return [...featureValues, label];
   });
 };

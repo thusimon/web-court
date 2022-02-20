@@ -1,7 +1,10 @@
 import * as tf from '@tensorflow/tfjs';
 
-export const PageClass = ['login', 'change_pass', 'signup', 'other'];
+export const PageClass = ['login', 'other'];
 
+export interface TrainCallback {
+  (msg: string, logs: tf.Logs[]): void;
+};
 /**
  * Train a `tf.Model` to recognize Iris flower type.
  *
@@ -15,7 +18,7 @@ export const PageClass = ['login', 'change_pass', 'signup', 'other'];
  *   [numTestExamples, 3].
  * @returns The trained `tf.Model` instance.
  */
-export const trainModel = async (xTrain: tf.Tensor2D, yTrain: tf.Tensor<tf.Rank>, xTest: tf.Tensor2D, yTest: tf.Tensor<tf.Rank>) => {
+export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], callback: TrainCallback) => {
   console.log('start training model');
   const epochs = 40;
   const learningRate = 0.01;
@@ -23,15 +26,19 @@ export const trainModel = async (xTrain: tf.Tensor2D, yTrain: tf.Tensor<tf.Rank>
   const model = tf.sequential();
 
   const layer1 = tf.layers.dense({
-    units: 10,
+    units: 50,
     activation: 'sigmoid',
     inputShape: [xTrain.shape[1]]
   });
   model.add(layer1);
   const layer2 = tf.layers.dense({
-    units: 3, activation: 'softmax'
+    units: 10, activation: 'sigmoid'
   });
   model.add(layer2);
+  const layer3 = tf.layers.dense({
+    units: 2, activation: 'sigmoid'
+  });
+  model.add(layer3);
   model.summary();
   
   const optimizer = tf.train.adam(learningRate);
@@ -41,7 +48,7 @@ export const trainModel = async (xTrain: tf.Tensor2D, yTrain: tf.Tensor<tf.Rank>
     metrics: ['accuracy'],
   });
   
-  const trainLogs = [];
+  const trainLogs: tf.Logs[] = [];
   const beginMs = performance.now();
   // Call `model.fit` to train the model.
   const history = await model.fit(xTrain, yTrain, {
@@ -52,13 +59,15 @@ export const trainModel = async (xTrain: tf.Tensor2D, yTrain: tf.Tensor<tf.Rank>
         // Plot the loss and accuracy values at the end of every training epoch.
         const secPerEpoch =
             (performance.now() - beginMs) / (1000 * (epoch + 1));
-        console.log(`Training model... Approximately ${secPerEpoch.toFixed(4)} seconds per epoch`)
+        const message = `Training model... Approximately ${secPerEpoch.toFixed(4)} seconds per epoch`;
         trainLogs.push(logs);
+        callback(message, trainLogs);
         //calculateAndDrawConfusionMatrix(model, xTest, yTest);
       },
     }
   });
   const secPerEpoch = (performance.now() - beginMs) / (1000 * epochs);
-  console.log(`Model training complete:  ${secPerEpoch.toFixed(4)} seconds per epoch`);
+  const message = `Model training complete:  ${secPerEpoch.toFixed(4)} seconds per epoch`;
+  callback(message, trainLogs);
   return model;
 }
