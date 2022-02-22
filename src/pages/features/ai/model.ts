@@ -3,7 +3,7 @@ import * as tf from '@tensorflow/tfjs';
 export const PageClass = ['login', 'other'];
 
 export interface TrainCallback {
-  (msg: string, logs: tf.Logs[]): void;
+  (msg: string, logs: tf.Logs[], complete: boolean): void;
 };
 /**
  * Train a `tf.Model` to recognize Iris flower type.
@@ -57,17 +57,22 @@ export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], ca
     callbacks: {
       onEpochEnd: async (epoch, logs) => {
         // Plot the loss and accuracy values at the end of every training epoch.
-        const secPerEpoch =
-            (performance.now() - beginMs) / (1000 * (epoch + 1));
-        const message = `Training model... Approximately ${secPerEpoch.toFixed(4)} seconds per epoch`;
+        const secPerEpoch = (performance.now() - beginMs) / (1000 * (epoch + 1));
+        const accuracyLoss = `Train accuracy/loss: ${logs.acc.toFixed(4)}/${logs.loss.toFixed(4)}; Test accuracy/loss: ${logs.val_acc.toFixed(4)}/${logs.val_loss.toFixed(4)}`;
+        const message = `Training model... Approximately ${secPerEpoch.toFixed(4)} seconds per epoch
+  ${accuracyLoss}`;
         trainLogs.push(logs);
-        callback(message, trainLogs);
-        //calculateAndDrawConfusionMatrix(model, xTest, yTest);
+        callback(accuracyLoss, trainLogs, false);
       },
     }
   });
   const secPerEpoch = (performance.now() - beginMs) / (1000 * epochs);
+  const lastLog = trainLogs.slice(-1)[0];
+  let accuracyLoss = '';
+  if (lastLog) {
+    accuracyLoss = `Train accuracy/loss: ${lastLog.acc.toFixed(4)}/${lastLog.loss.toFixed(4)}; Test accuracy/loss: ${lastLog.val_acc.toFixed(4)}/${lastLog.val_loss.toFixed(4)}`;
+  }
   const message = `Model training complete:  ${secPerEpoch.toFixed(4)} seconds per epoch`;
-  callback(message, trainLogs);
+  callback(message, trainLogs, true);
   return model;
 }

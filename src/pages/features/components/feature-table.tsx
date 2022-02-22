@@ -1,8 +1,9 @@
-import React, { useState, useContext } from 'react';
+import React, { useState, useContext, useEffect } from 'react';
 import { AppContext } from '../context-provider';
 import { FeatureCategory } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
-import { Actions, FeaturesType } from '../constants';
+import { FeaturesType } from '../constants';
+import { deleteFeature, getAllFeatures } from '../../../content/utils/storage';
 
 import './feature-table.scss';
 
@@ -12,16 +13,35 @@ export interface FeatureTablePropsType {
   selectFeatureIdx: number;
 }
 
-const FeatureTable = ({ features, featureTableType, selectFeatureIdx } : FeatureTablePropsType) => {
-  const selectedTable = features[featureTableType];
-  const [selectedFeatureIdx, setSelectedFeatureIdx] = useState(selectFeatureIdx);
-  const { dispatch } = useContext(AppContext);
+const FeatureTable = () => {
+  const { state } = useContext(AppContext);
+  const [ selectedFeatureIdx, setSelectedFeatureIdx ] = useState(-1);
+  const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
+    Page: [],
+    Field: []
+  });
+  useEffect(() => {
+    (async () => {
+      const allFeatures = await getAllFeatures();
+      setAllFeatures(allFeatures);
+    })();
+  }, []);
+  useEffect(() => {
+    (async () => {
+      if (state.clickButton === 'delete' && selectedFeatureIdx > -1) {
+        //TODO add confirm dialog
+        await deleteFeature(featureTableType, selectedFeatureIdx);
+        const allFeatures = await getAllFeatures()
+        setAllFeatures(allFeatures);
+        setSelectedFeatureIdx(-1);
+      }
+    })();
+  }, [state])
+  
+  const { featureTableType } = state;
+  const selectedTable = allFeature[featureTableType];
 
   const onClickFeature = (evt: React.MouseEvent<HTMLTableRowElement>, idx: number) => {
-    dispatch({
-      type: Actions.SelectFeature,
-      data: idx
-    });
     setSelectedFeatureIdx(idx);
   }
 

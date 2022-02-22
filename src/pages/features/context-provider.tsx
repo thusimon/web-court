@@ -4,16 +4,12 @@ import { Actions, ActionType } from './constants';
 
 export const initContextState = {
   featureTableType: FeatureCategory.Page,
-  clickButton: 'info',
-  selectFeatureIdx: -1,
-  changing: false
+  clickButton: 'info'
 };
 
 export interface AppContextType {
   featureTableType: FeatureCategory;
   clickButton: string;
-  selectFeatureIdx: number;
-  changing: boolean;
 }
 
 export const AppContext = createContext<{
@@ -36,33 +32,11 @@ export const reducer = (state: AppContextType, action: ActionType) => {
       };
     }
     case Actions.ButtonClick: {
-      state.clickButton = action.data as string;
-      if (state.clickButton === 'delete') {
-        return {
-          ...state,
-          ...{
-            changing: true
-          }
-        };
-      } else {
-        return {
-          ...state,
-          ...{
-            selectFeatureIdx: -1
-          }
-        };
-      }
-    }
-    case Actions.SelectFeature: {
-      state.selectFeatureIdx = action.data as number;
-      return state;
-    }
-    case Actions.UpdateChanging: {
+      const clickButton = action.data as string;
       return {
         ...state,
         ...{
-          changing: false,
-          selectFeatureIdx: -1
+          clickButton
         }
       };
     }

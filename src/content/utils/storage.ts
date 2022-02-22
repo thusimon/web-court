@@ -26,6 +26,14 @@ export const getFeatures = async (category: FeatureCategory): Promise<Array<Gene
   }
 };
 
+export const getAllFeatures = async () => {
+  const allFeatures = await Promise.all([getFeatures(FeatureCategory.Page), getFeatures(FeatureCategory.Field)]);
+  return {
+    Page: allFeatures[0],
+    Field: allFeatures[1]
+  };
+};
+
 export const setFeatures = async (category: FeatureCategory, features: Array<GeneralFeature>): Promise<Array<GeneralFeature>> => {
   try {
     await storage.local.set({[category]: features});

@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { FeatureCategory } from '../../../constants';
 import { PageClass, trainModel } from '../ai/model';
 import { getFeatureData } from '../ai/utils/data';
 import { FeaturesType } from '../constants';
+import { AppContext } from '../context-provider';
+import { getAllFeatures } from '../../../content/utils/storage';
 
 import './console.scss';
 
@@ -29,45 +31,42 @@ ${labelCountInfo}
 `;
 }
 
-const useForceUpdate = () => {
-  const [now, setNow] = useState(Date.now());
-  return () => {
-    const curr = Date.now();
-    if (curr > now + 200) {
-      setNow(curr);
-    }
-  }
-};
-
-const Console: React.FC<ConsolePropsType> = ({ button, features, featureTableType }) => {
+const Console: React.FC = () => {
+  const { state } = useContext(AppContext);
   let [training, setTraining] = useState(false);
   let [message, setMessage] = useState('');
- 
-  const forceUpdate = useForceUpdate();
-  switch (button) {
-    case 'info': {
-      message = getFeatureBasicInfo(features, featureTableType);
-      break;
-    }
-    case 'train': {
-      if (training) {
-        console.log('still training');
-        return;
-      }
-      training = true;
+
+  const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
+    Page: [],
+    Field: []
+  });
+  useEffect(() => {
+    (async () => {
+      const features = await getAllFeatures();
+      const message = getFeatureBasicInfo(features, state.featureTableType);
+      setAllFeatures(features);
+      setMessage(message);
+    })();
+  }, []);
+  useEffect(() => {
+    const { clickButton, featureTableType} = state;
+    if (clickButton === 'info') {
+      const message = getFeatureBasicInfo(allFeature, featureTableType);
+      setMessage(message);
+    } else if (state.clickButton === 'train' && !training) {
       let message = `Training model for ${featureTableType} features...\n`
-      const featureData = getFeatureData(features[featureTableType], PageClass, 0.1);
-      const model = trainModel(featureData, (msg, trainLogs) => {
+      setMessage(message);
+      const featureData = getFeatureData(allFeature[featureTableType], PageClass, 0.1);
+      const model = trainModel(featureData, (msg, trainLogs, complete) => {
         message += `  ${msg}\n`;
-        console.log(msg);
-        console.log(trainLogs);
+        setMessage(message);
+        if (complete) {
+          setTraining(false);
+        }
       });
-      console.log(message, featureData);
-      break;
     }
-    default:
-      break;
-  }
+  }, [state]);
+
   return (<textarea id='console-text-area' value={message} readOnly></textarea>)
 };
 

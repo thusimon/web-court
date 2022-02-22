@@ -3,9 +3,7 @@ import { FeatureCategory } from "@srcconstants";
 
 export enum Actions {
   UpdateFeatureTable,
-  ButtonClick,
-  SelectFeature,
-  UpdateChanging
+  ButtonClick
 }
 
 export interface ActionType {
