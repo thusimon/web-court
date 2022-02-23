@@ -1,7 +1,7 @@
 import { storage } from 'webextension-polyfill';
 import { GeneralFeature } from '../feature';
 import { LabelData } from '../message';
-import { FeatureCategory } from '../../constants';
+import { FeatureCategory, FeaturesType } from '../../constants';
 
 export type GeneralFeatureLabeled = GeneralFeature & LabelData;
 
@@ -48,4 +48,9 @@ export const deleteFeature = async (category: FeatureCategory, idx: number): Pro
   features.splice(idx, 1);
   const updated = await setFeatures(category, features);
   return updated;
-}
+};
+
+export const saveAllFeature = async (features: FeaturesType): Promise<FeaturesType> => {
+  await storage.local.set(features);
+  return features;
+};

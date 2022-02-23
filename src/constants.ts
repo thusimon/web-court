@@ -1,3 +1,5 @@
+import { GeneralFeatureLabeled } from "./content/utils/storage";
+
 export const WEBCOURT_UID = 'SrElXAlR4zOvfv8P';
 
 export const MIN_INPUT_SIZE = {
@@ -63,6 +65,10 @@ export enum FeatureCategory {
   Field = 'Field',
   Page = 'Page'
 };
+
+export type FeaturesType = {
+  [key in FeatureCategory]: GeneralFeatureLabeled[];
+}
 
 export enum InputFieldType {
   other,

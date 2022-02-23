@@ -20,7 +20,7 @@ export interface TrainCallback {
  */
 export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], callback: TrainCallback) => {
   console.log('start training model');
-  const epochs = 40;
+  const epochs = 50;
   const learningRate = 0.01;
   // Define the topology of the model: two dense layers.
   const model = tf.sequential();
