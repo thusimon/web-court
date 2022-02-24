@@ -1,5 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { AppContext } from '../context-provider';
+import { Actions } from '../constants';
 import { FeatureCategory, FeaturesType } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
 import { deleteFeature, getAllFeatures, saveAllFeature } from '../../../content/utils/storage';
@@ -13,13 +14,19 @@ export interface FeatureTablePropsType {
 }
 
 const FeatureTable = () => {
-  const { state } = useContext(AppContext);
+  const { state, dispatch } = useContext(AppContext);
   const [ selectedFeatureIdx, setSelectedFeatureIdx ] = useState(-1);
   const fileInput = useRef(null);
   const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
     Page: [],
     Field: []
   });
+
+  const resetButton = () => dispatch({
+    type: Actions.ButtonClick,
+    data: '',
+  });
+
   useEffect(() => {
     (async () => {
       const allFeatures = await getAllFeatures();
@@ -34,6 +41,7 @@ const FeatureTable = () => {
         const latestFeatures = await getAllFeatures()
         setAllFeatures(latestFeatures);
         setSelectedFeatureIdx(-1);
+        resetButton();
       } else if (state.clickButton === 'export') {
         const featureStr = JSON.stringify(allFeature, null, ' ');
         const blob = new Blob([featureStr], {type: "application/json"});
@@ -45,10 +53,12 @@ const FeatureTable = () => {
         document.body.appendChild(downloadLink);
         downloadLink.click();
         downloadLink.remove();
+        resetButton();
       } else if (state.clickButton === 'import') {
         if (fileInput.current) {
           fileInput.current.click();
         }
+        resetButton();
       }
     })();
   }, [state])
@@ -65,7 +75,6 @@ const FeatureTable = () => {
     let fileFeatureJson;
     try {
       fileFeatureJson = JSON.parse(fileContent);
-      console.log(fileFeatureJson);
       await saveAllFeature(fileFeatureJson);
     } catch (e) {
       alert('importing error: ' + e);
