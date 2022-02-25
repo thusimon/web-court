@@ -11,6 +11,13 @@ browser.contextMenus.create({
 
 // Field feature menues
 browser.contextMenus.create({
+  title: 'Submit',
+  contexts:['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
+  id: CONTEXT_MENU_IDS.LABEL_SUBMIT
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
   title: 'Other',
   contexts:['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
@@ -29,13 +36,6 @@ browser.contextMenus.create({
   contexts:['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
   id: CONTEXT_MENU_IDS.LABEL_PASSWORD
-}, () => browser.runtime.lastError);
-
-browser.contextMenus.create({
-  title: 'Submit button',
-  contexts:['all'],
-  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
-  id: CONTEXT_MENU_IDS.LABEL_SUBMIT
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({

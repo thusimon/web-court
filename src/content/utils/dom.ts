@@ -2,13 +2,13 @@ import { MIN_INPUT_SIZE, MIN_INPUT_OPACITY, OVERLAY_MODE, InputFieldType } from 
 import Overlay, { OverlaySettingsType } from '../components/overlay';
 
 export interface DomAttributeType {
-  type: string;
-  hasName: boolean;
-  hasId: boolean;
-  hasClass: boolean;
-  hasText: boolean;
+  type?: string;
+  name?: string;
+  id?: string;
+  className?: string;
+  textContent?: string;
   disabled: boolean;
-  tag: string;
+  tagName: string;
   tagDiscriptor: string; //this is only used to view the feature, should not be applied in training
 };
 
@@ -72,6 +72,7 @@ export const getInputType = (input: HTMLInputElement): InputFieldType => {
   if (type === 'password') {
     return InputFieldType.password;
   } else if (type === 'text' || type === 'email' || type === 'tel') {
+    // TODO, some website use 'search' as username input
     if (inputHasPasswordStyling(input)) {
       return InputFieldType.password;
     } else {
@@ -98,18 +99,29 @@ export const findPasswordInputs = (inputs: HTMLInputElement[]): HTMLInputElement
   return inputs.filter(input => getInputType(input) == InputFieldType.password);
 };
 
-export const getDomAttributes = (input: HTMLInputElement): DomAttributeType => {
+export const getDomAttributes = (element: HTMLElement): DomAttributeType => {
   return {
-    type: input.type,
-    hasName: !!input.name,
-    hasId: !!input.id,
-    hasClass: !!input.className,
-    hasText: !!input.textContent.trim(),
-    disabled: !!input.disabled,
-    tag: input.tagName.toLocaleLowerCase(),
-    tagDiscriptor: getTagDescriptor(input)
+    type: element.getAttribute('type'),
+    name: element.getAttribute('name'),
+    id: element.id,
+    className: element.className,
+    textContent: getAllTextContent(element),
+    disabled: !!element.hasAttribute('disabled'),
+    tagName: element.tagName.toLocaleLowerCase(),
+    tagDiscriptor: getTagDescriptor(element)
   }
 };
+
+export const getAllTextContent = (element: HTMLElement): string => {
+  let textContent = '';
+  textContent += element.textContent + ' ';
+  const children = element.children;
+  for (let i = 0; i < children.length; i++) {
+    const child = children[i] as HTMLElement;
+    textContent += getAllTextContent(child);
+  }
+  return textContent;
+}
 
 export const getCSSProperties = (input: HTMLElement): CSSPropertyType => {
   const cssStyle = window.getComputedStyle(input);

@@ -19,18 +19,18 @@ import {
   getSpacialStatistics,
 } from './utils/statistics';
 
-export interface InputFeature extends GeoType, NearestType, DomAttributeType, CSSPropertyType {}
+export interface InputFeature extends GeoType, NearestType, DomAttributeType, CSSPropertyType {};
 
 export interface GeneralFeature {
   [key: string]: number | string | boolean;
-}
+};
 
-export interface PageFeature extends GeneralFeature {}
+export interface PageFeature extends GeneralFeature {};
 
 export interface AllFeature {
   inputFeatures: GeneralFeature[],
   pageFeature: GeneralFeature
-}
+};
 
 export const getInputFieldFeatures = (input: HTMLInputElement): GeneralFeature => {
   const allVisiableInputs = findVisibleInputs();
@@ -50,7 +50,13 @@ export const getInputFieldFeatures = (input: HTMLInputElement): GeneralFeature =
     ...inputNearestFeatures,
     ...inputCSSFeatures,
   }
-}
+};
+
+export const getSubmitButtonFeatures = (button: HTMLElement, inputElements: HTMLInputElement[]): GeneralFeature => {
+  const tag = button.tagName.toLocaleLowerCase();
+  
+  return {}
+};
 
 export const appendFeatureNames = (prefix: string, features: GeneralFeature) => {
   const appendedFeatures: GeneralFeature = {}
@@ -58,7 +64,7 @@ export const appendFeatureNames = (prefix: string, features: GeneralFeature) => 
     appendedFeatures[`${prefix}${key}`] = features[key];
   }
   return appendedFeatures;
-}
+};
 
 export const getPageFeatures = (): GeneralFeature => {
   // get spacial feature for all inputs
@@ -88,7 +94,7 @@ export const getPageFeatures = (): GeneralFeature => {
     ...spacialStatisticsPasswordFeature,
     ...inputCounts
   };
-}
+};
 
 export const getPageUsernamePasswordGeoFeatures = (): GeneralFeature => {
   const visibleInputs = findVisibleInputs();
@@ -100,7 +106,7 @@ export const getPageUsernamePasswordGeoFeatures = (): GeneralFeature => {
     })
   });
   return pageFeatureMapped;
-}
+};
 
 export const constructPageFeatureOrdered = (feature: GeneralFeature) => {
   // extract the ordered key and value

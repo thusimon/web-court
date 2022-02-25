@@ -42,9 +42,9 @@ export interface SpacialType {
  * TODO: if input is in iframe, the geometry info should still base on top document
  * @param inputs
  */
-export const getGeoFeature = (input: HTMLInputElement): GeoType => {
+export const getGeoFeature = (element: HTMLElement): GeoType => {
   const bodyRect = document.body.getBoundingClientRect();
-  const rect = input.getBoundingClientRect();
+  const rect = element.getBoundingClientRect();
   if (bodyRect.height === 0 || bodyRect.width === 0) {
     console.log('document body size = 0');
     return {
