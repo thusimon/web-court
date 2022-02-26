@@ -1,4 +1,8 @@
-import { getInputFieldFeatures, getPageFeatures, getPageUsernamePasswordGeoFeatures } from './feature';
+import {
+  getInputFieldFeatures,
+  getPageUsernamePasswordGeoFeatures,
+  getSubmitButtonFeatures
+} from './feature';
 import { addFeature } from './utils/storage';
 import {
   highlightLabeledDom,
@@ -60,6 +64,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
       });;
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT: {
+      const submitFeatures = getSubmitButtonFeatures(dom as HTMLElement);
       return Promise.resolve();
     }
     case CONTEXT_MENU_IDS.LABEL_FIELD_OTHER: {

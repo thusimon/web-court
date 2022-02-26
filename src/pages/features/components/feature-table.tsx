@@ -19,7 +19,8 @@ const FeatureTable = () => {
   const fileInput = useRef(null);
   const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
     Page: [],
-    Field: []
+    Field: [],
+    Submit: []
   });
 
   const resetButton = () => dispatch({
@@ -64,7 +65,7 @@ const FeatureTable = () => {
   }, [state])
   
   const { featureTableType } = state;
-  const selectedTable = allFeature[featureTableType];
+  const selectedTable = allFeature[featureTableType] || [];
 
   const onClickFeature = (evt: React.MouseEvent<HTMLTableRowElement>, idx: number) => {
     setSelectedFeatureIdx(idx);

@@ -16,6 +16,9 @@ export interface ConsolePropsType {
 
 export const getFeatureBasicInfo = (features: FeaturesType, featureTableType: FeatureCategory): string => {
   const featureTable = features[featureTableType]
+  if (!(featureTable instanceof Array)) {
+    return '';
+  }
   const labels = featureTable.map(f => f.label);
   const uniqueLabels = [...new Set(labels)];
   let labelCountInfo = ''
@@ -38,7 +41,8 @@ const Console: React.FC = () => {
 
   const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
     Page: [],
-    Field: []
+    Field: [],
+    Submit: []
   });
   useEffect(() => {
     (async () => {

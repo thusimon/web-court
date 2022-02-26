@@ -52,10 +52,12 @@ export const getInputFieldFeatures = (input: HTMLInputElement): GeneralFeature =
   }
 };
 
-export const getSubmitButtonFeatures = (button: HTMLElement, inputElements: HTMLInputElement[]): GeneralFeature => {
-  const tag = button.tagName.toLocaleLowerCase();
+export const getSubmitButtonFeatures = (submit: HTMLElement): GeneralFeature[] => {
+  const submitFeatures: GeneralFeature[] = [];
+  // get all inputs
+  const allVisiableInputs = findVisibleInputs();
   
-  return {}
+  return submitFeatures;
 };
 
 export const appendFeatureNames = (prefix: string, features: GeneralFeature) => {

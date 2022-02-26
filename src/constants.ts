@@ -63,7 +63,8 @@ export enum PageLabelResult {
 
 export enum FeatureCategory {
   Field = 'Field',
-  Page = 'Page'
+  Page = 'Page',
+  Submit = 'Submit'
 };
 
 export type FeaturesType = {
