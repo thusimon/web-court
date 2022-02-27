@@ -13,10 +13,12 @@ export interface GeoType {
 };
 
 export interface NearestType {
-  typeNearestX: string;
-  typeNearestY: string;
+  typeNearestX?: string;
+  typeNearestY?: string;
   distNearestX: number;
   distNearestY: number;
+  distNearestXP: number;
+  distNearestYP: number;
 };
 
 export interface SpacialType {
@@ -48,39 +50,49 @@ export const getGeoFeature = (element: HTMLElement): GeoType => {
   if (bodyRect.height === 0 || bodyRect.width === 0) {
     console.log('document body size = 0');
     return {
-      top: rect.top,
+      top: toPrecision(rect.top),
       topP: 1,
-      left: rect.left,
+      left: toPrecision(rect.left),
       leftP:  1,
-      width: rect.width,
+      width: toPrecision(rect.width),
       widthP: 1,
-      height: rect.height,
+      height: toPrecision(rect.height),
       heightP: 1
     };
   }
   return {
-    top: rect.top,
-    topP: rect.top / bodyRect.height,
-    left: rect.left,
-    leftP:  rect.left / bodyRect.width,
-    width: rect.width,
-    widthP: rect.width / bodyRect.width,
-    height: rect.height,
-    heightP: rect.height / bodyRect.height
+    top: toPrecision(rect.top),
+    topP: toPrecision(rect.top / bodyRect.height),
+    left: toPrecision(rect.left),
+    leftP: toPrecision(rect.left / bodyRect.width),
+    width: toPrecision(rect.width),
+    widthP: toPrecision(rect.width / bodyRect.width),
+    height: toPrecision(rect.height),
+    heightP: toPrecision(rect.height / bodyRect.height)
   }
 };
 
-export const getNearestInfo = (input: HTMLInputElement, inputs: HTMLInputElement[]): NearestType => {
+export const getNearestInfo = (element: HTMLElement, inputs: HTMLInputElement[]): NearestType => {
+  if (inputs.length === 0) {
+    return {
+      distNearestX: -20,
+      distNearestY: -20,
+      distNearestXP: -1,
+      distNearestYP: -1
+    };
+  }
   let distNearestX = Number.MAX_SAFE_INTEGER;
   let distNearestY = Number.MAX_SAFE_INTEGER;
-  let typeNearestX = INPUT_TYPE_NONE;
-  let typeNearestY = INPUT_TYPE_NONE;
-  const rect = getGeoFeature(input);
+  let distNearestXP = 1;
+  let distNearestYP = 1;
+  const rect = getGeoFeature(element);
+  const bodyRect = document.body.getBoundingClientRect();
   // filter the input out from the inputs
-  inputs = inputs.filter(ipt => ipt != input);
+  inputs = inputs.filter(ipt => ipt != element);
   const rects = inputs.map(ipt => getGeoFeature(ipt));
   const cx = rect.left + rect.width / 2;
   const cy = rect.top + rect.height / 2;
+
   rects.forEach((r, i) => {
     const rcx = r.left + r.width / 2;
     const rcy = r.top + r.height / 2;
@@ -92,18 +104,18 @@ export const getNearestInfo = (input: HTMLInputElement, inputs: HTMLInputElement
     const distY = rcy - cy;
     if (Math.abs(distX) < Math.abs(distNearestX)) {
       distNearestX = distX;
-      typeNearestX = !!inputs[i] ? inputs[i].type : INPUT_TYPE_NONE;
+      distNearestXP = bodyRect.width > 0 ? distNearestX / bodyRect.width : 1;
     }
     if (Math.abs(distY) < Math.abs(distNearestY)) {
       distNearestY = distY;
-      typeNearestY = !!inputs[i] ? inputs[i].type : INPUT_TYPE_NONE;
+      distNearestYP = bodyRect.height > 0 ? distNearestY / bodyRect.height : 1;
     }
   });
   return {
-    distNearestX,
-    distNearestY,
-    typeNearestX,
-    typeNearestY
+    distNearestX: toPrecision(distNearestX),
+    distNearestY: toPrecision(distNearestY),
+    distNearestXP: toPrecision(distNearestXP),
+    distNearestYP: toPrecision(distNearestYP)
   };
 };
 

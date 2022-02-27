@@ -32,14 +32,13 @@ export interface AllFeature {
   pageFeature: GeneralFeature
 };
 
-export const getInputFieldFeatures = (input: HTMLInputElement): GeneralFeature => {
-  const allVisiableInputs = findVisibleInputs();
+export const getInputFeatures = (input: HTMLElement, inputs: HTMLInputElement[]): GeneralFeature => {
   // get geo features
   const inputGeoFeatures = getGeoFeature(input);
   // get dom features
   const inputDomFeatures = getDomAttributes(input);
   // get nearest features
-  const inputNearestFeatures = getNearestInfo(input, allVisiableInputs);
+  const inputNearestFeatures = getNearestInfo(input, inputs);
   // get css features
   const inputCSSFeatures = getCSSProperties(input);
 
@@ -52,12 +51,35 @@ export const getInputFieldFeatures = (input: HTMLInputElement): GeneralFeature =
   }
 };
 
-export const getSubmitButtonFeatures = (submit: HTMLElement): GeneralFeature[] => {
-  const submitFeatures: GeneralFeature[] = [];
-  // get all inputs
-  const allVisiableInputs = findVisibleInputs();
-  
-  return submitFeatures;
+export const getButtonFeatures = (button: HTMLElement, inputs: HTMLInputElement[]): GeneralFeature => {
+  // get geo features
+  const buttonGeoFeatures = getGeoFeature(button);
+  // get dom features
+  const buttonDomFeatures = getDomAttributes(button);
+  // get nearest features to username inputs
+  const usernameInputs = findUsernameInputs(inputs);
+  const buttonNearestUsernameFeatures = getNearestInfo(button, usernameInputs);
+  // get nearest features to password inputs
+  const passwordInputs = findUsernameInputs(inputs);
+  const buttonNearestPasswordFeatures = getNearestInfo(button, passwordInputs);
+
+  // merge all the features
+  return {
+    ...buttonGeoFeatures,
+    ...buttonDomFeatures,
+    ...{
+      nearUserX: buttonNearestUsernameFeatures.distNearestX,
+      nearUserXP: buttonNearestUsernameFeatures.distNearestXP,
+      nearUserY: buttonNearestUsernameFeatures.distNearestY,
+      nearUserYP: buttonNearestUsernameFeatures.distNearestYP
+    },
+    ...{
+      nearPassX: buttonNearestPasswordFeatures.distNearestX,
+      nearPassXP: buttonNearestPasswordFeatures.distNearestXP,
+      nearPassY: buttonNearestPasswordFeatures.distNearestY,
+      nearPassYP: buttonNearestPasswordFeatures.distNearestYP
+    }
+  };
 };
 
 export const appendFeatureNames = (prefix: string, features: GeneralFeature) => {

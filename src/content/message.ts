@@ -1,13 +1,15 @@
 import {
-  getInputFieldFeatures,
+  getInputFeatures,
   getPageUsernamePasswordGeoFeatures,
-  getSubmitButtonFeatures
+  getButtonFeatures
 } from './feature';
-import { addFeature } from './utils/storage';
+import { addFeature, addFeatureBulk } from './utils/storage';
 import {
   highlightLabeledDom,
   restoreDomHighlight,
-  clearOverlay
+  clearOverlay,
+  findVisibleInputs,
+  findVisibleButtons
 } from './utils/dom';
 import { Message, CONTEXT_MENU_IDS, FieldLabelResult, PageLabelResult, FeatureCategory } from '../constants';
 import Overlay from './components/overlay';
@@ -40,7 +42,8 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
   }
   switch (action) {
     case CONTEXT_MENU_IDS.LABEL_USERNAME: {
-      const inputFeatures = getInputFieldFeatures(dom as HTMLInputElement);
+      const allVisiableInputs = findVisibleInputs();
+      const inputFeatures = getInputFeatures(dom, allVisiableInputs);
       const featureLabeled = {
         ...data,
         ...inputFeatures,
@@ -52,7 +55,8 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
       });
     }
     case CONTEXT_MENU_IDS.LABEL_PASSWORD: {
-      const inputFeatures = getInputFieldFeatures(dom as HTMLInputElement);
+      const allVisiableInputs = findVisibleInputs();
+      const inputFeatures = getInputFeatures(dom, allVisiableInputs);
       const featureLabeled = {
         ...data,
         ...inputFeatures,
@@ -64,11 +68,31 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
       });;
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT: {
-      const submitFeatures = getSubmitButtonFeatures(dom as HTMLElement);
-      return Promise.resolve();
+      const allVisiableInputs = findVisibleInputs();
+      const submitFeatures = getButtonFeatures(dom, allVisiableInputs);
+      const submitFeatureLabeled = {
+        ...data,
+        ...submitFeatures,
+        label: FieldLabelResult.submit
+      };
+      const otherButtons = findVisibleButtons().filter(button => button != dom);
+      const otherButtonsFeatureLabeled = otherButtons.map(button => {
+        const buttonFeature = getButtonFeatures(button, allVisiableInputs);
+        return {
+          ...data,
+          ...buttonFeature,
+          label: FieldLabelResult.other
+        }
+      });
+      const allFeatures = [submitFeatureLabeled, ...otherButtonsFeatureLabeled]
+      return addFeatureBulk(FeatureCategory.Submit, allFeatures)
+      .then(() => {
+        highlightLabeledDom(dom);
+      });
     }
     case CONTEXT_MENU_IDS.LABEL_FIELD_OTHER: {
-      const inputFeatures = getInputFieldFeatures(dom as HTMLInputElement);
+      const allVisiableInputs = findVisibleInputs();
+      const inputFeatures = getInputFeatures(dom, allVisiableInputs);
       const featureLabeled = {
         ...data,
         ...inputFeatures,

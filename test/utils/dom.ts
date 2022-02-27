@@ -1,4 +1,4 @@
-import { MIN_INPUT_SIZE } from "@src/constants";
+import { MIN_ELEMENT_SIZE } from "@src/constants";
 
 export const setupInputDoms = (parent: HTMLElement, type: string, count: number = 1) => {
   for (let i = 0; i < count; i++) {
@@ -10,8 +10,8 @@ export const setupInputDoms = (parent: HTMLElement, type: string, count: number 
     const randomRect = {
       top: Math.random(),
       left: Math.random(),
-      width: Math.random() + MIN_INPUT_SIZE.WIDTH + 1,
-      height: Math.random() + MIN_INPUT_SIZE.HEIGHT + 1
+      width: Math.random() + MIN_ELEMENT_SIZE.WIDTH + 1,
+      height: Math.random() + MIN_ELEMENT_SIZE.HEIGHT + 1
     };
     input.getBoundingClientRect = jest.fn().mockReturnValue({
       ...randomRect,

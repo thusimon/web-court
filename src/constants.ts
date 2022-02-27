@@ -2,12 +2,12 @@ import { GeneralFeatureLabeled } from "./content/utils/storage";
 
 export const WEBCOURT_UID = 'SrElXAlR4zOvfv8P';
 
-export const MIN_INPUT_SIZE = {
+export const MIN_ELEMENT_SIZE = {
   WIDTH: 5,
   HEIGHT: 5
 };
 
-export const MIN_INPUT_OPACITY = 0.2;
+export const MIN_ELEMENT_OPACITY = 0.2;
 
 export const INPUT_TYPE_NONE = 'NONE';
 

@@ -114,9 +114,9 @@ const FeatureTable = () => {
           }</tr>)
         }
         </tbody>
-    </table>
-    <input type='file' id='import-file' className='no-display' accept='.json' onChange={onFileChange} ref={fileInput}/>
-   </div>
+      </table>
+      <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
+    </div>
   );
 };
 

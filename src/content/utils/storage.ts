@@ -17,6 +17,18 @@ export const addFeature = async (category: FeatureCategory, feature: GeneralFeat
   }
 };
 
+export const addFeatureBulk = async (category: FeatureCategory, features: GeneralFeature[]) => {
+  try {
+    const storageGet = await storage.local.get(category);
+    let currentFieldFeatures: GeneralFeature[] = storageGet[category] || [];
+    currentFieldFeatures = currentFieldFeatures.concat(features);
+    await storage.local.set({ [category]: currentFieldFeatures});
+    return Promise.resolve(true);
+  } catch (e) {
+    return Promise.reject(false);
+  }
+};
+
 export const getFeatures = async (category: FeatureCategory): Promise<Array<GeneralFeature>> => {
   try {
     const storageGet = await storage.local.get(category);

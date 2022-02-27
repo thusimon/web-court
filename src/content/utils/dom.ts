@@ -1,4 +1,4 @@
-import { MIN_INPUT_SIZE, MIN_INPUT_OPACITY, OVERLAY_MODE, InputFieldType } from  '../../constants';
+import { MIN_ELEMENT_SIZE, MIN_ELEMENT_OPACITY, OVERLAY_MODE, InputFieldType } from  '../../constants';
 import Overlay, { OverlaySettingsType } from '../components/overlay';
 
 export interface DomAttributeType {
@@ -22,19 +22,31 @@ export const findAllInputFields = (): HTMLInputElement[] => {
   return Array.from(inputs);
 };
 
-export const findVisibleInputs = (): HTMLInputElement[] => {
-  const inputs = findAllInputFields(); 
-  return inputs.filter(input => {
-    const inputRect = input.getBoundingClientRect();
+export const findAllButtons = (): HTMLElement[] => {
+  const buttons = Array.from(document.getElementsByTagName('BUTTON')) as HTMLElement[];
+  const inputSubmit = Array.from(document.getElementsByTagName('input')).filter(input => {
+    return input.type === 'submit' || input.type === 'image';
+  }) as HTMLElement[];
+  //TODO: think about how to get all the possible buttons but without getting too many
+  //const links = Array.from(document.getElementsByTagName('A'));
+  return [
+    ...buttons,
+    ...inputSubmit
+  ]
+};
+
+export const findAllVisibleElements = (elements: HTMLElement[]): HTMLElement[] => {
+  return elements.filter(element => {
+    const rect = element.getBoundingClientRect();
     // filter by size, must be larger than 2x2
-    if (inputRect.width <= MIN_INPUT_SIZE.WIDTH || inputRect.height <= MIN_INPUT_SIZE.HEIGHT) {
+    if (rect.width <= MIN_ELEMENT_SIZE.WIDTH || rect.height <= MIN_ELEMENT_SIZE.HEIGHT) {
       return false;
     }
     // filter by styling
-    const cssStyle = window.getComputedStyle(input);
+    const cssStyle = window.getComputedStyle(element);
     // opacity should be greater than 0.2
     const opacity = parseFloat(cssStyle.opacity)
-    if (opacity < MIN_INPUT_OPACITY) {
+    if (opacity < MIN_ELEMENT_OPACITY) {
       return false;
     }
     // display should not be none
@@ -49,6 +61,17 @@ export const findVisibleInputs = (): HTMLInputElement[] => {
     }
     return true;
   });
+}
+
+export const findVisibleInputs = (): HTMLInputElement[] => {
+  const inputs = findAllInputFields() as HTMLElement[];
+  return findAllVisibleElements(inputs) as HTMLInputElement[];
+};
+
+export const findVisibleButtons = (): HTMLElement[] => {
+  // find all buttons
+  const buttons = findAllButtons();
+  return findAllVisibleElements(buttons);
 };
 
 export const inputHasPasswordStyling = (input: HTMLInputElement): boolean => {
@@ -71,8 +94,7 @@ export const getInputType = (input: HTMLInputElement): InputFieldType => {
   const type = input.type;
   if (type === 'password') {
     return InputFieldType.password;
-  } else if (type === 'text' || type === 'email' || type === 'tel') {
-    // TODO, some website use 'search' as username input
+  } else if (type === 'text' || type === 'email' || type === 'tel' || type === 'search') {
     if (inputHasPasswordStyling(input)) {
       return InputFieldType.password;
     } else {
