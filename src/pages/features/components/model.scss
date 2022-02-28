@@ -1,0 +1,27 @@
+.model-show {
+  display: block;
+}
+
+.model-hide {
+  display: none;
+}
+
+#model-container {
+  position: absolute;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  top: 0px;
+  left: 0px;
+  background: rgba(0, 0, 0, 0.5);
+  #model-main {
+    background: white;
+    width: 70vw;
+    height: 60vh;
+    border: 2px solid black;
+    border-radius: 5px;
+    position: absolute;
+    left: 15vw;
+    top: 15vh;
+  }
+}

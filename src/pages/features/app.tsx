@@ -1,5 +1,6 @@
 import React from 'react';
 import FeatureTable from './components/feature-table';
+import Model from './components/model';
 import Console from './components/console';
 import Nav from './components/nav';
 
@@ -10,6 +11,7 @@ const App = () => {
     <Nav />
     <div id='feature'>
       <FeatureTable />
+      <Model />
     </div>
     <div id='console'>
       <Console />

@@ -32,15 +32,17 @@ export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], ca
   });
   model.add(layer1);
   const layer2 = tf.layers.dense({
-    units: 10, activation: 'sigmoid'
+    units: 10,
+    activation: 'sigmoid'
   });
   model.add(layer2);
   const layer3 = tf.layers.dense({
-    units: 2, activation: 'sigmoid'
+    units: 2,
+    activation: 'sigmoid'
   });
   model.add(layer3);
   model.summary();
-  
+
   const optimizer = tf.train.adam(learningRate);
   model.compile({
     optimizer: optimizer,

@@ -62,7 +62,7 @@ const FeatureTable = () => {
         resetButton();
       }
     })();
-  }, [state])
+  }, [state]);
   
   const { featureTableType } = state;
   const selectedTable = allFeature[featureTableType] || [];

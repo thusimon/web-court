@@ -137,6 +137,9 @@ export const getDomAttributes = (element: HTMLElement): DomAttributeType => {
 export const getAllTextContent = (element: HTMLElement): string => {
   let textContent = '';
   textContent += element.textContent + ' ';
+  if (element instanceof HTMLInputElement) {
+    textContent += element.value + ' ';
+  }
   const children = element.children;
   for (let i = 0; i < children.length; i++) {
     const child = children[i] as HTMLElement;

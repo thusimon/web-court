@@ -3,41 +3,57 @@ import { Menus, Tabs } from 'webextension-polyfill';
 import { CONTEXT_MENU_IDS, MessageType } from './constants';
 
 // create context menu
+
+// Field feature menus
 browser.contextMenus.create({
   title: 'Label Field', 
-  contexts:['all'], 
+  contexts: ['all'], 
   id: CONTEXT_MENU_IDS.LABEL_FIELD
-}, () => browser.runtime.lastError);
-
-// Field feature menues
-browser.contextMenus.create({
-  title: 'Submit',
-  contexts:['all'],
-  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
-  id: CONTEXT_MENU_IDS.LABEL_SUBMIT
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
   title: 'Other',
-  contexts:['all'],
+  contexts: ['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
   id: CONTEXT_MENU_IDS.LABEL_FIELD_OTHER
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
   title: 'Username',
-  contexts:['all'],
+  contexts: ['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
   id: CONTEXT_MENU_IDS.LABEL_USERNAME
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
   title: 'Password',
-  contexts:['all'],
+  contexts: ['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
   id: CONTEXT_MENU_IDS.LABEL_PASSWORD
 }, () => browser.runtime.lastError);
 
+// submit feature menus
+browser.contextMenus.create({
+  title: 'Button',
+  contexts: ['all'],
+  id: CONTEXT_MENU_IDS.LABEL_BUTTON
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Submit',
+  contexts: ['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_BUTTON,
+  id: CONTEXT_MENU_IDS.LABEL_SUBMIT
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Other',
+  contexts: ['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_BUTTON,
+  id: CONTEXT_MENU_IDS.LABEL_BUTTON_OTHER
+}, () => browser.runtime.lastError);
+
+//
 browser.contextMenus.create({
   title: 'Label Page', 
   contexts:['all'], 
@@ -47,35 +63,35 @@ browser.contextMenus.create({
 // Page feature context menus
 browser.contextMenus.create({
   title: 'Other', 
-  contexts:['all'],
+  contexts: ['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
   id: CONTEXT_MENU_IDS.LABEL_PAGE_OTHER
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
   title: 'Login', 
-  contexts:['all'],
+  contexts: ['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
   id: CONTEXT_MENU_IDS.LABEL_LOGIN
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
   title: 'Change Password', 
-  contexts:['all'],
+  contexts: ['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
   id: CONTEXT_MENU_IDS.LABEL_CHANGE_PASS
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
   title: 'Sign Up', 
-  contexts:['all'],
+  contexts: ['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_PAGE,
   id: CONTEXT_MENU_IDS.LABEL_SIGNUP
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
   title: 'Clear all', 
-  contexts:['all'], 
+  contexts: ['all'], 
   id: CONTEXT_MENU_IDS.LABEL_CLEAR_ALL
 }, () => browser.runtime.lastError);
 
