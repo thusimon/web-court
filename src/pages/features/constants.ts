@@ -1,14 +1,15 @@
-import { GeneralFeatureLabeled } from "@src/content/utils/storage";
-import { FeatureCategory } from "@srcconstants";
+import { GeneralFeatureLabeled } from "../../content/utils/storage";
+import { FeatureCategory, ModelConfig } from "../../constants";
 
 export enum Actions {
   UpdateFeatureTable,
-  ButtonClick
+  ButtonClick,
+  UpdateModelConfigs
 }
 
 export interface ActionType {
   type: Actions;
-  data: number | string | boolean;
+  data: number | string | boolean | ModelConfig[];
 }
 
 export type FeaturesType = {

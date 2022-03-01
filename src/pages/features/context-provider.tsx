@@ -1,15 +1,35 @@
 import React, { createContext, useReducer, Dispatch } from "react";
-import { FeatureCategory } from "../../constants";
+import { FeatureCategory, ModelConfig } from "../../constants";
 import { Actions, ActionType } from './constants';
 
-export const initContextState = {
+export const initContextState: AppContextType = {
   featureTableType: FeatureCategory.Page,
-  clickButton: 'info'
+  clickButton: 'info',
+  modelConfigs: [
+    {
+      name: 'default',
+      config: [
+        {
+          units: 50,
+          activation: 'sigmoid'
+        },
+        {
+          units: 10,
+          activation: 'sigmoid'
+        },
+        {
+          units: 2,
+          activation: 'sigmoid'
+        }
+      ]
+    }
+  ]
 };
 
 export interface AppContextType {
   featureTableType: FeatureCategory;
   clickButton: string;
+  modelConfigs: ModelConfig[]
 }
 
 export const AppContext = createContext<{

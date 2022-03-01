@@ -84,3 +84,13 @@ export enum InputFieldType {
 };
 
 export const PageInputMaxCount = 10; // collect 10 inputs at max 
+
+export interface ModelLayer {
+  units: number;
+  activation: string;
+};
+
+export interface ModelConfig {
+  name: string;
+  config: ModelLayer[];
+};
