@@ -37,10 +37,17 @@
         "names-title"
         "names-name"
         "names-button";
+      position: absolute;
+      height: 100%;
+      padding: 8px;
       label {
         grid-area: names-title;
       }
       #model-names {
+        overflow-y: auto;
+        overflow-x: hidden;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
         grid-area: names-name;
         .name-input {
           outline: none;
@@ -57,8 +64,32 @@
     }
     #model-layers-container {
       grid-area: layers;
+      display: grid;
+      grid-template-rows: 40px auto 40px;
+      grid-template-areas: 
+        "layers-title"
+        "layers-layer"
+        "layers-button";
+      position: absolute;
+      height: 100%;
+      padding: 8px;
+      label {
+        grid-area: layers-title;
+      }
+      #model-layers {
+        overflow-y: auto;
+        overflow-x: hidden;
+        border-top: 1px solid black;
+        border-bottom: 1px solid black;
+        .layer-config {
+          span {
+            margin: 0px 5px;
+          }
+        }
+      }
     }
     #buttons-container {
+      border-top: 1px solid black;
       grid-area: buttons;
     }
   }

@@ -1,15 +1,16 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
+import { ActivationIdentifier } from '@tensorflow/tfjs-layers/dist/keras_format/activation_config';
 import { Actions } from '../constants';
 import { AppContext } from '../context-provider';
-import { ModelConfig } from '../../../constants';
+import { ModelConfig, ModelLayer } from '../../../constants';
 
 import './model.scss';
 
 const Model = () => {
   const { state, dispatch } = useContext(AppContext);
   const modelRef = useRef(null);
-  const [modelIndex, setModelIndex] = useState(-1);
-  const [modelConfigStates, setModelConfigStates] = useState([])
+  const [modelIndex, setModelIndex] = useState(0);
+  const [modelConfigStates, setModelConfigStates] = useState<ModelConfig[]>([])
 
   useEffect(() => {
     (async () => {
@@ -17,7 +18,9 @@ const Model = () => {
         toggleModel(true);
       }
     })();
-    setModelConfigStates(state.modelConfigs)
+    const modalConfigs = state.modelConfigs;
+    setModelConfigStates(modalConfigs);
+    setModelIndex(modalConfigs.length - 1);
   }, [state]);
   
   const toggleModel = (show: boolean) => {
@@ -77,6 +80,32 @@ const Model = () => {
       modelConfigStates[idx].name = value;
       setModelConfigStates([...modelConfigStates]);
     }
+  };
+
+  const layerChangeHandler = (evt: React.ChangeEvent<HTMLInputElement|HTMLSelectElement>, idx: number) => {
+    const value = evt.currentTarget.value;
+    const name = evt.currentTarget.name;
+    const currentModel = modelConfigStates[modelIndex];
+    if (!currentModel) {
+      return;
+    }
+    const currentModalLayer = currentModel.config[idx];
+    if (!currentModalLayer) {
+      return;
+    }
+    switch (name) {
+      case 'layer-unit': {
+        currentModalLayer.units = parseInt(value);
+        break;
+      }
+      case 'layer-activation': {
+        currentModalLayer.activation = value as ActivationIdentifier;
+        break;
+      }
+      default:
+        break;
+    }
+    setModelConfigStates([...modelConfigStates]);
   }
 
   const modelHandler = (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
@@ -85,9 +114,16 @@ const Model = () => {
       case 'model-add': {
         const newConfig: ModelConfig = {
           name: 'new-config',
-          config: []
+          config: [
+            {
+              units: 20,
+              activation: 'sigmoid'
+            }
+          ]
         }
-        setModelConfigStates([...modelConfigStates, newConfig]);
+        const configs = [...modelConfigStates, newConfig];
+        setModelConfigStates(configs);
+        setModelIndex(configs.length - 1);
         break;
       }
       case 'model-delete': {
@@ -99,11 +135,34 @@ const Model = () => {
         }
         break;
       }
+      case 'layer-add': {
+        const currentModel = modelConfigStates[modelIndex];
+        if (!currentModel) {
+          return;
+        }
+        const newLayer: ModelLayer = {
+          units: 20,
+          activation: 'sigmoid'
+        };
+        currentModel.config.push(newLayer);
+        setModelConfigStates([...modelConfigStates]);
+        break;
+      }
+      case 'layer-delete': {
+        const currentModel = modelConfigStates[modelIndex];
+        if (!currentModel || currentModel.config.length <= 0) {
+          return;
+        }
+        currentModel.config.splice(-1, 1);
+        setModelConfigStates([...modelConfigStates]);
+        break;
+      }
       default:
         break;
     }
   };
 
+  const modelLayersConfigs = modelConfigStates[modelIndex] ? modelConfigStates[modelIndex].config : [];
   return (<div id='model-container' className='model-hide' ref={modelRef}>
     <div id='model-main'>
       <div id='model-names-container'>
@@ -128,11 +187,34 @@ const Model = () => {
       <div id='model-layers-container'>
         <label>Layers</label>
         <div id='model-layers'>
-          model layers
+          {modelLayersConfigs.map((config, idx) => {
+            const units = config.units;
+            const activation = config.activation;
+            return <div className='layer-config' key={`layer-${idx}`}>
+              <span>Node:</span>
+              <input type='number' name='layer-unit' min={1} max={10000} step={1} value={units} onChange={(evt) => layerChangeHandler(evt, idx)}/>
+              <span>Activation:</span>
+              <select name='layer-activation' value={activation} onChange={(evt) => layerChangeHandler(evt, idx)}>
+                <option value='elu'>elu</option>
+                <option value='hardSigmoid'>hardSigmoid</option>
+                <option value='linear'>linear</option>
+                <option value='relu'>relu</option>
+                <option value='relu6'>relu6</option>
+                <option value='selu'>selu</option>
+                <option value='sigmoid'>sigmoid</option>
+                <option value='softmax'>softmax</option>
+                <option value='softplus'>softplus</option>
+                <option value='softsign'>softsign</option>
+                <option value='tanh'>tanh</option>
+                <option value='swish'>swish</option>
+                <option value='mish'>mish</option>
+              </select>
+            </div>
+          })}
         </div>
         <div id='model-layers-buttons'>
-          <button className='model-button'>+</button>
-          <button className='model-button'>-</button>
+          <button className='model-button' name='layer-add' onClick={modelHandler}>+</button>
+          <button className='model-button' name='layer-delete' onClick={modelHandler}>-</button>
         </div>
       </div>
       <div id='buttons-container'>

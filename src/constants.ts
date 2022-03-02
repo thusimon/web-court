@@ -1,4 +1,5 @@
 import { GeneralFeatureLabeled } from "./content/utils/storage";
+import { ActivationIdentifier } from '@tensorflow/tfjs-layers/dist/keras_format/activation_config';
 
 export const WEBCOURT_UID = 'SrElXAlR4zOvfv8P';
 
@@ -87,7 +88,7 @@ export const PageInputMaxCount = 10; // collect 10 inputs at max
 
 export interface ModelLayer {
   units: number;
-  activation: string;
+  activation: ActivationIdentifier;
 };
 
 export interface ModelConfig {
