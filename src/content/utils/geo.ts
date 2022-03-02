@@ -3,13 +3,13 @@ import { findPasswordInputs, findUsernameInputs, findVisibleInputs, getInputType
 import { toPrecision } from './numbers';
 export interface GeoType {
   top: number;
-  topP: number;
+  topP?: number;
   left: number;
-  leftP: number;
+  leftP?: number;
   width: number;
-  widthP: number;
+  widthP?: number;
   height: number;
-  heightP: number
+  heightP?: number
 };
 
 export interface NearestType {
@@ -17,8 +17,8 @@ export interface NearestType {
   typeNearestY?: string;
   distNearestX: number;
   distNearestY: number;
-  distNearestXP: number;
-  distNearestYP: number;
+  distNearestXP?: number;
+  distNearestYP?: number;
 };
 
 export interface SpacialType {
@@ -44,39 +44,45 @@ export interface SpacialType {
  * TODO: if input is in iframe, the geometry info should still base on top document
  * @param inputs
  */
-export const getGeoFeature = (element: HTMLElement): GeoType => {
+export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true): GeoType => {
   const bodyRect = document.body.getBoundingClientRect();
   const rect = element.getBoundingClientRect();
+  const geo = {
+    top: toPrecision(rect.top),
+    left: toPrecision(rect.left),
+    width: toPrecision(rect.width),
+    height: toPrecision(rect.height)
+  }
   if (bodyRect.height === 0 || bodyRect.width === 0) {
     console.log('document body size = 0');
-    return {
-      top: toPrecision(rect.top),
+    const geoP = {
       topP: 1,
-      left: toPrecision(rect.left),
       leftP:  1,
-      width: toPrecision(rect.width),
       widthP: 1,
-      height: toPrecision(rect.height),
       heightP: 1
-    };
+    }
+    return useRatio ? {
+      ...geo,
+      ...geoP
+    } : geo;
   }
-  return {
-    top: toPrecision(rect.top),
+  const geoP = {
     topP: toPrecision(rect.top / bodyRect.height),
-    left: toPrecision(rect.left),
     leftP: toPrecision(rect.left / bodyRect.width),
-    width: toPrecision(rect.width),
     widthP: toPrecision(rect.width / bodyRect.width),
-    height: toPrecision(rect.height),
     heightP: toPrecision(rect.height / bodyRect.height)
   }
+  return useRatio ? {
+    ...geo,
+    ...geoP
+  } : geo;
 };
 
 export const getNearestInfo = (element: HTMLElement, inputs: HTMLInputElement[]): NearestType => {
   if (inputs.length === 0) {
     return {
-      distNearestX: -20,
-      distNearestY: -20,
+      distNearestX: -200,
+      distNearestY: -200,
       distNearestXP: -1,
       distNearestYP: -1
     };

@@ -51,34 +51,36 @@ export const getInputFeatures = (input: HTMLElement, inputs: HTMLInputElement[])
   }
 };
 
-export const getButtonFeatures = (button: HTMLElement, inputs: HTMLInputElement[]): GeneralFeature => {
+export const getButtonFeatures = (button: HTMLElement, inputs: HTMLInputElement[], useRatio: boolean = false): GeneralFeature => {
   // get geo features
-  const buttonGeoFeatures = getGeoFeature(button);
+  const buttonGeoFeatures = getGeoFeature(button, useRatio);
   // get dom features
   const buttonDomFeatures = getDomAttributes(button);
   // get nearest features to username inputs
   const usernameInputs = findUsernameInputs(inputs);
   const buttonNearestUsernameFeatures = getNearestInfo(button, usernameInputs);
   // get nearest features to password inputs
-  const passwordInputs = findUsernameInputs(inputs);
+  const passwordInputs = findPasswordInputs(inputs);
   const buttonNearestPasswordFeatures = getNearestInfo(button, passwordInputs);
 
+  const nearestRatio = useRatio ? {
+    nearUserXP: buttonNearestUsernameFeatures.distNearestXP,
+    nearUserYP: buttonNearestUsernameFeatures.distNearestYP,
+    nearPassXP: buttonNearestPasswordFeatures.distNearestXP,
+    nearPassYP: buttonNearestPasswordFeatures.distNearestYP
+  } : {};
   // merge all the features
+
   return {
     ...buttonGeoFeatures,
     ...buttonDomFeatures,
     ...{
       nearUserX: buttonNearestUsernameFeatures.distNearestX,
-      nearUserXP: buttonNearestUsernameFeatures.distNearestXP,
       nearUserY: buttonNearestUsernameFeatures.distNearestY,
-      nearUserYP: buttonNearestUsernameFeatures.distNearestYP
-    },
-    ...{
       nearPassX: buttonNearestPasswordFeatures.distNearestX,
-      nearPassXP: buttonNearestPasswordFeatures.distNearestXP,
-      nearPassY: buttonNearestPasswordFeatures.distNearestY,
-      nearPassYP: buttonNearestPasswordFeatures.distNearestYP
-    }
+      nearPassY: buttonNearestPasswordFeatures.distNearestY
+    },
+    ...nearestRatio
   };
 };
 
