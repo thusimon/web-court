@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { 
   DomAttributeType,
   CSSPropertyType,
@@ -5,7 +6,8 @@ import {
   findUsernameInputs,
   findPasswordInputs,
   getDomAttributes,
-  getCSSProperties
+  getCSSProperties,
+  getCanvasData
 } from './utils/dom';
 import {
   GeoType,
@@ -13,7 +15,8 @@ import {
   getGeoFeature,
   getNearestInfo,
   getUsernamePasswordGeoFeature,
-  SpacialType
+  SpacialType,
+  sortElementsByDistanceOnAxis
 } from './utils/geo';
 import {
   getSpacialStatistics,
@@ -51,36 +54,51 @@ export const getInputFeatures = (input: HTMLElement, inputs: HTMLInputElement[])
   }
 };
 
-export const getButtonFeatures = (button: HTMLElement, inputs: HTMLInputElement[], useRatio: boolean = false): GeneralFeature => {
+export const buttonCSSProperties = ['borderRadius'];
+
+export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputElement[], useRatio: boolean = false): Promise<GeneralFeature> => {
   // get geo features
   const buttonGeoFeatures = getGeoFeature(button, useRatio);
   // get dom features
   const buttonDomFeatures = getDomAttributes(button);
-  // get nearest features to username inputs
+  // get css features
+  const buttonCSSFeatures = _.pick(getCSSProperties(button), buttonCSSProperties);
+  // get canvas features;
+  const buttonCanvasFeatures = await getCanvasData(button);
+  // get sorted username inputs
   const usernameInputs = findUsernameInputs(inputs);
-  const buttonNearestUsernameFeatures = getNearestInfo(button, usernameInputs);
-  // get nearest features to password inputs
-  const passwordInputs = findPasswordInputs(inputs);
-  const buttonNearestPasswordFeatures = getNearestInfo(button, passwordInputs);
+  const usernameInputsSortedX = sortElementsByDistanceOnAxis(button, usernameInputs, 0);
+  const usernameInputsSortedY = sortElementsByDistanceOnAxis(button, usernameInputs, 1);
+  const usernameInputNearestX = usernameInputsSortedX[0];
+  const usernameInputNearestY = usernameInputsSortedY[0];
+  const usernameInputNearestXGeo = getGeoFeature(usernameInputNearestX, useRatio, 'UX');
+  const usernameInputNearestYGeo = getGeoFeature(usernameInputNearestY, useRatio, 'UY');
+  const sameUserXY = usernameInputNearestX instanceof HTMLInputElement && usernameInputNearestX === usernameInputNearestY;
 
-  const nearestRatio = useRatio ? {
-    nearUserXP: buttonNearestUsernameFeatures.distNearestXP,
-    nearUserYP: buttonNearestUsernameFeatures.distNearestYP,
-    nearPassXP: buttonNearestPasswordFeatures.distNearestXP,
-    nearPassYP: buttonNearestPasswordFeatures.distNearestYP
-  } : {};
+  // get sorted password inputs
+  const passwordInputs = findPasswordInputs(inputs);
+  const passwordInputsSortedX = sortElementsByDistanceOnAxis(button, passwordInputs, 0);
+  const passwordInputsSortedY = sortElementsByDistanceOnAxis(button, passwordInputs, 1);
+  const passwordInputNearestX = passwordInputsSortedX[0];
+  const passwordInputNearestY = passwordInputsSortedY[0];
+  const passwordInputNearestXGeo = getGeoFeature(passwordInputNearestX, useRatio, 'PX');
+  const passwordInputNearestYGeo = getGeoFeature(passwordInputNearestY, useRatio, 'PY');
+  const samePassXY = passwordInputNearestX instanceof HTMLInputElement && passwordInputNearestX === passwordInputNearestY;
+  
   // merge all the features
 
   return {
     ...buttonGeoFeatures,
     ...buttonDomFeatures,
+    ...buttonCSSFeatures,
+    ...usernameInputNearestXGeo,
+    ...usernameInputNearestYGeo,
+    ...passwordInputNearestXGeo,
+    ...passwordInputNearestYGeo,
     ...{
-      nearUserX: buttonNearestUsernameFeatures.distNearestX,
-      nearUserY: buttonNearestUsernameFeatures.distNearestY,
-      nearPassX: buttonNearestPasswordFeatures.distNearestX,
-      nearPassY: buttonNearestPasswordFeatures.distNearestY
-    },
-    ...nearestRatio
+      sameUserXY,
+      samePassXY
+    }
   };
 };
 

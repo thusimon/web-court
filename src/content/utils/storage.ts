@@ -59,6 +59,11 @@ export const deleteFeature = async (category: FeatureCategory, idx: number): Pro
   return updated;
 };
 
+export const deleteFeatureCategory = async (category: FeatureCategory): Promise<[]> => {
+  await setFeatures(category, []);
+  return [];
+};
+
 export const saveAllFeature = async (features: FeaturesType): Promise<FeaturesType> => {
   await storage.local.set(features);
   return features;

@@ -1,6 +1,6 @@
 import { MIN_ELEMENT_SIZE, MIN_ELEMENT_OPACITY, OVERLAY_MODE, InputFieldType } from  '../../constants';
 import Overlay, { OverlaySettingsType } from '../components/overlay';
-
+import html2canvas from 'html2canvas';
 export interface DomAttributeType {
   type?: string;
   name?: string;
@@ -15,6 +15,7 @@ export interface DomAttributeType {
 export interface CSSPropertyType {
   textSecurity: string;
   fontFamily: string;
+  borderRadius: number;
 };
 
 export const findAllInputFields = (): HTMLInputElement[] => {
@@ -154,15 +155,24 @@ export const getAllTextContent = (element: HTMLElement): string => {
   }
 }
 
-export const getCSSProperties = (input: HTMLElement): CSSPropertyType => {
-  const cssStyle = window.getComputedStyle(input);
+export const getCSSProperties = (element: HTMLElement): CSSPropertyType => {
+  const cssStyle = window.getComputedStyle(element);
   const textSecurity = cssStyle.getPropertyValue('-webkit-text-security');
   const fontFamily = cssStyle.getPropertyValue('font-family');
+  const borderRadius = parseFloat(cssStyle.getPropertyValue('border-radius'));
   return {
     textSecurity,
-    fontFamily
+    fontFamily,
+    borderRadius,
   };
 };
+
+export const getCanvasData = async (element: HTMLElement) => {
+  const canvas = await html2canvas(element);
+  const context = canvas.getContext('2d');
+  const dataURL = canvas.toDataURL('image/png');
+  console.log(dataURL);
+}
 
 export const highlightPendingDom = (dom: HTMLElement) => {
   if (!dom) {

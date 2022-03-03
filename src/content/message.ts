@@ -32,7 +32,7 @@ export interface LabelData {
   label?: FieldLabelResult | PageLabelResult 
 };
 
-export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay): Promise<void> => {
+export const handleLabel = async (message: Message, dom: HTMLElement, overlay: Overlay): Promise<void> => {
   if (!dom) {
     return;
   }
@@ -83,7 +83,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT: {
       const allVisiableInputs = findVisibleInputs();
-      const submitFeatures = getButtonFeatures(dom, allVisiableInputs);
+      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs);
       const submitFeatureLabeled = {
         ...data,
         ...submitFeatures,
@@ -107,7 +107,7 @@ export const handleLabel = (message: Message, dom: HTMLElement, overlay: Overlay
     }
     case CONTEXT_MENU_IDS.LABEL_BUTTON_OTHER: {
       const allVisiableInputs = findVisibleInputs();
-      const submitFeatures = getButtonFeatures(dom, allVisiableInputs);
+      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs);
       const submitFeatureLabeled = {
         ...data,
         ...submitFeatures,

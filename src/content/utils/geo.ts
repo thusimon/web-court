@@ -12,6 +12,10 @@ export interface GeoType {
   heightP?: number
 };
 
+export interface GeoPrefixType {
+  [key: string]: number;
+}
+
 export interface NearestType {
   typeNearestX?: string;
   typeNearestY?: string;
@@ -29,6 +33,8 @@ export interface SpacialType {
   type: InputFieldType; // it is username input or password input
 }
 
+export const addKeyPrefix = (key: string, prefix: string = '') => `${prefix}${key}`;
+
 /**
  * get geometry features, for one input, return
  * {
@@ -44,22 +50,39 @@ export interface SpacialType {
  * TODO: if input is in iframe, the geometry info should still base on top document
  * @param inputs
  */
-export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true): GeoType => {
+export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true, keyPrefix: string = ''): GeoPrefixType => {
+  if (!element) {
+    const geo = {
+      [addKeyPrefix('top', keyPrefix)]: 0,
+      [addKeyPrefix('left', keyPrefix)]: 0,
+      [addKeyPrefix('width', keyPrefix)]: 0,
+      [addKeyPrefix('height', keyPrefix)]: 0
+    }
+    return useRatio ? {
+      ...geo,
+      ...{
+        [addKeyPrefix('topP', keyPrefix)]: 0,
+        [addKeyPrefix('leftP', keyPrefix)]: 0,
+        [addKeyPrefix('widthP', keyPrefix)]: 0,
+        [addKeyPrefix('heightP', keyPrefix)]: 0
+      }
+    } : geo;
+  }
   const bodyRect = document.body.getBoundingClientRect();
   const rect = element.getBoundingClientRect();
   const geo = {
-    top: toPrecision(rect.top),
-    left: toPrecision(rect.left),
-    width: toPrecision(rect.width),
-    height: toPrecision(rect.height)
+    [addKeyPrefix('top', keyPrefix)]: toPrecision(rect.top),
+    [addKeyPrefix('left', keyPrefix)]: toPrecision(rect.left),
+    [addKeyPrefix('width', keyPrefix)]: toPrecision(rect.width),
+    [addKeyPrefix('height', keyPrefix)]: toPrecision(rect.height)
   }
   if (bodyRect.height === 0 || bodyRect.width === 0) {
     console.log('document body size = 0');
     const geoP = {
-      topP: 1,
-      leftP:  1,
-      widthP: 1,
-      heightP: 1
+      [addKeyPrefix('topP', keyPrefix)]: 0,
+      [addKeyPrefix('leftP', keyPrefix)]:  0,
+      [addKeyPrefix('widthP', keyPrefix)]: 1,
+      [addKeyPrefix('heightP', keyPrefix)]: 1
     }
     return useRatio ? {
       ...geo,
@@ -67,15 +90,53 @@ export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true): G
     } : geo;
   }
   const geoP = {
-    topP: toPrecision(rect.top / bodyRect.height),
-    leftP: toPrecision(rect.left / bodyRect.width),
-    widthP: toPrecision(rect.width / bodyRect.width),
-    heightP: toPrecision(rect.height / bodyRect.height)
+    [addKeyPrefix('topP', keyPrefix)]: toPrecision(rect.top / bodyRect.height),
+    [addKeyPrefix('leftP', keyPrefix)]: toPrecision(rect.left / bodyRect.width),
+    [addKeyPrefix('widthP', keyPrefix)]: toPrecision(rect.width / bodyRect.width),
+    [addKeyPrefix('heightP', keyPrefix)]: toPrecision(rect.height / bodyRect.height)
   }
   return useRatio ? {
     ...geo,
     ...geoP
   } : geo;
+};
+
+/**
+ * get the sorted elements by distance on axis
+ * by default on x-axis 
+ * @param element
+ * @param targets
+ * @param axis
+ */
+export const sortElementsByDistanceOnAxis = (element: HTMLElement, targets: HTMLElement[], axis: number = 0): HTMLElement[] => {
+  const rect = getGeoFeature(element);
+  const centerX = rect.left + rect.width / 2;
+  const centerY = rect.top + rect.height / 2;
+  const sortedTargets = targets.sort((a, b) => {
+    const rectA = getGeoFeature(a);
+    const rectB = getGeoFeature(b);
+    const centerXA = rectA.left + rectA.width / 2;
+    const centerYA = rectA.top + rectA.height / 2;
+    const centerXB = rectB.left + rectB.width / 2;
+    const centerYB = rectB.top + rectB.height / 2;
+    if (axis == 0) {
+      // sort by X axis
+      const distXA = Math.abs(centerX - centerXA);
+      const distXB = Math.abs(centerX - centerXB);
+      return distXA - distXB;
+    } else if (axis == 1) {
+      // sort by Y axis
+      const distYA = Math.abs(centerY - centerYA);
+      const distYB = Math.abs(centerY - centerYB);
+      return distYA - distYB;
+    } else {
+      // sort by distance
+      const distA = Math.sqrt(Math.pow(centerX - centerXA, 2) + Math.pow(centerY - centerYA, 2));
+      const distB = Math.sqrt(Math.pow(centerX - centerXB, 2) + Math.pow(centerY - centerYB, 2));
+      return distA - distB;
+    }
+  });
+  return sortedTargets;
 };
 
 export const getNearestInfo = (element: HTMLElement, inputs: HTMLInputElement[]): NearestType => {

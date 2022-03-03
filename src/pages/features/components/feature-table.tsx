@@ -3,7 +3,7 @@ import { AppContext } from '../context-provider';
 import { Actions } from '../constants';
 import { FeatureCategory, FeaturesType } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
-import { deleteFeature, getAllFeatures, saveAllFeature } from '../../../content/utils/storage';
+import { deleteFeature, deleteFeatureCategory, getAllFeatures, saveAllFeature } from '../../../content/utils/storage';
 
 import './feature-table.scss';
 
@@ -36,30 +36,47 @@ const FeatureTable = () => {
   }, []);
   useEffect(() => {
     (async () => {
-      if (state.clickButton === 'delete' && selectedFeatureIdx > -1) {
-        //TODO add confirm dialog
-        await deleteFeature(featureTableType, selectedFeatureIdx);
-        const latestFeatures = await getAllFeatures()
-        setAllFeatures(latestFeatures);
-        setSelectedFeatureIdx(-1);
-        resetButton();
-      } else if (state.clickButton === 'export') {
-        const featureStr = JSON.stringify(allFeature, null, ' ');
-        const blob = new Blob([featureStr], {type: "application/json"});
-        const url = URL.createObjectURL(blob);
-        const downloadLink = document.createElement('a');
-        downloadLink.style.display = 'none';
-        downloadLink.href = url;
-        downloadLink.download = "web-court-features.json";  
-        document.body.appendChild(downloadLink);
-        downloadLink.click();
-        downloadLink.remove();
-        resetButton();
-      } else if (state.clickButton === 'import') {
-        if (fileInput.current) {
-          fileInput.current.click();
+      const button = state.clickButton;
+      switch (button) {
+        case 'delete-one': {
+          //TODO add confirm dialog
+          await deleteFeature(featureTableType, selectedFeatureIdx);
+          const latestFeatures = await getAllFeatures()
+          setAllFeatures(latestFeatures);
+          setSelectedFeatureIdx(-1);
+          resetButton();
+          break;
         }
-        resetButton();
+        case 'delete-catetory': {
+          await deleteFeatureCategory(featureTableType);
+          const latestFeatures = await getAllFeatures()
+          setAllFeatures(latestFeatures);
+          setSelectedFeatureIdx(-1);
+          resetButton();
+          break;
+        }
+        case 'export': {
+          const featureStr = JSON.stringify(allFeature, null, ' ');
+          const blob = new Blob([featureStr], {type: "application/json"});
+          const url = URL.createObjectURL(blob);
+          const downloadLink = document.createElement('a');
+          downloadLink.style.display = 'none';
+          downloadLink.href = url;
+          downloadLink.download = "web-court-features.json";  
+          document.body.appendChild(downloadLink);
+          downloadLink.click();
+          downloadLink.remove();
+          resetButton();
+          break;
+        }
+        case 'import': {
+          if (fileInput.current) {
+            fileInput.current.click();
+          }
+          resetButton();
+        }
+        default:
+          break;
       }
     })();
   }, [state]);
@@ -97,7 +114,10 @@ const FeatureTable = () => {
 
   return (
     selectedTable && selectedTable.length == 0 ?
-    <div>No feature collected</div> :
+    <div>
+      <p>No feature collected</p>
+      <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
+    </div> :
     <div>
       <table className='feature-table'>
         <thead>

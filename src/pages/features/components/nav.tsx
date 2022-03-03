@@ -31,11 +31,15 @@ const Nav = () => {
       </div>
       |
       <div className='controls'>
-        <button title='Delete' name='delete' onClick={onClickHander}>🗑</button>
+        <button title='Delete one feature' name='delete-one' onClick={onClickHander}>🗑</button>
       </div>
       |
       <div className='controls'>
-        <button title='Information' name='info' onClick={onClickHander}>🛈</button>
+        <button title='Delete all category features' name='delete-catetory' onClick={onClickHander} className='highlight'>🗑</button>
+      </div>
+      |
+      <div className='controls'>
+        <button title='Information' name='info' onClick={onClickHander}>🗈</button>
       </div>
       |
       <div className='controls'>

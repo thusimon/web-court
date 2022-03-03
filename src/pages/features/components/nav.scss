@@ -2,6 +2,10 @@ header {
   .controls {
     margin: 0px 10px;
     display: inline-block;
+    .highlight {
+      color: red;
+      font-weight: 600;
+    }
   }
   label {
     margin: 0px 10px 0px 0px;
