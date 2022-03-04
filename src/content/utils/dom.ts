@@ -1,4 +1,4 @@
-import { MIN_ELEMENT_SIZE, MIN_ELEMENT_OPACITY, OVERLAY_MODE, InputFieldType } from  '../../constants';
+import { MIN_ELEMENT_SIZE, MIN_ELEMENT_OPACITY, OVERLAY_MODE, InputFieldType, ImageDataCanvas } from  '../../constants';
 import Overlay, { OverlaySettingsType } from '../components/overlay';
 import html2canvas from 'html2canvas';
 export interface DomAttributeType {
@@ -167,11 +167,11 @@ export const getCSSProperties = (element: HTMLElement): CSSPropertyType => {
   };
 };
 
-export const getCanvasData = async (element: HTMLElement) => {
+export const getCanvasImageData = async (element: HTMLElement): Promise<ImageDataCanvas> => {
   const canvas = await html2canvas(element);
   const context = canvas.getContext('2d');
-  const dataURL = canvas.toDataURL('image/png');
-  console.log(dataURL);
+  const imageData = context.getImageData(0, 0, canvas.width, canvas.height) as ImageDataCanvas;
+  return imageData;
 }
 
 export const highlightPendingDom = (dom: HTMLElement) => {

@@ -95,3 +95,7 @@ export interface ModelConfig {
   name: string;
   config: ModelLayer[];
 };
+
+export interface ImageDataCanvas extends ImageData {
+  colorSpace: string;
+};

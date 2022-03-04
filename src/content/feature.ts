@@ -7,7 +7,7 @@ import {
   findPasswordInputs,
   getDomAttributes,
   getCSSProperties,
-  getCanvasData
+  getCanvasImageData
 } from './utils/dom';
 import {
   GeoType,
@@ -18,6 +18,7 @@ import {
   SpacialType,
   sortElementsByDistanceOnAxis
 } from './utils/geo';
+import { getDominateColor } from './utils/image';
 import {
   getSpacialStatistics,
 } from './utils/statistics';
@@ -64,7 +65,8 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
   // get css features
   const buttonCSSFeatures = _.pick(getCSSProperties(button), buttonCSSProperties);
   // get canvas features;
-  const buttonCanvasFeatures = await getCanvasData(button);
+  const buttonCanvasFeatures = await getCanvasImageData(button);
+  const buttonColor = getDominateColor(buttonCanvasFeatures);
   // get sorted username inputs
   const usernameInputs = findUsernameInputs(inputs);
   const usernameInputsSortedX = sortElementsByDistanceOnAxis(button, usernameInputs, 0);
@@ -91,6 +93,11 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
     ...buttonGeoFeatures,
     ...buttonDomFeatures,
     ...buttonCSSFeatures,
+    ...{
+      colorR: buttonColor[0],
+      colorG: buttonColor[1],
+      colorB: buttonColor[2]
+    },
     ...usernameInputNearestXGeo,
     ...usernameInputNearestYGeo,
     ...passwordInputNearestXGeo,

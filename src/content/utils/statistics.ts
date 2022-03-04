@@ -102,3 +102,7 @@ export const getSpacialStatistics = (inputs: HTMLInputElement[]): GeneralFeature
     minLeftP: min(cxPVec).toFixed(4)
   };
 };
+
+export const getMaxValueKey = (obj: {[key: string]: number}, def: string): string => {
+  return Object.keys(obj).reduce((a, b) => obj[a] > obj[b] ? a : b, def);
+};
