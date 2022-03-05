@@ -19,8 +19,8 @@ const FeatureTable = () => {
   const fileInput = useRef(null);
   const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
     Page: [],
-    Field: [],
-    Submit: []
+    Inputs: [],
+    Buttons: []
   });
 
   const resetButton = () => dispatch({

@@ -65,6 +65,7 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
   // get css features
   const buttonCSSFeatures = _.pick(getCSSProperties(button), buttonCSSProperties);
   // get canvas features;
+  // TODO: canvas feature has big overhead to collect. May skip it in production
   const buttonCanvasFeatures = await getCanvasImageData(button);
   const buttonColor = getDominateColor(buttonCanvasFeatures);
   // get sorted username inputs

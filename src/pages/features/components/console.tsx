@@ -41,8 +41,8 @@ const Console: React.FC = () => {
 
   const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
     Page: [],
-    Field: [],
-    Submit: []
+    Inputs: [],
+    Buttons: []
   });
   useEffect(() => {
     (async () => {

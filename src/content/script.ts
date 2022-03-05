@@ -4,10 +4,10 @@ import {
   findVisibleInputs,
   findUsernameInputs,
   findPasswordInputs,
-  highlightPendingDom,
   restoreDomHighlight,
   addTooltipUnderDom,
-  clearOverlay
+  clearOverlay,
+  highlightLabeledDoms
 } from './utils/dom';
 import { handleLabel } from './message';
 import './components/overlay';
@@ -34,7 +34,7 @@ setInterval(() => {
   const allVisiableInputs = findVisibleInputs();
   const textInputs = findUsernameInputs(allVisiableInputs);
   const passwordInputs = findPasswordInputs(allVisiableInputs);
-  [...textInputs, ...passwordInputs].forEach(vi => highlightPendingDom(vi));
+  highlightLabeledDoms([...textInputs, ...passwordInputs], 'green');
 }, 1000);
 
 document.addEventListener('keyup', (evt) => {

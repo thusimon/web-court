@@ -4,34 +4,6 @@ import { CONTEXT_MENU_IDS, MessageType } from './constants';
 
 // create context menu
 
-// Field feature menus
-browser.contextMenus.create({
-  title: 'Label Field', 
-  contexts: ['all'], 
-  id: CONTEXT_MENU_IDS.LABEL_FIELD
-}, () => browser.runtime.lastError);
-
-browser.contextMenus.create({
-  title: 'Other',
-  contexts: ['all'],
-  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
-  id: CONTEXT_MENU_IDS.LABEL_FIELD_OTHER
-}, () => browser.runtime.lastError);
-
-browser.contextMenus.create({
-  title: 'Username',
-  contexts: ['all'],
-  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
-  id: CONTEXT_MENU_IDS.LABEL_USERNAME
-}, () => browser.runtime.lastError);
-
-browser.contextMenus.create({
-  title: 'Password',
-  contexts: ['all'],
-  parentId: CONTEXT_MENU_IDS.LABEL_FIELD,
-  id: CONTEXT_MENU_IDS.LABEL_PASSWORD
-}, () => browser.runtime.lastError);
-
 // submit feature menus
 browser.contextMenus.create({
   title: 'Button',
@@ -40,10 +12,10 @@ browser.contextMenus.create({
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
-  title: 'Submit',
+  title: 'Submit && Other',
   contexts: ['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_BUTTON,
-  id: CONTEXT_MENU_IDS.LABEL_SUBMIT
+  id: CONTEXT_MENU_IDS.LABEL_SUBMIT_OTHER
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
@@ -51,6 +23,48 @@ browser.contextMenus.create({
   contexts: ['all'],
   parentId: CONTEXT_MENU_IDS.LABEL_BUTTON,
   id: CONTEXT_MENU_IDS.LABEL_BUTTON_OTHER
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Submit',
+  contexts: ['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_BUTTON,
+  id: CONTEXT_MENU_IDS.LABEL_SUBMIT_ONLY
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'All Other',
+  contexts: ['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_BUTTON,
+  id: CONTEXT_MENU_IDS.LABEL_BUTTON_OTHER_ALL
+}, () => browser.runtime.lastError);
+
+// input feature menus
+browser.contextMenus.create({
+  title: 'Inputs', 
+  contexts: ['all'], 
+  id: CONTEXT_MENU_IDS.LABEL_INPUT
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Other',
+  contexts: ['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_INPUT,
+  id: CONTEXT_MENU_IDS.LABEL_INPUT_OTHER
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Username',
+  contexts: ['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_INPUT,
+  id: CONTEXT_MENU_IDS.LABEL_USERNAME
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
+  title: 'Password',
+  contexts: ['all'],
+  parentId: CONTEXT_MENU_IDS.LABEL_INPUT,
+  id: CONTEXT_MENU_IDS.LABEL_PASSWORD
 }, () => browser.runtime.lastError);
 
 //

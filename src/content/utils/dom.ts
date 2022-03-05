@@ -174,25 +174,18 @@ export const getCanvasImageData = async (element: HTMLElement): Promise<ImageDat
   return imageData;
 }
 
-export const highlightPendingDom = (dom: HTMLElement) => {
-  if (!dom) {
+export const highlightLabeledDoms = (doms: HTMLElement[], color: string) => {
+  if (!doms) {
     return;
   }
-  dom.style.setProperty('border', '4px solid red', 'important');
+  doms.forEach(dom => dom.style.setProperty('border', `3px solid ${color}`, 'important'));
 };
 
-export const highlightLabeledDom = (dom: HTMLElement) => {
-  if (!dom) {
+export const restoreDomHighlight = (doms: HTMLElement[]) => {
+  if (!doms) {
     return;
   }
-  dom.style.setProperty('border', '2px solid blue', 'important');
-};
-
-export const restoreDomHighlight = (dom: HTMLElement) => {
-  if (!dom) {
-    return;
-  }
-  dom.style.setProperty('border', '');
+  doms.forEach(dom => dom.style.removeProperty('border'));
 };
 
 export const getTagDescriptor = (dom: HTMLElement) => {
