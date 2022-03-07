@@ -52,7 +52,7 @@ export const convertToTensors = (data: number[][], targets: number[], testSplit:
   const yTrain = ys.slice([0, 0], [numTrainExamples, classLength]);
   const yTest = ys.slice([0, 0], [numTestExamples, classLength]);
   return [xTrain, yTrain, xTest, yTest];
-}
+};
 
 export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses: string[], testSplit: number) => {
   const arrData = convertFeatureToArray(features);
@@ -90,5 +90,4 @@ export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses
       tf.concat(xTests, concatAxis), tf.concat(yTests, concatAxis)
     ];
   });
-}
-
+};
