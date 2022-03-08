@@ -2,6 +2,12 @@ import * as tf from '@tensorflow/tfjs';
 import { GeneralFeatureLabeled } from '../../../../content/utils/storage'
 import { PageLabelResult } from '../../../../constants';
 
+export const toOneHot = (feature: number[], classLength: number) => {
+  // Create a 1D `tf.Tensor` to hold the labels, and convert the number label
+  // from the set {0, 1, 2} into one-hot encoding (.e.g., 0 --> [1, 0, 0]).
+  return tf.oneHot(tf.tensor1d(feature).toInt(), classLength);
+};
+
 export const convertFeatureToArray = (features: GeneralFeatureLabeled[]): (number|string|boolean)[][] => {
   const excludeProps = ['label', 'url'];
   return features.map(feature => {
@@ -44,7 +50,7 @@ export const convertToTensors = (data: number[][], targets: number[], testSplit:
 
   // Create a 1D `tf.Tensor` to hold the labels, and convert the number label
   // from the set {0, 1, 2} into one-hot encoding (.e.g., 0 --> [1, 0, 0]).
-  const ys = tf.oneHot(tf.tensor1d(shuffledTargets).toInt(), classLength);
+  const ys = toOneHot(shuffledTargets, classLength);
 
   // Split the data into training and test sets, using `slice`.
   const xTrain = xs.slice([0, 0], [numTrainExamples, xDims]);
