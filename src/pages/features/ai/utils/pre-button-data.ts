@@ -1,6 +1,7 @@
 import _ from 'lodash';
 import * as tf from '@tensorflow/tfjs';
 import { GeneralFeature } from '../../../../content/feature';
+import { GeneralFeatureLabeled } from '@srccontent/utils/storage';
 
 export enum ButtonFeatureType {
   auxillary,
@@ -63,8 +64,32 @@ export const processCategoryFeature = (features: ButtonFeature[]) => {
 
 }
 
+export type ValueList = ValueType[];
+
+export type ValueType = number | string | boolean;
 export interface FeatureValueList {
-  [key: string]: number[] | string[] | boolean[];
+  [key: string]: ValueList;
+};
+
+export const getFeatureRange = (features: GeneralFeature[]): FeatureValueList => {
+  const categoricalFeatureNames = buttonFeatures.filter(bf => bf.type === ButtonFeatureType.category).map(bf => bf.name);
+  const initVal: FeatureValueList = {}
+  const featureRanges = features.reduce((prev, curr) => {
+    categoricalFeatureNames.forEach(cn => {
+      if (!prev[cn]) {
+        prev[cn] = [];
+        prev[cn].push(curr[cn]);
+      } else if (!prev[cn].includes(curr[cn])) {
+        prev[cn].push(curr[cn]);
+      }
+    });
+    return prev;
+  }, initVal);
+  // sort each value list
+  categoricalFeatureNames.forEach(cn => {
+    featureRanges[cn].sort();
+  });
+  return featureRanges;
 };
 
 export const convertFeatureToTensor = (feature: GeneralFeature, featureRange: FeatureValueList) => {
@@ -89,7 +114,11 @@ export const convertFeatureToTensor = (feature: GeneralFeature, featureRange: Fe
   const categoricalFeatureTensor = tf.tensor2d([categoricalFeatureArr]);
 
   //concat number and categorical feature
-  // TODO: nomalize the feature
+  //TODO: nomalize the feature, MLP may not need nomalization, but should think about it for other models
   const allFeature = numberFeatureTensor.concat(categoricalFeatureTensor, 1);
   return allFeature;
 };
+
+export const convertButtonFeaturesToTensor = (features: GeneralFeatureLabeled[]) => {
+  const categoricalFeatureRange = getFeatureRange(features);
+}
