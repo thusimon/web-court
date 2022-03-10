@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import * as tf from '@tensorflow/tfjs';
 import { GeneralFeature } from '../../../../content/feature';
-import { GeneralFeatureLabeled } from '@srccontent/utils/storage';
+import { GeneralFeatureLabeled } from '../../../../content/utils/storage';
+import { FeatureValueList } from './data';
 
 export enum ButtonFeatureType {
   auxillary,
@@ -43,12 +43,12 @@ export const buttonFeatures: ButtonFeature[] = [
   { name: 'colorB', type: ButtonFeatureType.number },
   { name: 'colorG', type: ButtonFeatureType.number },
   { name: 'colorR', type: ButtonFeatureType.number },
-  { name: 'id', type: ButtonFeatureType.category }, // dom
-  { name: 'name', type: ButtonFeatureType.category },
+  { name: 'id', type: ButtonFeatureType.string }, // dom
+  { name: 'name', type: ButtonFeatureType.string },
   { name: 'tagName', type: ButtonFeatureType.category },
-  { name: 'textContent', type: ButtonFeatureType.category },
+  { name: 'textContent', type: ButtonFeatureType.string },
   { name: 'type', type: ButtonFeatureType.category },
-  { name: 'className', type: ButtonFeatureType.category },
+  { name: 'className', type: ButtonFeatureType.string },
   { name: 'disabled', type: ButtonFeatureType.category },
   { name: 'left', type: ButtonFeatureType.number }, // geometry
   { name: 'top', type: ButtonFeatureType.number },
@@ -56,26 +56,16 @@ export const buttonFeatures: ButtonFeature[] = [
   { name: 'height', type: ButtonFeatureType.number }
 ];
 
-export const getFeatureByType = (features: ButtonFeature[], type: ButtonFeatureType) => {
-  return features.filter(feature => feature.type === type);
-};
-
-export const processCategoryFeature = (features: ButtonFeature[]) => {
-
-}
-
-export type ValueList = ValueType[];
-
-export type ValueType = number | string | boolean;
-export interface FeatureValueList {
-  [key: string]: ValueList;
-};
-
-export const getFeatureRange = (features: GeneralFeature[]): FeatureValueList => {
-  const categoricalFeatureNames = buttonFeatures.filter(bf => bf.type === ButtonFeatureType.category).map(bf => bf.name);
+export const getCategoricalFeatureRange = (features: GeneralFeature[]): FeatureValueList => {
+  const categoricalFeatureNames = buttonFeatures
+    .filter(bf => bf.type === ButtonFeatureType.category || bf.type === ButtonFeatureType.string)
+    .map(bf => bf.name);
   const initVal: FeatureValueList = {}
   const featureRanges = features.reduce((prev, curr) => {
     categoricalFeatureNames.forEach(cn => {
+      if (_.isUndefined(curr[cn])) {
+        return;
+      }
       if (!prev[cn]) {
         prev[cn] = [];
         prev[cn].push(curr[cn]);
@@ -92,33 +82,37 @@ export const getFeatureRange = (features: GeneralFeature[]): FeatureValueList =>
   return featureRanges;
 };
 
-export const convertFeatureToTensor = (feature: GeneralFeature, featureRange: FeatureValueList) => {
-  // number feature
-  const numberFeatureNames = buttonFeatures.filter(bf => bf.type === ButtonFeatureType.number).map(bf => bf.name);
-  const numberFeature = _.pick(feature, numberFeatureNames);
-  const numberFeatureArr = _.values(numberFeature) as number[];
-  const numberFeatureTensor = tf.tensor2d([numberFeatureArr]); // shape 1xn
+export const processStringFeature = (features: GeneralFeatureLabeled[]) => {
+  features.forEach(feature => {
+    feature['id'] = !!feature['id'];
+    feature['name'] = !!feature['name'];
+    feature['className'] = !!feature['className'];
+  });
+  return features;
+}
 
+// TODO: nomalize the number feature
+// MLP may not need nomalization, but should think about it for other models
+
+export const processCategoryFeature = (features: GeneralFeatureLabeled[]): GeneralFeatureLabeled[] => {
+  const categoricalFeatureRange = getCategoricalFeatureRange(features);
+  const categoricalFeatureNames = Object.keys(categoricalFeatureRange);
   // categorical feature
   // NOTE: here categorical feature is mapped to index integer
   // e.g tagName = ['input', 'button', 'a'] => [0, 1, 2]
   // convert to oneHot encode if necessary
-  const categoricalFeatureNames = buttonFeatures.filter(bf => bf.type === ButtonFeatureType.category).map(bf => bf.name);
-  const categoricalFeature = _.pick(feature, categoricalFeatureNames) as GeneralFeature
-  for(const key in categoricalFeature) {
-    const value = categoricalFeature[key];
-    const featureRangeOptions = featureRange[key] as Array<boolean|number|string> 
-    categoricalFeature[key] = featureRangeOptions.indexOf(value);
-  }
-  const categoricalFeatureArr = _.values(categoricalFeature) as number[];
-  const categoricalFeatureTensor = tf.tensor2d([categoricalFeatureArr]);
-
-  //concat number and categorical feature
-  //TODO: nomalize the feature, MLP may not need nomalization, but should think about it for other models
-  const allFeature = numberFeatureTensor.concat(categoricalFeatureTensor, 1);
-  return allFeature;
+  features.forEach(feature => {
+    categoricalFeatureNames.forEach(cn => {
+      const value = feature[cn];
+      const featureRangeOptions = categoricalFeatureRange[cn];
+      feature[cn] = featureRangeOptions.indexOf(value);
+    });
+  });
+  return features;
 };
 
-export const convertButtonFeaturesToTensor = (features: GeneralFeatureLabeled[]) => {
-  const categoricalFeatureRange = getFeatureRange(features);
-}
+export const processButtonFeature = (features: GeneralFeatureLabeled[]): GeneralFeatureLabeled[] => {
+  const featureProcessString = processStringFeature(features);
+  const featureProcessCategory = processCategoryFeature(featureProcessString);
+  return featureProcessCategory;
+};

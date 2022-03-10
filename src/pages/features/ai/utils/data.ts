@@ -1,6 +1,17 @@
 import * as tf from '@tensorflow/tfjs';
 import { GeneralFeatureLabeled } from '../../../../content/utils/storage'
-import { PageLabelResult } from '../../../../constants';
+import { FeatureCategory, PageLabelResult } from '../../../../constants';
+import { processButtonFeature } from './process-button-data';
+
+export const PageClass = ['login', 'other'];
+export const ButtonClass = ['submit', 'other'];
+
+export type ValueList = ValueType[];
+
+export type ValueType = number | string | boolean;
+export interface FeatureValueList {
+  [key: string]: ValueList;
+};
 
 export const toOneHot = (feature: number[], classLength: number) => {
   // Create a 1D `tf.Tensor` to hold the labels, and convert the number label
@@ -8,7 +19,7 @@ export const toOneHot = (feature: number[], classLength: number) => {
   return tf.oneHot(tf.tensor1d(feature).toInt(), classLength);
 };
 
-export const convertFeatureToArray = (features: GeneralFeatureLabeled[]): (number|string|boolean)[][] => {
+export const convertFeatureToArray = (features: GeneralFeatureLabeled[]): ValueType[][] => {
   const excludeProps = ['label', 'url'];
   return features.map(feature => {
     // TODO multiple classes
@@ -96,4 +107,17 @@ export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses
       tf.concat(xTests, concatAxis), tf.concat(yTests, concatAxis)
     ];
   });
+};
+
+export const getFeatureDataByCategory = (features: GeneralFeatureLabeled[], featureTableType: FeatureCategory, testSplit: number = 0.1) => {
+  switch (featureTableType) {
+    case FeatureCategory.Page:
+    case FeatureCategory.Inputs:
+      return getFeatureData(features, PageClass, testSplit);
+    case FeatureCategory.Buttons:
+      const buttonFeatures = processButtonFeature(features);
+      return getFeatureData(buttonFeatures, ButtonClass, testSplit);
+    default:
+      break;
+  }
 };

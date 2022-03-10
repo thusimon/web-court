@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { FeatureCategory } from '../../../constants';
-import { PageClass, trainModel } from '../ai/model';
-import { getFeatureData } from '../ai/utils/data';
+import { trainModel } from '../ai/model';
+import { getFeatureDataByCategory } from '../ai/utils/data';
 import { FeaturesType } from '../constants';
 import { AppContext } from '../context-provider';
 import { getAllFeatures } from '../../../content/utils/storage';
@@ -60,7 +60,7 @@ const Console: React.FC = () => {
     } else if (state.clickButton === 'train' && !training) {
       let message = `Training model for ${featureTableType} features...\n`
       setMessage(message);
-      const featureData = getFeatureData(allFeature[featureTableType], PageClass, 0.1);
+      const featureData = getFeatureDataByCategory(allFeature[featureTableType], featureTableType);
       const model = trainModel(featureData, (msg, trainLogs, complete) => {
         message += `  ${msg}\n`;
         setMessage(message);

@@ -1,7 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
 
-export const PageClass = ['login', 'other'];
-
 export interface TrainCallback {
   (msg: string, logs: tf.Logs[], complete: boolean): void;
 };

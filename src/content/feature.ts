@@ -66,8 +66,8 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
   const buttonCSSFeatures = _.pick(getCSSProperties(button), buttonCSSProperties);
   // get canvas features;
   // TODO: canvas feature has big overhead to collect. May skip it in production
-  const buttonCanvasFeatures = await getCanvasImageData(button);
-  const buttonColor = getDominateColor(buttonCanvasFeatures);
+  // const buttonCanvasFeatures = await getCanvasImageData(button);
+  // const buttonColor = getDominateColor(buttonCanvasFeatures);
   // get sorted username inputs
   const usernameInputs = findUsernameInputs(inputs);
   const usernameInputsSortedX = sortElementsByDistanceOnAxis(button, usernameInputs, 0);
@@ -94,11 +94,11 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
     ...buttonGeoFeatures,
     ...buttonDomFeatures,
     ...buttonCSSFeatures,
-    ...{
-      colorR: buttonColor[0],
-      colorG: buttonColor[1],
-      colorB: buttonColor[2]
-    },
+    // ...{
+    //   colorR: buttonColor[0],
+    //   colorG: buttonColor[1],
+    //   colorB: buttonColor[2]
+    // },
     ...usernameInputNearestXGeo,
     ...usernameInputNearestYGeo,
     ...passwordInputNearestXGeo,
