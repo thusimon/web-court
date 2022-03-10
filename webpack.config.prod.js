@@ -1,5 +1,4 @@
 const path = require('path');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
 const { getBuildFilePathAndName, htmlWebpackPlugins, copyWebpackPlugin } = require('./tools/build-utils');
 
 const config = {
@@ -54,12 +53,5 @@ const config = {
 };
 
 config.plugins = [...htmlWebpackPlugins, copyWebpackPlugin];
-
-config.optimization = {
-  minimizer: [
-    `...`,
-    new CssMinimizerPlugin(),
-  ],
-};
 
 module.exports = config;
