@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import * as tf from '@tensorflow/tfjs';
 import { GeneralFeatureLabeled } from '../../../../content/utils/storage'
 import { FeatureCategory, PageLabelResult } from '../../../../constants';
@@ -20,12 +21,12 @@ export const toOneHot = (feature: number[], classLength: number) => {
 };
 
 export const convertFeatureToArray = (features: GeneralFeatureLabeled[]): ValueType[][] => {
-  const excludeProps = ['label', 'url'];
+  const excludeProps = ['label', 'url', 'tagDiscriptor'];
   return features.map(feature => {
     // TODO multiple classes
     const label = feature.label === PageLabelResult.login ? 0 : 1;
-    const featureKeys = Object.keys(feature).filter(key => !excludeProps.includes(key));
-    const featureValues = featureKeys.map(k => feature[k]);
+    const cleanedFeature = _.omit(feature, excludeProps);
+    const featureValues = _.values(cleanedFeature);
     return [...featureValues, label];
   });
 };

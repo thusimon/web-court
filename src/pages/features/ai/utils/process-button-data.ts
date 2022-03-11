@@ -82,11 +82,33 @@ export const getCategoricalFeatureRange = (features: GeneralFeature[]): FeatureV
   return featureRanges;
 };
 
+/**
+ * Using text content feature is not good, it requires our model to learn the actual content
+ * Reasons are:
+ *  - high effort to maintain the regex list and its order
+ *  - i18n, high effort to support other languages
+ *  - the button doesn't have text content
+ * Currently we use this feature as a workaround for English websites
+ * If there are better features, please discard the text content feature
+ */
+export const submitButtonContentRegexes: RegExp[] = [
+  /^(?!.*forg[o|e]t).*(log\W*in)/i,
+  /^(?!.*forg[o|e]t).*(sign\W*in)/i,
+  /continue\W*$/i,
+  /next\W*$/i,
+  /submit\W*$/i,
+  /go\W*$/i,
+  /ok\W*$/i,
+  /save\W*$/i,
+];
+
 export const processStringFeature = (features: GeneralFeatureLabeled[]) => {
   features.forEach(feature => {
     feature['id'] = !!feature['id'];
     feature['name'] = !!feature['name'];
     feature['className'] = !!feature['className'];
+    const textContent = feature['textContent'] as string;
+    feature['textContent'] = submitButtonContentRegexes.some(submitRegex => submitRegex.test(textContent));
   });
   return features;
 }
