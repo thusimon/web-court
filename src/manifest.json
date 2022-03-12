@@ -9,7 +9,7 @@
       "matches": ["<all_urls>"],
       "css": ["content/style.css"],
       "js": ["content/script.js"],
-      "all_frames": false
+      "all_frames": true
     }
   ],
   "background": {

@@ -5,9 +5,11 @@ export interface DomAttributeType {
   type?: string;
   name?: string;
   id?: string;
+  role?: string;
+  value?: string;
   className?: string;
   textContent?: string;
-  disabled: boolean;
+  disabled?: boolean;
   tagName: string;
   tagDiscriptor: string; //this is only used to view the feature, should not be applied in training
 };
@@ -26,14 +28,15 @@ export const findAllInputFields = (): HTMLInputElement[] => {
 export const findAllButtons = (): HTMLElement[] => {
   const buttons = Array.from(document.getElementsByTagName('BUTTON')) as HTMLElement[];
   const inputSubmit = Array.from(document.getElementsByTagName('input')).filter(input => {
-    return input.type === 'submit' || input.type === 'image';
+    return input.type === 'submit' || input.type === 'image' || input.type === 'button';
   }) as HTMLElement[];
+  const links = Array.from(document.getElementsByTagName('A')) as HTMLElement[];
   //TODO: think about how to get all the possible buttons but without getting too many
-  //const links = Array.from(document.getElementsByTagName('A'));
   return [
     ...buttons,
-    ...inputSubmit
-  ]
+    ...inputSubmit,
+    ...links
+  ];
 };
 
 export const findAllVisibleElements = (elements: HTMLElement[]): HTMLElement[] => {
@@ -123,9 +126,10 @@ export const findPasswordInputs = (inputs: HTMLInputElement[]): HTMLInputElement
 };
 
 export const getDomAttributes = (element: HTMLElement): DomAttributeType => {
-  return {
+  const domAttributes: DomAttributeType = {
     type: element.getAttribute('type'),
     name: element.getAttribute('name'),
+    role: element.getAttribute('role'),
     id: element.id,
     className: element.className,
     textContent: getAllTextContent(element),
@@ -133,6 +137,10 @@ export const getDomAttributes = (element: HTMLElement): DomAttributeType => {
     tagName: element.tagName.toLocaleLowerCase(),
     tagDiscriptor: getTagDescriptor(element)
   }
+  if (element instanceof HTMLInputElement) {
+    domAttributes.value = element.value;
+  }
+  return domAttributes;
 };
 
 export const getAllTextContent = (element: HTMLElement): string => {

@@ -46,6 +46,8 @@ export const buttonFeatures: ButtonFeature[] = [
   { name: 'id', type: ButtonFeatureType.string }, // dom
   { name: 'name', type: ButtonFeatureType.string },
   { name: 'tagName', type: ButtonFeatureType.category },
+  { name: 'role', type: ButtonFeatureType.category },
+  { name: 'value', type: ButtonFeatureType.string },
   { name: 'textContent', type: ButtonFeatureType.string },
   { name: 'type', type: ButtonFeatureType.category },
   { name: 'className', type: ButtonFeatureType.string },
@@ -104,11 +106,13 @@ export const submitButtonContentRegexes: RegExp[] = [
 
 export const processStringFeature = (features: GeneralFeatureLabeled[]) => {
   features.forEach(feature => {
-    feature['id'] = !!feature['id'];
-    feature['name'] = !!feature['name'];
-    feature['className'] = !!feature['className'];
-    const textContent = feature['textContent'] as string;
-    feature['textContent'] = submitButtonContentRegexes.some(submitRegex => submitRegex.test(textContent));
+    feature.id = !!feature.id;
+    feature.name = !!feature.name;
+    feature.className = !!feature.className;
+    const textContent = feature.textContent as string;
+    feature.textContent = submitButtonContentRegexes.some(submitRegex => submitRegex.test(textContent));
+    const value = feature.value as string;
+    feature.value = submitButtonContentRegexes.some(submitRegex => submitRegex.test(value));
   });
   return features;
 }
@@ -133,8 +137,7 @@ export const processCategoryFeature = (features: GeneralFeatureLabeled[]): Gener
   return features;
 };
 
-export const processButtonFeature = (features: GeneralFeatureLabeled[]): GeneralFeatureLabeled[] => {
-  const featureProcessString = processStringFeature(features);
-  const featureProcessCategory = processCategoryFeature(featureProcessString);
-  return featureProcessCategory;
-};
+export const processButtonFeature = _.flowRight([
+  processStringFeature,
+  processCategoryFeature
+]);

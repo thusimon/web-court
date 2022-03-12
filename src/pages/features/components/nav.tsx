@@ -35,7 +35,7 @@ const Nav = () => {
       </div>
       |
       <div className='controls'>
-        <button title='Delete all category features' name='delete-catetory' onClick={onClickHander} className='highlight'>🗑</button>
+        <button title='Delete all features in this category' name='delete-catetory' onClick={onClickHander} className='highlight'>🗑</button>
       </div>
       |
       <div className='controls'>
