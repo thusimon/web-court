@@ -36,38 +36,53 @@ ${labelCountInfo}
 
 const Console: React.FC = () => {
   const { state } = useContext(AppContext);
-  let [training, setTraining] = useState(false);
-  let [message, setMessage] = useState('');
+  const [training, setTraining] = useState(false);
+  const [message, setMessage] = useState('');
 
   const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
     Page: [],
     Inputs: [],
     Buttons: []
   });
+
+  const refresh = async () => {
+    const features = await getAllFeatures();
+    const message = getFeatureBasicInfo(features, state.featureTableType);
+    setAllFeatures(features);
+    setMessage(message);
+  }
   useEffect(() => {
-    (async () => {
-      const features = await getAllFeatures();
-      const message = getFeatureBasicInfo(features, state.featureTableType);
-      setAllFeatures(features);
-      setMessage(message);
-    })();
+    refresh();
   }, []);
   useEffect(() => {
     const { clickButton, featureTableType} = state;
-    if (clickButton === 'info') {
-      const message = getFeatureBasicInfo(allFeature, featureTableType);
-      setMessage(message);
-    } else if (state.clickButton === 'train' && !training) {
-      let message = `Training model for ${featureTableType} features...\n`
-      setMessage(message);
-      const featureData = getFeatureDataByCategory(allFeature[featureTableType], featureTableType);
-      const model = trainModel(featureData, (msg, trainLogs, complete) => {
-        message += `  ${msg}\n`;
+    switch (clickButton) {
+      case 'refresh': {
+        refresh();
+        return;
+      }
+      case 'info': {
+        const message = getFeatureBasicInfo(allFeature, featureTableType);
         setMessage(message);
-        if (complete) {
-          setTraining(false);
+        return;
+      }
+      case 'train': {
+        if (training) {
+          return;
         }
-      });
+        let message = `Training model for ${featureTableType} features...\n`
+        setMessage(message);
+        const featureData = getFeatureDataByCategory(allFeature[featureTableType], featureTableType);
+        const model = trainModel(featureData, (msg, trainLogs, complete) => {
+          message += `  ${msg}\n`;
+          setMessage(message);
+          if (complete) {
+            setTraining(false);
+          }
+        });
+      }
+      default:
+        break;
     }
   }, [state]);
 

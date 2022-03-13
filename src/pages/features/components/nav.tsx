@@ -31,6 +31,10 @@ const Nav = () => {
       </div>
       |
       <div className='controls'>
+        <button title='refresh' name='refresh' onClick={onClickHander}>↻</button>
+      </div>
+      |
+      <div className='controls'>
         <button title='Delete one feature' name='delete-one' onClick={onClickHander}>🗑</button>
       </div>
       |

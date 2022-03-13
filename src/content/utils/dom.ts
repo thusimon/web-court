@@ -186,7 +186,7 @@ export const highlightLabeledDoms = (doms: HTMLElement[], color: string) => {
   if (!doms) {
     return;
   }
-  doms.forEach(dom => dom.style.setProperty('border', `3px solid ${color}`, 'important'));
+  doms.forEach(dom => dom.style.setProperty('border', `1px solid ${color}`, 'important'));
 };
 
 export const restoreDomHighlight = (doms: HTMLElement[]) => {

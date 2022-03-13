@@ -23,10 +23,12 @@ const FeatureTable = () => {
     Buttons: []
   });
 
-  const resetButton = () => dispatch({
-    type: Actions.ButtonClick,
-    data: '',
-  });
+  const dispatchButton = (button: string) => {
+    dispatch({
+      type: Actions.ButtonClick,
+      data: button,
+    });
+  }
 
   useEffect(() => {
     (async () => {
@@ -44,7 +46,8 @@ const FeatureTable = () => {
           const latestFeatures = await getAllFeatures()
           setAllFeatures(latestFeatures);
           setSelectedFeatureIdx(-1);
-          resetButton();
+          dispatchButton('refresh');
+          dispatchButton('');
           break;
         }
         case 'delete-catetory': {
@@ -52,7 +55,8 @@ const FeatureTable = () => {
           const latestFeatures = await getAllFeatures()
           setAllFeatures(latestFeatures);
           setSelectedFeatureIdx(-1);
-          resetButton();
+          dispatchButton('refresh');
+          dispatchButton('');
           break;
         }
         case 'export': {
@@ -66,14 +70,18 @@ const FeatureTable = () => {
           document.body.appendChild(downloadLink);
           downloadLink.click();
           downloadLink.remove();
-          resetButton();
+          dispatchButton('');
           break;
         }
         case 'import': {
           if (fileInput.current) {
             fileInput.current.click();
           }
-          resetButton();
+          dispatchButton('');
+        }
+        case 'refresh': {
+          setSelectedFeatureIdx(selectedFeatureIdx);
+          dispatchButton('');
         }
         default:
           break;
