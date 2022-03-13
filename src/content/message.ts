@@ -11,7 +11,7 @@ import {
   findVisibleInputs,
   findVisibleButtons
 } from './utils/dom';
-import { Message, CONTEXT_MENU_IDS, FieldLabelResult, PageLabelResult, FeatureCategory } from '../constants';
+import { Message, CONTEXT_MENU_IDS, LabelResult, FeatureCategory } from '../constants';
 import Overlay from './components/overlay';
 
 const contextMenuActions = [
@@ -29,7 +29,7 @@ const contextMenuActions = [
 
 export interface LabelData {
   url?: string;
-  label?: FieldLabelResult | PageLabelResult 
+  label?: LabelResult; 
 };
 
 export const handleLabel = async (message: Message, dom: HTMLElement, overlay: Overlay): Promise<void> => {
@@ -48,7 +48,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       const featureLabeled = {
         ...data,
         ...inputFeatures,
-        label: FieldLabelResult.username
+        label: LabelResult.field_username
       };
       return addFeature(FeatureCategory.Inputs, featureLabeled)
       .then(() => {
@@ -61,7 +61,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       const featureLabeled = {
         ...data,
         ...inputFeatures,
-        label: FieldLabelResult.password
+        label: LabelResult.field_password
       };
       return addFeature(FeatureCategory.Inputs, featureLabeled)
       .then(() => {
@@ -74,7 +74,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       const featureLabeled = {
         ...data,
         ...inputFeatures,
-        label: FieldLabelResult.other
+        label: LabelResult.other
       };
       return addFeature(FeatureCategory.Inputs, featureLabeled)
       .then(() => {
@@ -87,7 +87,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       const submitFeatureLabeled = {
         ...data,
         ...submitFeatures,
-        label: FieldLabelResult.submit
+        label: LabelResult.field_submit
       };
       return addFeature(FeatureCategory.Buttons, submitFeatureLabeled)
       .then(() => {
@@ -101,7 +101,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       const submitFeatureLabeled = {
         ...data,
         ...submitFeatures,
-        label: FieldLabelResult.submit
+        label: LabelResult.field_submit
       };
       const otherButtons = findVisibleButtons().filter(button => button != dom);
       const otherButtonsFeatureLabeled = await Promise.all(otherButtons.map(async button => {
@@ -109,7 +109,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
         return {
           ...data,
           ...buttonFeature,
-          label: FieldLabelResult.other
+          label: LabelResult.other
         }
       }));
       const allFeatures = [submitFeatureLabeled, ...otherButtonsFeatureLabeled]
@@ -126,7 +126,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       const submitFeatureLabeled = {
         ...data,
         ...submitFeatures,
-        label: FieldLabelResult.other
+        label: LabelResult.other
       };
       return addFeature(FeatureCategory.Buttons, submitFeatureLabeled)
       .then(() => {
@@ -140,7 +140,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       const otherFeatureLabeled = {
         ...data,
         ...otherButtonFeatures,
-        label: FieldLabelResult.other
+        label: LabelResult.other
       };
       const restButtons = findVisibleButtons().filter(button => button != dom);
       const restButtonsFeatureLabeled = await Promise.all(restButtons.map(async button => {
@@ -148,7 +148,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
         return {
           ...data,
           ...buttonFeature,
-          label: FieldLabelResult.other
+          label: LabelResult.other
         }
       }));
       const allFeatures = [otherFeatureLabeled, ...restButtonsFeatureLabeled]
@@ -162,7 +162,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
     case CONTEXT_MENU_IDS.LABEL_LOGIN: {
       const pageFeatures = getPageUsernamePasswordGeoFeatures();
       const featureLabeled = {
-        label: PageLabelResult.login,
+        label: LabelResult.page_login,
         ...data,
         ...pageFeatures
       };
@@ -175,7 +175,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
     case CONTEXT_MENU_IDS.LABEL_CHANGE_PASS: {
       const pageFeatures = getPageUsernamePasswordGeoFeatures();
       const featureLabeled = {
-        label: PageLabelResult.change_pass,
+        label: LabelResult.page_changepass,
         ...data,
         ...pageFeatures
       };
@@ -188,7 +188,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
     case CONTEXT_MENU_IDS.LABEL_SIGNUP: {
       const pageFeatures = getPageUsernamePasswordGeoFeatures();
       const featureLabeled = {
-        label: PageLabelResult.signup,
+        label: LabelResult.page_signup,
         ...data,
         ...pageFeatures
       };
@@ -201,7 +201,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
     case CONTEXT_MENU_IDS.LABEL_PAGE_OTHER: {
       const pageFeatures = getPageUsernamePasswordGeoFeatures();
       const featureLabeled = {
-        label: PageLabelResult.other,
+        label: LabelResult.other,
         ...data,
         ...pageFeatures
       };

@@ -52,17 +52,13 @@ export interface Message {
   data: object
 };
 
-export enum FieldLabelResult {
-  username,
-  password,
-  submit,
-  other
-};
-
-export enum PageLabelResult {
-  login,
-  change_pass,
-  signup,
+export enum LabelResult {
+  field_username,
+  field_password,
+  field_submit,
+  page_login,
+  page_changepass,
+  page_signup,
   other
 };
 

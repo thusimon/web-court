@@ -30,12 +30,11 @@ export const findAllButtons = (): HTMLElement[] => {
   const inputSubmit = Array.from(document.getElementsByTagName('input')).filter(input => {
     return input.type === 'submit' || input.type === 'image' || input.type === 'button';
   }) as HTMLElement[];
-  const links = Array.from(document.getElementsByTagName('A')) as HTMLElement[];
-  //TODO: think about how to get all the possible buttons but without getting too many
+  // TODO: think about how to get all the possible buttons but without getting too many
+  // const links = Array.from(document.getElementsByTagName('A')) as HTMLElement[];
   return [
     ...buttons,
-    ...inputSubmit,
-    ...links
+    ...inputSubmit
   ];
 };
 
@@ -139,6 +138,8 @@ export const getDomAttributes = (element: HTMLElement): DomAttributeType => {
   }
   if (element instanceof HTMLInputElement) {
     domAttributes.value = element.value;
+  } else {
+    domAttributes.value = null;
   }
   return domAttributes;
 };

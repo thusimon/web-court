@@ -37,12 +37,15 @@ export const buttonFeatures: ButtonFeature[] = [
   { name: 'UYleft', type: ButtonFeatureType.number },
   { name: 'UYtop', type: ButtonFeatureType.number },
   { name: 'UYwidth', type: ButtonFeatureType.number},
-  { name: 'samePassXY', type: ButtonFeatureType.category },
-  { name: 'sameUserXY', type: ButtonFeatureType.category },
   { name: 'borderRadius', type: ButtonFeatureType.number }, // css
   { name: 'colorB', type: ButtonFeatureType.number },
   { name: 'colorG', type: ButtonFeatureType.number },
   { name: 'colorR', type: ButtonFeatureType.number },
+  { name: 'left', type: ButtonFeatureType.number }, // geometry
+  { name: 'top', type: ButtonFeatureType.number },
+  { name: 'width', type: ButtonFeatureType.number },
+  { name: 'height', type: ButtonFeatureType.number },
+  // string and categorical feature
   { name: 'id', type: ButtonFeatureType.string }, // dom
   { name: 'name', type: ButtonFeatureType.string },
   { name: 'tagName', type: ButtonFeatureType.category },
@@ -52,10 +55,8 @@ export const buttonFeatures: ButtonFeature[] = [
   { name: 'type', type: ButtonFeatureType.category },
   { name: 'className', type: ButtonFeatureType.string },
   { name: 'disabled', type: ButtonFeatureType.category },
-  { name: 'left', type: ButtonFeatureType.number }, // geometry
-  { name: 'top', type: ButtonFeatureType.number },
-  { name: 'width', type: ButtonFeatureType.number },
-  { name: 'height', type: ButtonFeatureType.number }
+  { name: 'samePassXY', type: ButtonFeatureType.category },
+  { name: 'sameUserXY', type: ButtonFeatureType.category }
 ];
 
 export const getCategoricalFeatureRange = (features: GeneralFeature[]): FeatureValueList => {
@@ -94,8 +95,8 @@ export const getCategoricalFeatureRange = (features: GeneralFeature[]): FeatureV
  * If there are better features, please discard the text content feature
  */
 export const submitButtonContentRegexes: RegExp[] = [
-  /^(?!.*forg[o|e]t).*(log\W*in)/i,
-  /^(?!.*forg[o|e]t).*(sign\W*in)/i,
+  /^(?!.*forg[o|e]t).*(log\W*[i|o]n)/i,
+  /^(?!.*forg[o|e]t).*(sign\W*[i|o]n)/i,
   /continue\W*$/i,
   /next\W*$/i,
   /submit\W*$/i,
@@ -106,9 +107,12 @@ export const submitButtonContentRegexes: RegExp[] = [
 
 export const processStringFeature = (features: GeneralFeatureLabeled[]) => {
   features.forEach(feature => {
-    feature.id = !!feature.id;
-    feature.name = !!feature.name;
-    feature.className = !!feature.className;
+    const id = feature.id as string;
+    feature.id = submitButtonContentRegexes.some(submitRegex => submitRegex.test(id));
+    const name = feature.name as string;
+    feature.name = submitButtonContentRegexes.some(submitRegex => submitRegex.test(name));
+    const className = feature.className as string;
+    feature.className = submitButtonContentRegexes.some(submitRegex => submitRegex.test(className));
     const textContent = feature.textContent as string;
     feature.textContent = submitButtonContentRegexes.some(submitRegex => submitRegex.test(textContent));
     const value = feature.value as string;

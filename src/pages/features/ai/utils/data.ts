@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as tf from '@tensorflow/tfjs';
 import { GeneralFeatureLabeled } from '../../../../content/utils/storage'
-import { FeatureCategory, PageLabelResult } from '../../../../constants';
+import { FeatureCategory, LabelResult } from '../../../../constants';
 import { processButtonFeature } from './process-button-data';
 
 export const PageClass = ['login', 'other'];
@@ -22,9 +22,9 @@ export const toOneHot = (feature: number[], classLength: number) => {
 
 export const convertFeatureToArray = (features: GeneralFeatureLabeled[]): ValueType[][] => {
   const excludeProps = ['label', 'url', 'tagDiscriptor'];
+  const uniqueLabels = _.uniq(features.map(f => f.label));
   return features.map(feature => {
-    // TODO multiple classes
-    const label = feature.label === PageLabelResult.login ? 0 : 1;
+    const label = uniqueLabels.indexOf(feature.label);
     const cleanedFeature = _.omit(feature, excludeProps);
     const featureValues = _.values(cleanedFeature);
     return [...featureValues, label];

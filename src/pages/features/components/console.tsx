@@ -2,7 +2,7 @@ import React, { useContext, useEffect, useState } from 'react';
 import { FeatureCategory } from '../../../constants';
 import { trainModel } from '../ai/model';
 import { getFeatureDataByCategory } from '../ai/utils/data';
-import { FeaturesType } from '../constants';
+import { Actions, FeaturesType } from '../constants';
 import { AppContext } from '../context-provider';
 import { getAllFeatures } from '../../../content/utils/storage';
 
@@ -35,7 +35,7 @@ ${labelCountInfo}
 }
 
 const Console: React.FC = () => {
-  const { state } = useContext(AppContext);
+  const { state, dispatch } = useContext(AppContext);
   const [training, setTraining] = useState(false);
   const [message, setMessage] = useState('');
 
@@ -50,7 +50,15 @@ const Console: React.FC = () => {
     const message = getFeatureBasicInfo(features, state.featureTableType);
     setAllFeatures(features);
     setMessage(message);
-  }
+  };
+
+  const dispatchButton = (button: string) => {
+    dispatch({
+      type: Actions.ButtonClick,
+      data: button,
+    });
+  };
+
   useEffect(() => {
     refresh();
   }, []);
@@ -59,15 +67,17 @@ const Console: React.FC = () => {
     switch (clickButton) {
       case 'refresh': {
         refresh();
+        dispatchButton('');
         return;
       }
       case 'info': {
         const message = getFeatureBasicInfo(allFeature, featureTableType);
         setMessage(message);
-        return;
+        break;
       }
       case 'train': {
         if (training) {
+          dispatchButton('');
           return;
         }
         let message = `Training model for ${featureTableType} features...\n`
@@ -80,6 +90,8 @@ const Console: React.FC = () => {
             setTraining(false);
           }
         });
+        dispatchButton('');
+        return;
       }
       default:
         break;

@@ -25,13 +25,13 @@ export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], ca
 
   const layer1 = tf.layers.dense({
     units: 50,
-    activation: 'sigmoid',
+    activation: 'relu',
     inputShape: [xTrain.shape[1]]
   });
   model.add(layer1);
   const layer2 = tf.layers.dense({
-    units: 10,
-    activation: 'sigmoid'
+    units: 16, // 10
+    activation: 'relu'
   });
   model.add(layer2);
   const layer3 = tf.layers.dense({

@@ -28,13 +28,15 @@ const FeatureTable = () => {
       type: Actions.ButtonClick,
       data: button,
     });
-  }
+  };
+
+  const refresh = async () => {
+    const allFeatures = await getAllFeatures();
+    setAllFeatures(allFeatures);
+  };
 
   useEffect(() => {
-    (async () => {
-      const allFeatures = await getAllFeatures();
-      setAllFeatures(allFeatures);
-    })();
+    refresh();
   }, []);
   useEffect(() => {
     (async () => {
@@ -43,8 +45,7 @@ const FeatureTable = () => {
         case 'delete-one': {
           //TODO add confirm dialog
           await deleteFeature(featureTableType, selectedFeatureIdx);
-          const latestFeatures = await getAllFeatures()
-          setAllFeatures(latestFeatures);
+          await refresh();
           setSelectedFeatureIdx(-1);
           dispatchButton('refresh');
           dispatchButton('');
@@ -52,8 +53,7 @@ const FeatureTable = () => {
         }
         case 'delete-catetory': {
           await deleteFeatureCategory(featureTableType);
-          const latestFeatures = await getAllFeatures()
-          setAllFeatures(latestFeatures);
+          await refresh();
           setSelectedFeatureIdx(-1);
           dispatchButton('refresh');
           dispatchButton('');
@@ -80,7 +80,7 @@ const FeatureTable = () => {
           dispatchButton('');
         }
         case 'refresh': {
-          setSelectedFeatureIdx(selectedFeatureIdx);
+          await refresh();
           dispatchButton('');
         }
         default:
