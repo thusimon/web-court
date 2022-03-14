@@ -49,7 +49,6 @@ export const buttonFeatures: ButtonFeature[] = [
   { name: 'id', type: ButtonFeatureType.string }, // dom
   { name: 'name', type: ButtonFeatureType.string },
   { name: 'tagName', type: ButtonFeatureType.category },
-  { name: 'role', type: ButtonFeatureType.category },
   { name: 'value', type: ButtonFeatureType.string },
   { name: 'textContent', type: ButtonFeatureType.string },
   { name: 'type', type: ButtonFeatureType.category },
@@ -141,7 +140,7 @@ export const processCategoryFeature = (features: GeneralFeatureLabeled[]): Gener
   return features;
 };
 
-export const processButtonFeature = _.flowRight([
+export const processButtonFeature = _.flow([
   processStringFeature,
   processCategoryFeature
 ]);

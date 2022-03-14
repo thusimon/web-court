@@ -57,7 +57,7 @@ export const getInputFeatures = (input: HTMLElement, inputs: HTMLInputElement[])
 
 export const buttonCSSProperties = ['borderRadius'];
 
-export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputElement[], useRatio: boolean = false): Promise<GeneralFeature> => {
+export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputElement[], useRatio: boolean = true): Promise<GeneralFeature> => {
   // get geo features
   const buttonGeoFeatures = getGeoFeature(button, useRatio);
   // get dom features

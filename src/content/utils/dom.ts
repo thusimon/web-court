@@ -1,3 +1,4 @@
+import _ from 'lodash';
 import { MIN_ELEMENT_SIZE, MIN_ELEMENT_OPACITY, OVERLAY_MODE, InputFieldType, ImageDataCanvas } from  '../../constants';
 import Overlay, { OverlaySettingsType } from '../components/overlay';
 import html2canvas from 'html2canvas';
@@ -128,7 +129,6 @@ export const getDomAttributes = (element: HTMLElement): DomAttributeType => {
   const domAttributes: DomAttributeType = {
     type: element.getAttribute('type'),
     name: element.getAttribute('name'),
-    role: element.getAttribute('role'),
     id: element.id,
     className: element.className,
     textContent: getAllTextContent(element),
@@ -168,7 +168,9 @@ export const getCSSProperties = (element: HTMLElement): CSSPropertyType => {
   const cssStyle = window.getComputedStyle(element);
   const textSecurity = cssStyle.getPropertyValue('-webkit-text-security');
   const fontFamily = cssStyle.getPropertyValue('font-family');
-  const borderRadius = parseFloat(cssStyle.getPropertyValue('border-radius'));
+  const rect = element.getBoundingClientRect();
+  const maxSize = _.max([rect.width, rect.height]);
+  const borderRadius = parseFloat(cssStyle.getPropertyValue('border-radius')) / maxSize;
   return {
     textSecurity,
     fontFamily,

@@ -57,16 +57,14 @@ export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true, ke
       [addKeyPrefix('left', keyPrefix)]: 0,
       [addKeyPrefix('width', keyPrefix)]: 0,
       [addKeyPrefix('height', keyPrefix)]: 0
-    }
-    return useRatio ? {
-      ...geo,
-      ...{
-        [addKeyPrefix('topP', keyPrefix)]: 0,
+    };
+    const geoP = {
+      [addKeyPrefix('topP', keyPrefix)]: 0,
         [addKeyPrefix('leftP', keyPrefix)]: 0,
         [addKeyPrefix('widthP', keyPrefix)]: 0,
         [addKeyPrefix('heightP', keyPrefix)]: 0
-      }
-    } : geo;
+    };
+    return useRatio ? geoP : geo;
   }
   const bodyRect = document.body.getBoundingClientRect();
   const rect = element.getBoundingClientRect();
@@ -84,10 +82,7 @@ export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true, ke
       [addKeyPrefix('widthP', keyPrefix)]: 1,
       [addKeyPrefix('heightP', keyPrefix)]: 1
     }
-    return useRatio ? {
-      ...geo,
-      ...geoP
-    } : geo;
+    return useRatio ? geoP : geo;
   }
   const geoP = {
     [addKeyPrefix('topP', keyPrefix)]: toPrecision(rect.top / bodyRect.height),
@@ -95,10 +90,7 @@ export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true, ke
     [addKeyPrefix('widthP', keyPrefix)]: toPrecision(rect.width / bodyRect.width),
     [addKeyPrefix('heightP', keyPrefix)]: toPrecision(rect.height / bodyRect.height)
   }
-  return useRatio ? {
-    ...geo,
-    ...geoP
-  } : geo;
+  return useRatio ? geoP : geo;
 };
 
 /**
