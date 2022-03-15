@@ -70,18 +70,19 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
   // const buttonColor = getDominateColor(buttonCanvasFeatures);
   // get sorted username inputs
   const usernameInputs = findUsernameInputs(inputs);
-  const usernameInputsSortedX = sortElementsByDistanceOnAxis(button, usernameInputs, 0);
-  const usernameInputsSortedY = sortElementsByDistanceOnAxis(button, usernameInputs, 1);
+  const usernameInputsSortedX = sortElementsByDistanceOnAxis(button, usernameInputs, 0) as HTMLInputElement[];
+  const usernameInputsSortedY = sortElementsByDistanceOnAxis(button, usernameInputs, 1) as HTMLInputElement[];
   const usernameInputNearestX = usernameInputsSortedX[0];
   const usernameInputNearestY = usernameInputsSortedY[0];
   const usernameInputNearestXGeo = getGeoFeature(usernameInputNearestX, useRatio, 'UX');
   const usernameInputNearestYGeo = getGeoFeature(usernameInputNearestY, useRatio, 'UY');
+  // TODO add username and password input length and nearest input index
   const sameUserXY = usernameInputNearestX instanceof HTMLInputElement && usernameInputNearestX === usernameInputNearestY;
 
   // get sorted password inputs
   const passwordInputs = findPasswordInputs(inputs);
-  const passwordInputsSortedX = sortElementsByDistanceOnAxis(button, passwordInputs, 0);
-  const passwordInputsSortedY = sortElementsByDistanceOnAxis(button, passwordInputs, 1);
+  const passwordInputsSortedX = sortElementsByDistanceOnAxis(button, passwordInputs, 0) as HTMLInputElement[];
+  const passwordInputsSortedY = sortElementsByDistanceOnAxis(button, passwordInputs, 1) as HTMLInputElement[];
   const passwordInputNearestX = passwordInputsSortedX[0];
   const passwordInputNearestY = passwordInputsSortedY[0];
   const passwordInputNearestXGeo = getGeoFeature(passwordInputNearestX, useRatio, 'PX');

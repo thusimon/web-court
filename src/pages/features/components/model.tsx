@@ -10,7 +10,7 @@ const Model = () => {
   const { state, dispatch } = useContext(AppContext);
   const modelRef = useRef(null);
   const [modelIndex, setModelIndex] = useState(0);
-  const [modelConfigStates, setModelConfigStates] = useState<ModelConfig[]>([])
+  const [modelConfigStates, setModelConfigStates] = useState<ModelConfig[]>([]);
 
   useEffect(() => {
     (async () => {
@@ -18,9 +18,9 @@ const Model = () => {
         toggleModel(true);
       }
     })();
-    const modalConfigs = state.modelConfigs;
-    setModelConfigStates(modalConfigs);
-    setModelIndex(modalConfigs.length - 1);
+    const { modelConfigs, modelIdx } = state;
+    setModelConfigStates(modelConfigs);
+    setModelIndex(modelIdx);
   }, [state]);
   
   const toggleModel = (show: boolean) => {
@@ -44,8 +44,14 @@ const Model = () => {
     dispatch({
       type: Actions.UpdateModelConfigs,
       data: configs
-    })
-  }
+    });
+  };
+  const updateConfigIndex = (configIndex: number) => {
+    dispatch({
+      type: Actions.UpdateModelConfigIdx,
+      data: configIndex
+    });
+  };
 
   const buttonClickHandler = (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const buttonName = evt.currentTarget.name;
@@ -54,6 +60,11 @@ const Model = () => {
         toggleModel(false);
         resetButton();
         break;
+      }
+      case 'save': {
+        toggleModel(false);
+        updateConfigs(modelConfigStates);
+        updateConfigIndex(modelIndex);
       }
     }
   };
@@ -117,16 +128,24 @@ const Model = () => {
           config: [
             {
               units: 20,
+              activation: 'relu'
+            },
+            {
+              units: 2,
               activation: 'sigmoid'
             }
           ]
         }
+
         const configs = [...modelConfigStates, newConfig];
         setModelConfigStates(configs);
         setModelIndex(configs.length - 1);
         break;
       }
       case 'model-delete': {
+        if (modelConfigStates.length <= 1) {
+          return;
+        }
         if (modelIndex > -1) {
           const updatedConfigs = modelConfigStates.slice();
           updatedConfigs.splice(modelIndex, 1);
@@ -150,7 +169,7 @@ const Model = () => {
       }
       case 'layer-delete': {
         const currentModel = modelConfigStates[modelIndex];
-        if (!currentModel || currentModel.config.length <= 0) {
+        if (!currentModel || currentModel.config.length <= 2) {
           return;
         }
         currentModel.config.splice(-1, 1);
@@ -181,7 +200,7 @@ const Model = () => {
         </div>
         <div id='model-names-buttons'>
           <button className='model-button' name='model-add' onClick={modelHandler}>+</button>
-          <button className='model-button' name='model-delete' onClick={modelHandler}>-</button>
+          <button className='model-button' name='model-delete' onClick={modelHandler} disabled={modelConfigStates.length<=1}>-</button>
         </div>
       </div>
       <div id='model-layers-container'>
@@ -214,7 +233,7 @@ const Model = () => {
         </div>
         <div id='model-layers-buttons'>
           <button className='model-button' name='layer-add' onClick={modelHandler}>+</button>
-          <button className='model-button' name='layer-delete' onClick={modelHandler}>-</button>
+          <button className='model-button' name='layer-delete' onClick={modelHandler} disabled={modelLayersConfigs.length<=2}>-</button>
         </div>
       </div>
       <div id='buttons-container'>

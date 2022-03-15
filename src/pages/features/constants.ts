@@ -4,7 +4,8 @@ import { FeatureCategory, ModelConfig } from "../../constants";
 export enum Actions {
   UpdateFeatureTable,
   ButtonClick,
-  UpdateModelConfigs
+  UpdateModelConfigs,
+  UpdateModelConfigIdx
 }
 
 export interface ActionType {

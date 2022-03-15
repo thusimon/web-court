@@ -112,8 +112,10 @@ export const processStringFeature = (features: GeneralFeatureLabeled[]) => {
     feature.name = submitButtonContentRegexes.some(submitRegex => submitRegex.test(name));
     const className = feature.className as string;
     feature.className = submitButtonContentRegexes.some(submitRegex => submitRegex.test(className));
+    // TODO add textContent string length feature
     const textContent = feature.textContent as string;
     feature.textContent = submitButtonContentRegexes.some(submitRegex => submitRegex.test(textContent));
+    // TODO add value string length feature
     const value = feature.value as string;
     feature.value = submitButtonContentRegexes.some(submitRegex => submitRegex.test(value));
   });
@@ -128,8 +130,8 @@ export const processCategoryFeature = (features: GeneralFeatureLabeled[]): Gener
   const categoricalFeatureNames = Object.keys(categoricalFeatureRange);
   // categorical feature
   // NOTE: here categorical feature is mapped to index integer
-  // e.g tagName = ['input', 'button', 'a'] => [0, 1, 2]
-  // convert to oneHot encode if necessary
+  // e.g tagName = ['input', 'button'] => [0, 1]
+  // convert to oneHot encode
   features.forEach(feature => {
     categoricalFeatureNames.forEach(cn => {
       const value = feature[cn];

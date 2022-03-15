@@ -1,8 +1,31 @@
 import * as tf from '@tensorflow/tfjs';
-
+import { ModelConfig } from '../../../constants';
 export interface TrainCallback {
   (msg: string, logs: tf.Logs[], complete: boolean): void;
 };
+
+export const createModel = (modelConfig: ModelConfig, inputNumber: number): tf.Sequential => {
+  const config = modelConfig.config;
+  const configLength = config.length;
+  if (configLength <= 2) {
+    throw 'not enough layers';
+  }
+  const model = tf.sequential();
+  const firstLayer = tf.layers.dense({
+    units: config[0].units,
+    activation: config[0].activation,
+    inputShape: [inputNumber]
+  });
+  model.add(firstLayer);
+  for(let i = 1; i < configLength; i++) {
+    const layer = tf.layers.dense({
+      units: config[i].units,
+      activation: config[i].activation
+    });
+    model.add(layer);
+  }
+  return model; 
+}
 /**
  * Train a `tf.Model` to recognize Iris flower type.
  *
@@ -16,29 +39,11 @@ export interface TrainCallback {
  *   [numTestExamples, 3].
  * @returns The trained `tf.Model` instance.
  */
-export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], callback: TrainCallback) => {
+export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], modelConfig: ModelConfig, callback: TrainCallback) => {
   console.log('start training model');
   const epochs = 50;
   const learningRate = 0.01;
-  // Define the topology of the model: two dense layers.
-  const model = tf.sequential();
-
-  const layer1 = tf.layers.dense({
-    units: 50,
-    activation: 'relu',
-    inputShape: [xTrain.shape[1]]
-  });
-  model.add(layer1);
-  const layer2 = tf.layers.dense({
-    units: 16, // 10
-    activation: 'relu'
-  });
-  model.add(layer2);
-  const layer3 = tf.layers.dense({
-    units: 2,
-    activation: 'sigmoid'
-  });
-  model.add(layer3);
+  const model = createModel(modelConfig, xTrain.shape[1]);
   model.summary();
 
   const optimizer = tf.train.adam(learningRate);

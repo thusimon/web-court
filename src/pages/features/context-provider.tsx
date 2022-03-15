@@ -10,12 +10,12 @@ export const initContextState: AppContextType = {
       name: 'default',
       config: [
         {
-          units: 50,
-          activation: 'sigmoid'
+          units: 32,
+          activation: 'relu'
         },
         {
-          units: 10,
-          activation: 'sigmoid'
+          units: 16,
+          activation: 'relu'
         },
         {
           units: 2,
@@ -23,13 +23,15 @@ export const initContextState: AppContextType = {
         }
       ]
     }
-  ]
+  ],
+  modelIdx: 0
 };
 
 export interface AppContextType {
   featureTableType: FeatureCategory;
   clickButton: string;
-  modelConfigs: ModelConfig[]
+  modelConfigs: ModelConfig[];
+  modelIdx: number;
 }
 
 export const AppContext = createContext<{

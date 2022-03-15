@@ -83,7 +83,10 @@ const Console: React.FC = () => {
         let message = `Training model for ${featureTableType} features...\n`
         setMessage(message);
         const featureData = getFeatureDataByCategory(allFeature[featureTableType], featureTableType);
-        const model = trainModel(featureData, (msg, trainLogs, complete) => {
+        const modelConfigs = state.modelConfigs;
+        const modelConfigIdx = state.modelIdx;
+        const modelConfig = modelConfigs[modelConfigIdx];
+        const model = trainModel(featureData, modelConfig, (msg, trainLogs, complete) => {
           message += `  ${msg}\n`;
           setMessage(message);
           if (complete) {
