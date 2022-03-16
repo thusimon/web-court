@@ -1,37 +1,19 @@
 import React, { createContext, useReducer, Dispatch } from "react";
 import { FeatureCategory, ModelConfig } from "../../constants";
-import { Actions, ActionType } from './constants';
+import { Actions, ActionType, DefaultModelConfig } from './constants';
 
 export const initContextState: AppContextType = {
   featureTableType: FeatureCategory.Page,
   clickButton: 'info',
-  modelConfigs: [
-    {
-      name: 'default',
-      config: [
-        {
-          units: 32,
-          activation: 'relu'
-        },
-        {
-          units: 16,
-          activation: 'relu'
-        },
-        {
-          units: 2,
-          activation: 'sigmoid'
-        }
-      ]
-    }
-  ],
-  modelIdx: 0
+  modelConfigs: [DefaultModelConfig],
+  modelConfigIdx: 0
 };
 
 export interface AppContextType {
   featureTableType: FeatureCategory;
   clickButton: string;
-  modelConfigs: ModelConfig[];
-  modelIdx: number;
+  modelConfigs: ModelConfig[],
+  modelConfigIdx: number;
 }
 
 export const AppContext = createContext<{
@@ -59,6 +41,24 @@ export const reducer = (state: AppContextType, action: ActionType) => {
         ...state,
         ...{
           clickButton
+        }
+      };
+    }
+    case Actions.UpdateModelConfigIdx: {
+      const modelConfigIdx = action.data as number;
+      return {
+        ...state,
+        ...{
+          modelConfigIdx
+        }
+      };
+    }
+    case Actions.UpdateModelConfigs: {
+      const modelConfigs = action.data as ModelConfig[];
+      return {
+        ...state,
+        ...{
+          modelConfigs
         }
       };
     }

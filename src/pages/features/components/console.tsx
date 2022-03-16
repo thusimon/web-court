@@ -1,10 +1,10 @@
 import React, { useContext, useEffect, useState } from 'react';
-import { FeatureCategory } from '../../../constants';
+import { FeatureCategory, ModelConfig } from '../../../constants';
 import { trainModel } from '../ai/model';
 import { getFeatureDataByCategory } from '../ai/utils/data';
-import { Actions, FeaturesType } from '../constants';
+import { Actions, DefaultModelConfig, FeaturesType } from '../constants';
 import { AppContext } from '../context-provider';
-import { getAllFeatures } from '../../../content/utils/storage';
+import { getAllFeatures, getAllModelConfig } from '../../../content/utils/storage';
 
 import './console.scss';
 
@@ -38,6 +38,8 @@ const Console: React.FC = () => {
   const { state, dispatch } = useContext(AppContext);
   const [training, setTraining] = useState(false);
   const [message, setMessage] = useState('');
+  const [modelConfigs, setModelConfigs] = useState<ModelConfig[]>([DefaultModelConfig]);
+
 
   const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
     Page: [],
@@ -46,9 +48,13 @@ const Console: React.FC = () => {
   });
 
   const refresh = async () => {
-    const features = await getAllFeatures();
+    let [features, modelConfigs] = await Promise.all([getAllFeatures(), getAllModelConfig()]);
+    if (!modelConfigs || modelConfigs.length < 1) {
+      modelConfigs = [DefaultModelConfig];
+    }
     const message = getFeatureBasicInfo(features, state.featureTableType);
     setAllFeatures(features);
+    setModelConfigs(modelConfigs);
     setMessage(message);
   };
 
@@ -63,7 +69,7 @@ const Console: React.FC = () => {
     refresh();
   }, []);
   useEffect(() => {
-    const { clickButton, featureTableType} = state;
+    const { clickButton, featureTableType, modelConfigIdx,  } = state;
     switch (clickButton) {
       case 'refresh': {
         refresh();
@@ -83,8 +89,6 @@ const Console: React.FC = () => {
         let message = `Training model for ${featureTableType} features...\n`
         setMessage(message);
         const featureData = getFeatureDataByCategory(allFeature[featureTableType], featureTableType);
-        const modelConfigs = state.modelConfigs;
-        const modelConfigIdx = state.modelIdx;
         const modelConfig = modelConfigs[modelConfigIdx];
         const model = trainModel(featureData, modelConfig, (msg, trainLogs, complete) => {
           message += `  ${msg}\n`;

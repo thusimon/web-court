@@ -3,7 +3,7 @@ import { AppContext } from '../context-provider';
 import { Actions } from '../constants';
 import { FeatureCategory, FeaturesType } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
-import { deleteFeature, deleteFeatureCategory, getAllFeatures, saveAllFeature } from '../../../content/utils/storage';
+import { clearAllData, deleteFeature, deleteFeatureCategory, getAllData, getAllFeatures, saveAllData } from '../../../content/utils/storage';
 
 import './feature-table.scss';
 
@@ -60,8 +60,9 @@ const FeatureTable = () => {
           break;
         }
         case 'export': {
-          const featureStr = JSON.stringify(allFeature, null, ' ');
-          const blob = new Blob([featureStr], {type: "application/json"});
+          const allStorageData = await getAllData();
+          const dataStr = JSON.stringify(allStorageData, null, ' ');
+          const blob = new Blob([dataStr], {type: "application/json"});
           const url = URL.createObjectURL(blob);
           const downloadLink = document.createElement('a');
           downloadLink.style.display = 'none';
@@ -101,7 +102,8 @@ const FeatureTable = () => {
     let fileFeatureJson;
     try {
       fileFeatureJson = JSON.parse(fileContent);
-      await saveAllFeature(fileFeatureJson);
+      await clearAllData();
+      await saveAllData(fileFeatureJson);
     } catch (e) {
       alert('importing error: ' + e);
     }

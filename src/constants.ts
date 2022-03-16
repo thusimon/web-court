@@ -62,6 +62,12 @@ export enum LabelResult {
   other
 };
 
+export enum StorageCategory {
+  Features = 'Features',
+  ModelConfigs = 'ModelConfigs',
+  Models = 'Models'
+};
+
 export enum FeatureCategory {
   Inputs = 'Inputs',
   Page = 'Page',
@@ -70,7 +76,13 @@ export enum FeatureCategory {
 
 export type FeaturesType = {
   [key in FeatureCategory]: GeneralFeatureLabeled[];
-}
+};
+
+export interface StorageData {
+  [StorageCategory.Features]?: FeaturesType,
+  [StorageCategory.ModelConfigs]?: ModelConfig[],
+  [StorageCategory.Models]?: Model[];
+};
 
 export enum InputFieldType {
   other,
@@ -92,6 +104,10 @@ export interface ModelLayer {
 export interface ModelConfig {
   name: string;
   config: ModelLayer[];
+};
+
+export interface Model {
+  name: string;
 };
 
 export interface ImageDataCanvas extends ImageData {

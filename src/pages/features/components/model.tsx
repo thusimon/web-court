@@ -1,8 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ActivationIdentifier } from '@tensorflow/tfjs-layers/dist/keras_format/activation_config';
-import { Actions } from '../constants';
+import { Actions, DefaultModelConfig } from '../constants';
 import { AppContext } from '../context-provider';
 import { ModelConfig, ModelLayer } from '../../../constants';
+import { getAllModelConfig, saveAllModelConfig } from '../../../content/utils/storage';
 
 import './model.scss';
 
@@ -14,13 +15,17 @@ const Model = () => {
 
   useEffect(() => {
     (async () => {
-      if (state.clickButton === 'models') {
-        toggleModel(true);
-      }
+      const modelConfigsStore = await getAllModelConfig();
+      const modelConfigs = (modelConfigsStore && modelConfigsStore.length) > 0 ? modelConfigsStore : [DefaultModelConfig];
+      setModelIndex(0);
+      setModelConfigStates(modelConfigs);
     })();
-    const { modelConfigs, modelIdx } = state;
-    setModelConfigStates(modelConfigs);
-    setModelIndex(modelIdx);
+  }, []);
+
+  useEffect(() => {
+    if (state.clickButton === 'models') {
+      toggleModel(true);
+    }
   }, [state]);
   
   const toggleModel = (show: boolean) => {
@@ -40,12 +45,6 @@ const Model = () => {
     data: '',
   });
 
-  const updateConfigs = (configs: ModelConfig[]) => {
-    dispatch({
-      type: Actions.UpdateModelConfigs,
-      data: configs
-    });
-  };
   const updateConfigIndex = (configIndex: number) => {
     dispatch({
       type: Actions.UpdateModelConfigIdx,
@@ -53,7 +52,14 @@ const Model = () => {
     });
   };
 
-  const buttonClickHandler = (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+  const updateConfigs = (configs: ModelConfig[]) => {
+    dispatch({
+      type: Actions.UpdateModelConfigs,
+      data: configs
+    });
+  };
+
+  const buttonClickHandler = async (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const buttonName = evt.currentTarget.name;
     switch (buttonName) {
       case 'cancel': {
@@ -63,8 +69,10 @@ const Model = () => {
       }
       case 'save': {
         toggleModel(false);
-        updateConfigs(modelConfigStates);
+        resetButton();
         updateConfigIndex(modelIndex);
+        updateConfigs(modelConfigStates);
+        await saveAllModelConfig(modelConfigStates);
       }
     }
   };
@@ -77,6 +85,7 @@ const Model = () => {
       input.disabled = false;
     } else if (detail === 1) {
       setModelIndex(idx);
+      updateConfigIndex(modelIndex);
     }
   };
 

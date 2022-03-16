@@ -16,3 +16,21 @@ export interface ActionType {
 export type FeaturesType = {
   [key in FeatureCategory]: GeneralFeatureLabeled[];
 }
+
+export const DefaultModelConfig: ModelConfig = {
+  name: 'default',
+  config: [
+    {
+      units: 32,
+      activation: 'relu'
+    },
+    {
+      units: 16,
+      activation: 'relu'
+    },
+    {
+      units: 2,
+      activation: 'sigmoid'
+    }
+  ]
+};
