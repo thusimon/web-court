@@ -1,12 +1,13 @@
 import React, { createContext, useReducer, Dispatch } from "react";
-import { FeatureCategory, ModelConfig } from "../../constants";
-import { Actions, ActionType, DefaultModelConfig } from './constants';
+import { FeatureCategory, IterParam, ModelConfig } from "../../constants";
+import { Actions, ActionType, DefaultIterParam, DefaultModelConfig } from './constants';
 
 export const initContextState: AppContextType = {
   featureTableType: FeatureCategory.Page,
   clickButton: 'info',
   modelConfigs: [DefaultModelConfig],
-  modelConfigIdx: 0
+  modelConfigIdx: 0,
+  iterParam: DefaultIterParam
 };
 
 export interface AppContextType {
@@ -14,6 +15,7 @@ export interface AppContextType {
   clickButton: string;
   modelConfigs: ModelConfig[],
   modelConfigIdx: number;
+  iterParam: IterParam;
 }
 
 export const AppContext = createContext<{

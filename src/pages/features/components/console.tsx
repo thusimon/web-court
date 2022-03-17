@@ -69,7 +69,7 @@ const Console: React.FC = () => {
     refresh();
   }, []);
   useEffect(() => {
-    const { clickButton, featureTableType, modelConfigIdx,  } = state;
+    const { clickButton, featureTableType, modelConfigIdx, iterParam } = state;
     switch (clickButton) {
       case 'refresh': {
         refresh();
@@ -86,17 +86,17 @@ const Console: React.FC = () => {
           dispatchButton('');
           return;
         }
-        let message = `Training model for ${featureTableType} features...\n`
-        setMessage(message);
         const featureData = getFeatureDataByCategory(allFeature[featureTableType], featureTableType);
         const modelConfig = modelConfigs[modelConfigIdx];
+        let message = `Training model for ${featureTableType} features, with model "${modelConfig.name}", Epoch=${iterParam.epochs} and learningRate=${iterParam.learningRate}...\n`
+        setMessage(message);
         const model = trainModel(featureData, modelConfig, (msg, trainLogs, complete) => {
           message += `  ${msg}\n`;
           setMessage(message);
           if (complete) {
             setTraining(false);
           }
-        });
+        }, iterParam);
         dispatchButton('');
         return;
       }

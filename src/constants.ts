@@ -65,6 +65,7 @@ export enum LabelResult {
 export enum StorageCategory {
   Features = 'Features',
   ModelConfigs = 'ModelConfigs',
+  IterParams = 'IterParams',
   Models = 'Models'
 };
 
@@ -104,6 +105,11 @@ export interface ModelLayer {
 export interface ModelConfig {
   name: string;
   config: ModelLayer[];
+};
+
+export interface IterParam {
+  epochs: number;
+  learningRate: number;
 };
 
 export interface Model {

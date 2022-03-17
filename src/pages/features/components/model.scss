@@ -23,12 +23,12 @@
     border-radius: 5px;
     position: absolute;
     left: 15vw;
-    top: 15vh;
-    grid-template-columns: 30% 70%;
-    grid-template-rows: auto 50px;
+    top: 10vh;
+    grid-template-columns: 30% 50% 20%;
+    grid-template-rows: auto 100px;
     grid-template-areas: 
-      "names layers"
-      "buttons buttons";
+      "names layers iters"
+      "buttons buttons buttons";
     #model-names-container {
       grid-area: names;
       display: grid;
@@ -88,9 +88,30 @@
         }
       }
     }
+    #model-iters-container {
+      grid-area: iters;
+      display: grid;
+      grid-template-rows: 40px auto;
+      grid-template-areas: 
+        "iters-title"
+        "iters-params";
+      position: absolute;
+      height: 100%;
+      padding: 8px;
+      label {
+        grid-area: iters-title;
+      }
+      #model-iters {
+        border-top: 1px solid black;
+      }
+    }
     #buttons-container {
       border-top: 1px solid black;
       grid-area: buttons;
+    }
+    button {
+      height: 2em;
+      cursor: pointer;
     }
   }
 }

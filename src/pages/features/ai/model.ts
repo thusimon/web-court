@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { ModelConfig } from '../../../constants';
+import { IterParam, ModelConfig } from '../../../constants';
 export interface TrainCallback {
   (msg: string, logs: tf.Logs[], complete: boolean): void;
 };
@@ -39,14 +39,12 @@ export const createModel = (modelConfig: ModelConfig, inputNumber: number): tf.S
  *   [numTestExamples, 3].
  * @returns The trained `tf.Model` instance.
  */
-export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], modelConfig: ModelConfig, callback: TrainCallback) => {
+export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], modelConfig: ModelConfig, callback: TrainCallback, iterParam: IterParam) => {
   console.log('start training model');
-  const epochs = 50;
-  const learningRate = 0.01;
   const model = createModel(modelConfig, xTrain.shape[1]);
   model.summary();
 
-  const optimizer = tf.train.adam(learningRate);
+  const optimizer = tf.train.adam(iterParam.learningRate);
   model.compile({
     optimizer: optimizer,
     loss: 'categoricalCrossentropy',
@@ -57,7 +55,7 @@ export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], mo
   const beginMs = performance.now();
   // Call `model.fit` to train the model.
   const history = await model.fit(xTrain, yTrain, {
-    epochs: epochs,
+    epochs: iterParam.epochs,
     validationData: [xTest, yTest],
     callbacks: {
       onEpochEnd: async (epoch, logs) => {
@@ -71,7 +69,7 @@ export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], mo
       },
     }
   });
-  const secPerEpoch = (performance.now() - beginMs) / (1000 * epochs);
+  const secPerEpoch = (performance.now() - beginMs) / (1000 * iterParam.epochs);
   const lastLog = trainLogs.slice(-1)[0];
   let accuracyLoss = '';
   if (lastLog) {

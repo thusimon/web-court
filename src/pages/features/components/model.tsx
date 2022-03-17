@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ActivationIdentifier } from '@tensorflow/tfjs-layers/dist/keras_format/activation_config';
-import { Actions, DefaultModelConfig } from '../constants';
+import { Actions, DefaultIterParam, DefaultModelConfig } from '../constants';
 import { AppContext } from '../context-provider';
-import { ModelConfig, ModelLayer } from '../../../constants';
-import { getAllModelConfig, saveAllModelConfig } from '../../../content/utils/storage';
+import { IterParam, ModelConfig, ModelLayer } from '../../../constants';
+import { getAllModelConfig, getIterParams, saveAllModelConfig, saveIterParams } from '../../../content/utils/storage';
 
 import './model.scss';
 
@@ -12,13 +12,14 @@ const Model = () => {
   const modelRef = useRef(null);
   const [modelIndex, setModelIndex] = useState(0);
   const [modelConfigStates, setModelConfigStates] = useState<ModelConfig[]>([]);
+  const [iterParams, setIterParams] = useState<IterParam>(DefaultIterParam);
 
   useEffect(() => {
     (async () => {
-      const modelConfigsStore = await getAllModelConfig();
-      const modelConfigs = (modelConfigsStore && modelConfigsStore.length) > 0 ? modelConfigsStore : [DefaultModelConfig];
+      const [modelConfigs, iterParams] = await Promise.all([getAllModelConfig(), getIterParams()]);
       setModelIndex(0);
       setModelConfigStates(modelConfigs);
+      setIterParams(iterParams);
     })();
   }, []);
 
@@ -59,6 +60,13 @@ const Model = () => {
     });
   };
 
+  const updateIterParams = (iterParam: IterParam) => {
+    dispatch({
+      type: Actions.UpdateIterParams,
+      data: iterParam
+    });
+  }
+
   const buttonClickHandler = async (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
     const buttonName = evt.currentTarget.name;
     switch (buttonName) {
@@ -72,7 +80,8 @@ const Model = () => {
         resetButton();
         updateConfigIndex(modelIndex);
         updateConfigs(modelConfigStates);
-        await saveAllModelConfig(modelConfigStates);
+        updateIterParams(iterParams);
+        await Promise.all([saveAllModelConfig(modelConfigStates), saveIterParams(iterParams)]);
       }
     }
   };
@@ -85,7 +94,7 @@ const Model = () => {
       input.disabled = false;
     } else if (detail === 1) {
       setModelIndex(idx);
-      updateConfigIndex(modelIndex);
+      updateConfigIndex(idx);
     }
   };
 
@@ -190,6 +199,26 @@ const Model = () => {
     }
   };
 
+  const iterParamsHandler = (evt: React.ChangeEvent<HTMLInputElement>) => {
+    const value = parseFloat(evt.currentTarget.value);
+    const name = evt.currentTarget.name;
+    const currentIterParams = state.iterParam;
+    switch (name) {
+      case 'epochs': {
+        currentIterParams.epochs = value;
+        break;
+      }
+      case 'learning-rate': {
+        currentIterParams.learningRate = value;
+        break;
+      }
+      default:
+        break;
+    }
+    setIterParams({...currentIterParams});
+    updateIterParams(currentIterParams);
+  };
+
   const modelLayersConfigs = modelConfigStates[modelIndex] ? modelConfigStates[modelIndex].config : [];
   return (<div id='model-container' className='model-hide' ref={modelRef}>
     <div id='model-main'>
@@ -243,6 +272,15 @@ const Model = () => {
         <div id='model-layers-buttons'>
           <button className='model-button' name='layer-add' onClick={modelHandler}>+</button>
           <button className='model-button' name='layer-delete' onClick={modelHandler} disabled={modelLayersConfigs.length<=2}>-</button>
+        </div>
+      </div>
+      <div id='model-iters-container'>
+        <label>Iteration Parameters</label>
+        <div id='model-iters'>
+          <label htmlFor='iter-epochs'>Epochs:</label><br></br>
+          <input id='iter-epochs' name='epochs' type='number' defaultValue={iterParams.epochs} value={iterParams.epochs} onChange={iterParamsHandler}></input>
+          <label htmlFor='iter-learningRate'>Learning Rate:</label><br></br>
+          <input type='number' name='learning-rate' defaultValue={iterParams.learningRate} value={iterParams.learningRate} step={0.001} onChange={iterParamsHandler}></input>
         </div>
       </div>
       <div id='buttons-container'>

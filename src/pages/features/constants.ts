@@ -1,16 +1,17 @@
 import { GeneralFeatureLabeled } from "../../content/utils/storage";
-import { FeatureCategory, ModelConfig } from "../../constants";
+import { FeatureCategory, IterParam, ModelConfig } from "../../constants";
 
 export enum Actions {
   UpdateFeatureTable,
   ButtonClick,
   UpdateModelConfigs,
-  UpdateModelConfigIdx
+  UpdateModelConfigIdx,
+  UpdateIterParams
 }
 
 export interface ActionType {
   type: Actions;
-  data: number | string | boolean | ModelConfig[];
+  data: number | string | boolean | ModelConfig[] | IterParam;
 }
 
 export type FeaturesType = {
@@ -34,3 +35,8 @@ export const DefaultModelConfig: ModelConfig = {
     }
   ]
 };
+
+export const DefaultIterParam: IterParam = {
+  epochs: 50,
+  learningRate: 0.01
+}

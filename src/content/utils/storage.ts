@@ -1,13 +1,15 @@
 import { storage } from 'webextension-polyfill';
 import { GeneralFeature } from '../feature';
 import { LabelData } from '../message';
-import { FeatureCategory, FeaturesType, ModelConfig, StorageCategory, StorageData } from '../../constants';
+import { FeatureCategory, FeaturesType, IterParam, ModelConfig, StorageCategory, StorageData } from '../../constants';
+import { DefaultIterParam, DefaultModelConfig } from '../../pages/features/constants';
 
 export type GeneralFeatureLabeled = GeneralFeature & LabelData;
 
 export const addFeature = async (category: FeatureCategory, feature: GeneralFeature) => {
   try {
-    const features = await storage.local.get(StorageCategory.Features);
+    const featureStorage = await storage.local.get(StorageCategory.Features);
+    const features = featureStorage[StorageCategory.Features] || {};
     const currentFieldFeatures = features[category] || [];
     currentFieldFeatures.push(feature);
     features[category] = currentFieldFeatures;
@@ -20,7 +22,8 @@ export const addFeature = async (category: FeatureCategory, feature: GeneralFeat
 
 export const addFeatureBulk = async (category: FeatureCategory, newFeatures: GeneralFeature[]) => {
   try {
-    const features = await storage.local.get(StorageCategory.Features);
+    const featureStorage = await storage.local.get(StorageCategory.Features);
+    const features = featureStorage[StorageCategory.Features] || {};
     let currentFieldFeatures: GeneralFeature[] = features[category] || [];
     currentFieldFeatures = currentFieldFeatures.concat(newFeatures);
     features[category] = currentFieldFeatures;
@@ -33,7 +36,8 @@ export const addFeatureBulk = async (category: FeatureCategory, newFeatures: Gen
 
 export const getFeatures = async (category: FeatureCategory): Promise<Array<GeneralFeature>> => {
   try {
-    const features = await storage.local.get(StorageCategory.Features);
+    const featureStorage = await storage.local.get(StorageCategory.Features);
+    const features = featureStorage[StorageCategory.Features] || {};
     return features[category] || [];
   } catch (e) {
     return [];
@@ -41,13 +45,15 @@ export const getFeatures = async (category: FeatureCategory): Promise<Array<Gene
 };
 
 export const getAllFeatures = async (): Promise<FeaturesType> => {
-  const features = await storage.local.get(StorageCategory.Features);
-  return features[StorageCategory.Features] || {};
+  const featureStorage = await storage.local.get(StorageCategory.Features);
+  const features = featureStorage[StorageCategory.Features] || {};
+  return features;
 };
 
 export const setFeatures = async (category: FeatureCategory, newFeatures: Array<GeneralFeature>): Promise<Array<GeneralFeature>> => {
   try {
-    const features = await storage.local.get(StorageCategory.Features);
+    const featureStorage = await storage.local.get(StorageCategory.Features);
+    const features = featureStorage[StorageCategory.Features] || {};
     features[category] = newFeatures;
     await storage.local.set({[StorageCategory.Features]: features});
     return newFeatures
@@ -57,7 +63,8 @@ export const setFeatures = async (category: FeatureCategory, newFeatures: Array<
 };
 
 export const deleteFeature = async (category: FeatureCategory, idx: number): Promise<Array<GeneralFeature>> => {
-  const features = await storage.local.get(StorageCategory.Features);
+  const featureStorage = await storage.local.get(StorageCategory.Features);
+  const features = featureStorage[StorageCategory.Features] || {};
   const categoryFeature = features[category] || [];
   categoryFeature.splice(idx, 1);
   features[category] = categoryFeature;
@@ -71,13 +78,25 @@ export const deleteFeatureCategory = async (category: FeatureCategory): Promise<
 };
 
 export const getAllModelConfig = async (): Promise<ModelConfig[]> => {
-  const modelConfigs = await storage.local.get(StorageCategory.ModelConfigs);
-  return modelConfigs[StorageCategory.ModelConfigs] || [];
+  const modelConfigStorage = await storage.local.get(StorageCategory.ModelConfigs);
+  const modelConfigs = modelConfigStorage[StorageCategory.ModelConfigs] || [DefaultModelConfig];
+  return modelConfigs;
 };
 
 export const saveAllModelConfig = async (modelConfigs: ModelConfig[]) => {
   await storage.local.set({ [StorageCategory.ModelConfigs]: modelConfigs });
   return modelConfigs;
+};
+
+export const getIterParams = async (): Promise<IterParam> => {
+  const iterParamStorage = await storage.local.get(StorageCategory.IterParams);
+  const iterParams = iterParamStorage[StorageCategory.IterParams] || DefaultIterParam;
+  return iterParams;
+};
+
+export const saveIterParams = async (iterParams: IterParam) => {
+  await storage.local.set({ [StorageCategory.IterParams]: iterParams });
+  return iterParams;
 };
 
 export const saveAllData = async (data: StorageData): Promise<StorageData> => {
