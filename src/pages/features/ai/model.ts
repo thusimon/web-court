@@ -7,7 +7,7 @@ export interface TrainCallback {
 export const createModel = (modelConfig: ModelConfig, inputNumber: number): tf.Sequential => {
   const config = modelConfig.config;
   const configLength = config.length;
-  if (configLength <= 2) {
+  if (configLength < 2) {
     throw 'not enough layers';
   }
   const model = tf.sequential();
@@ -39,12 +39,12 @@ export const createModel = (modelConfig: ModelConfig, inputNumber: number): tf.S
  *   [numTestExamples, 3].
  * @returns The trained `tf.Model` instance.
  */
-export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], modelConfig: ModelConfig, callback: TrainCallback, iterParam: IterParam) => {
+export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], modelConfig: ModelConfig, callback: TrainCallback, iterParams: IterParam) => {
   console.log('start training model');
   const model = createModel(modelConfig, xTrain.shape[1]);
   model.summary();
 
-  const optimizer = tf.train.adam(iterParam.learningRate);
+  const optimizer = tf.train.adam(iterParams.learningRate);
   model.compile({
     optimizer: optimizer,
     loss: 'categoricalCrossentropy',
@@ -55,7 +55,7 @@ export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], mo
   const beginMs = performance.now();
   // Call `model.fit` to train the model.
   const history = await model.fit(xTrain, yTrain, {
-    epochs: iterParam.epochs,
+    epochs: iterParams.epochs,
     validationData: [xTest, yTest],
     callbacks: {
       onEpochEnd: async (epoch, logs) => {
@@ -69,7 +69,7 @@ export const trainModel = async ([xTrain, yTrain, xTest, yTest]: tf.Tensor[], mo
       },
     }
   });
-  const secPerEpoch = (performance.now() - beginMs) / (1000 * iterParam.epochs);
+  const secPerEpoch = (performance.now() - beginMs) / (1000 * iterParams.epochs);
   const lastLog = trainLogs.slice(-1)[0];
   let accuracyLoss = '';
   if (lastLog) {

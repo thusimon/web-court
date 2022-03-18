@@ -7,7 +7,7 @@ export const initContextState: AppContextType = {
   clickButton: 'info',
   modelConfigs: [DefaultModelConfig],
   modelConfigIdx: 0,
-  iterParam: DefaultIterParam
+  iterParams: DefaultIterParam
 };
 
 export interface AppContextType {
@@ -15,7 +15,7 @@ export interface AppContextType {
   clickButton: string;
   modelConfigs: ModelConfig[],
   modelConfigIdx: number;
-  iterParam: IterParam;
+  iterParams: IterParam;
 }
 
 export const AppContext = createContext<{
@@ -61,6 +61,15 @@ export const reducer = (state: AppContextType, action: ActionType) => {
         ...state,
         ...{
           modelConfigs
+        }
+      };
+    }
+    case Actions.UpdateIterParams: {
+      const iterParams = action.data as IterParam;
+      return {
+        ...state,
+        ...{
+          iterParams
         }
       };
     }

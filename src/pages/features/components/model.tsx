@@ -20,6 +20,8 @@ const Model = () => {
       setModelIndex(0);
       setModelConfigStates(modelConfigs);
       setIterParams(iterParams);
+      updateConfigs(modelConfigs);
+      updateIterParams(iterParams);
     })();
   }, []);
 
@@ -60,10 +62,10 @@ const Model = () => {
     });
   };
 
-  const updateIterParams = (iterParam: IterParam) => {
+  const updateIterParams = (iterParams: IterParam) => {
     dispatch({
       type: Actions.UpdateIterParams,
-      data: iterParam
+      data: iterParams
     });
   }
 
@@ -202,7 +204,7 @@ const Model = () => {
   const iterParamsHandler = (evt: React.ChangeEvent<HTMLInputElement>) => {
     const value = parseFloat(evt.currentTarget.value);
     const name = evt.currentTarget.name;
-    const currentIterParams = state.iterParam;
+    const currentIterParams = state.iterParams;
     switch (name) {
       case 'epochs': {
         currentIterParams.epochs = value;
@@ -278,9 +280,9 @@ const Model = () => {
         <label>Iteration Parameters</label>
         <div id='model-iters'>
           <label htmlFor='iter-epochs'>Epochs:</label><br></br>
-          <input id='iter-epochs' name='epochs' type='number' defaultValue={iterParams.epochs} value={iterParams.epochs} onChange={iterParamsHandler}></input>
+          <input id='iter-epochs' name='epochs' type='number' value={iterParams.epochs} onChange={iterParamsHandler}></input>
           <label htmlFor='iter-learningRate'>Learning Rate:</label><br></br>
-          <input type='number' name='learning-rate' defaultValue={iterParams.learningRate} value={iterParams.learningRate} step={0.001} onChange={iterParamsHandler}></input>
+          <input type='number' name='learning-rate' value={iterParams.learningRate} step={0.001} onChange={iterParamsHandler}></input>
         </div>
       </div>
       <div id='buttons-container'>
