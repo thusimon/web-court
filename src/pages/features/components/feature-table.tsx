@@ -3,13 +3,13 @@ import { AppContext } from '../context-provider';
 import { Actions } from '../constants';
 import { FeatureCategory, FeaturesType } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
-import { clearAllData, deleteFeature, deleteFeatureCategory, getAllData, getAllFeatures, saveAllData } from '../../../content/utils/storage';
+import { clearAllData, deleteFeature, deleteFeatureCategory, getAllData, getAllFeatures, saveAllData } from '../../../common/storage';
 
 import './feature-table.scss';
 
 export interface FeatureTablePropsType {
   features: FeaturesType;
-  featureTableType: FeatureCategory;
+  featureCategory: FeatureCategory;
   selectFeatureIdx: number;
 }
 
@@ -44,7 +44,7 @@ const FeatureTable = () => {
       switch (button) {
         case 'delete-one': {
           //TODO add confirm dialog
-          await deleteFeature(featureTableType, selectedFeatureIdx);
+          await deleteFeature(featureCategory, selectedFeatureIdx);
           await refresh();
           setSelectedFeatureIdx(-1);
           dispatchButton('refresh');
@@ -52,7 +52,7 @@ const FeatureTable = () => {
           break;
         }
         case 'delete-catetory': {
-          await deleteFeatureCategory(featureTableType);
+          await deleteFeatureCategory(featureCategory);
           await refresh();
           setSelectedFeatureIdx(-1);
           dispatchButton('refresh');
@@ -90,8 +90,8 @@ const FeatureTable = () => {
     })();
   }, [state]);
   
-  const { featureTableType } = state;
-  const selectedTable = allFeature[featureTableType] || [];
+  const { featureCategory } = state;
+  const selectedTable = allFeature[featureCategory] || [];
 
   const onClickFeature = (evt: React.MouseEvent<HTMLTableRowElement>, idx: number) => {
     setSelectedFeatureIdx(idx);

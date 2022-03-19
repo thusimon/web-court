@@ -1,9 +1,9 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { ActivationIdentifier } from '@tensorflow/tfjs-layers/dist/keras_format/activation_config';
-import { Actions, DefaultIterParam, DefaultModelConfig } from '../constants';
+import { Actions, DefaultIterParam } from '../constants';
 import { AppContext } from '../context-provider';
 import { IterParam, ModelConfig, ModelLayer } from '../../../constants';
-import { getAllModelConfig, getIterParams, saveAllModelConfig, saveIterParams } from '../../../content/utils/storage';
+import { getAllModelConfig, getIterParams, saveAllModelConfig, saveIterParams } from '../../../common/storage';
 
 import './model.scss';
 

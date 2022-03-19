@@ -5,7 +5,7 @@ import { trainModel } from '../ai/model';
 import { getFeatureDataByCategory } from '../ai/utils/data';
 import { Actions, FeaturesType } from '../constants';
 import { AppContext } from '../context-provider';
-import { getAllFeatures, saveModelToIndexDB } from '../../../content/utils/storage';
+import { getAllFeatures, saveModelToIndexDB } from '../../../common/storage';
 import * as browser from 'webextension-polyfill';
 
 import './console.scss';
@@ -13,11 +13,11 @@ import './console.scss';
 export interface ConsolePropsType {
   button: string;
   features: FeaturesType;
-  featureTableType: FeatureCategory;
+  featureCategory: FeatureCategory;
 }
 
-export const getFeatureBasicInfo = (features: FeaturesType, featureTableType: FeatureCategory): string => {
-  const featureTable = features[featureTableType]
+export const getFeatureBasicInfo = (features: FeaturesType, featureCategory: FeatureCategory): string => {
+  const featureTable = features[featureCategory]
   if (!(featureTable instanceof Array)) {
     return '';
   }
@@ -29,7 +29,7 @@ export const getFeatureBasicInfo = (features: FeaturesType, featureTableType: Fe
     labelCountInfo += `    ${uniqueLabel}: ${labelCount.length}
 `;
   });
-  return `Features of ${featureTableType}:
+  return `Features of ${featureCategory}:
   total: ${labels.length}
   labels:
 ${labelCountInfo}
@@ -52,7 +52,7 @@ const Console: React.FC = () => {
 
   const refresh = async () => {
     const features = await getAllFeatures();
-    const message = getFeatureBasicInfo(features, state.featureTableType);
+    const message = getFeatureBasicInfo(features, state.featureCategory);
     setAllFeatures(features);
     setMessage(message);
   };
@@ -84,7 +84,7 @@ const Console: React.FC = () => {
   }, []);
   useEffect(() => {
     (async () => {
-      const { clickButton, featureTableType, modelConfigIdx, modelConfigs, iterParams } = state;
+      const { clickButton, featureCategory, modelConfigIdx, modelConfigs, iterParams } = state;
       switch (clickButton) {
         case 'refresh': {
           refresh();
@@ -92,7 +92,7 @@ const Console: React.FC = () => {
           return;
         }
         case 'info': {
-          const message = getFeatureBasicInfo(allFeature, featureTableType);
+          const message = getFeatureBasicInfo(allFeature, featureCategory);
           setMessage(message);
           break;
         }
@@ -101,10 +101,10 @@ const Console: React.FC = () => {
             dispatchButton('');
             return;
           }
-          const featureData = getFeatureDataByCategory(allFeature[featureTableType], featureTableType);
+          const featureData = getFeatureDataByCategory(allFeature[featureCategory], featureCategory);
           const modelConfig = modelConfigs[modelConfigIdx];
           const consoleE = consoleRef.current;
-          let message = `Training model for ${featureTableType} features, with model "${modelConfig.name}", Epoch=${iterParams.epochs} and learningRate=${iterParams.learningRate}...\n`
+          let message = `Training model for ${featureCategory} features, with model "${modelConfig.name}", Epoch=${iterParams.epochs} and learningRate=${iterParams.learningRate}...\n`
           setMessage(message);
           const model = await trainModel(featureData, modelConfig, (msg, trainLogs, complete) => {
             message += `  ${msg}\n`;
@@ -116,7 +116,6 @@ const Console: React.FC = () => {
           }, iterParams);
           dispatchButton('');
           setModel(model);
-          browser.runtime.sendMessage({type: 'train', data: {test: 123}});
           return;
         }
         default:

@@ -3,7 +3,7 @@ import { FeatureCategory, IterParam, ModelConfig } from "../../constants";
 import { Actions, ActionType, DefaultIterParam, DefaultModelConfig } from './constants';
 
 export const initContextState: AppContextType = {
-  featureTableType: FeatureCategory.Page,
+  featureCategory: FeatureCategory.Page,
   clickButton: 'info',
   modelConfigs: [DefaultModelConfig],
   modelConfigIdx: 0,
@@ -11,7 +11,7 @@ export const initContextState: AppContextType = {
 };
 
 export interface AppContextType {
-  featureTableType: FeatureCategory;
+  featureCategory: FeatureCategory;
   clickButton: string;
   modelConfigs: ModelConfig[],
   modelConfigIdx: number;
@@ -33,7 +33,7 @@ export const reducer = (state: AppContextType, action: ActionType) => {
       return {
         ...state,
         ...{
-          featureTableType: newTableType
+          featureCategory: newTableType
         }
       };
     }

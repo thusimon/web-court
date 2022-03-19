@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as tf from '@tensorflow/tfjs';
-import { GeneralFeatureLabeled } from '../../../../content/utils/storage'
-import { FeatureCategory, LabelResult } from '../../../../constants';
+import { GeneralFeatureLabeled } from '../../../../common/storage'
+import { FeatureCategory } from '../../../../constants';
 import { processButtonFeature } from './process-button-data';
 
 export const PageClass = ['login', 'other'];
@@ -110,8 +110,8 @@ export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses
   });
 };
 
-export const getFeatureDataByCategory = (features: GeneralFeatureLabeled[], featureTableType: FeatureCategory, testSplit: number = 0.1) => {
-  switch (featureTableType) {
+export const getFeatureDataByCategory = (features: GeneralFeatureLabeled[], featureCategory: FeatureCategory, testSplit: number = 0.1) => {
+  switch (featureCategory) {
     case FeatureCategory.Page:
     case FeatureCategory.Inputs:
       return getFeatureData(features, PageClass, testSplit);

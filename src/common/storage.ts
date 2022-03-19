@@ -1,9 +1,9 @@
 import * as tf from '@tensorflow/tfjs';
 import { storage } from 'webextension-polyfill';
-import { GeneralFeature } from '../feature';
-import { LabelData } from '../message';
-import { FeatureCategory, FeaturesType, IterParam, ModelConfig, StorageCategory, StorageData } from '../../constants';
-import { DefaultIterParam, DefaultModelConfig } from '../../pages/features/constants';
+import { GeneralFeature } from '../content/feature';
+import { LabelData } from '../content/message';
+import { FeatureCategory, FeaturesType, IterParam, ModelConfig, StorageCategory, StorageData } from '../constants';
+import { DefaultIterParam, DefaultModelConfig } from '../pages/features/constants';
 
 export type GeneralFeatureLabeled = GeneralFeature & LabelData;
 

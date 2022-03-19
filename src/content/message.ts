@@ -3,7 +3,7 @@ import {
   getPageUsernamePasswordGeoFeatures,
   getButtonFeatures
 } from './feature';
-import { addFeature, addFeatureBulk } from './utils/storage';
+import { addFeature, addFeatureBulk } from '../common/storage';
 import {
   highlightLabeledDoms,
   restoreDomHighlight,

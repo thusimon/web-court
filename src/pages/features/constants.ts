@@ -1,4 +1,4 @@
-import { GeneralFeatureLabeled } from "../../content/utils/storage";
+import { GeneralFeatureLabeled } from "../../common/storage";
 import { FeatureCategory, IterParam, ModelConfig } from "../../constants";
 
 export enum Actions {

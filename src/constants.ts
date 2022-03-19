@@ -1,4 +1,4 @@
-import { GeneralFeatureLabeled } from "./content/utils/storage";
+import { GeneralFeatureLabeled } from "./common/storage";
 import { ActivationIdentifier } from '@tensorflow/tfjs-layers/dist/keras_format/activation_config';
 
 export const WEBCOURT_UID = 'SrElXAlR4zOvfv8P';

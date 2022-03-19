@@ -1,6 +1,7 @@
 import * as browser from 'webextension-polyfill';
 import { Menus, Tabs } from 'webextension-polyfill';
 import { CONTEXT_MENU_IDS, MessageType } from './constants';
+import { loadModelInFromIndexDB } from './common/storage';
 
 // create context menu
 
@@ -125,16 +126,9 @@ const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
 browser.contextMenus.onClicked.addListener(contextMenuClickHandler);
 
 
-const messageHandler = (msg: any, sender: browser.Runtime.MessageSender) => {
-  const {type, data} = msg;
-  switch (type) {
-    case 'train': {
-      console.log(msg);
-      break;
-    }
-    default:
-      break;
-  }
-};
+const messageHandler = (msg: any, sender: browser.Runtime.MessageSender) => {};
 
 browser.runtime.onMessage.addListener(messageHandler);
+
+loadModelInFromIndexDB('btn-model')
+.then(console.log);

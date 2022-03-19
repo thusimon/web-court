@@ -25,7 +25,7 @@ const Nav = () => {
     <header>
       <div className='controls'>
         <label htmlFor='feature-select'>Feature Category</label>
-        <select value={state.featureTableType} onChange={onChangeHandler} id='feature-select'>
+        <select value={state.featureCategory} onChange={onChangeHandler} id='feature-select'>
           {Object.values(FeatureCategory).map(fname => <option key={fname} value={fname}>{fname}</option>)}
         </select>
       </div>
