@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
+import * as tf from '@tensorflow/tfjs';
 import { FeatureCategory } from '../../../constants';
 import { trainModel } from '../ai/model';
 import { getFeatureDataByCategory } from '../ai/utils/data';
 import { Actions, FeaturesType } from '../constants';
 import { AppContext } from '../context-provider';
-import { getAllFeatures } from '../../../content/utils/storage';
+import { getAllFeatures, saveModelToIndexDB } from '../../../content/utils/storage';
+import * as browser from 'webextension-polyfill';
 
 import './console.scss';
 
@@ -38,6 +40,7 @@ const Console: React.FC = () => {
   const { state, dispatch } = useContext(AppContext);
   const [training, setTraining] = useState(false);
   const [message, setMessage] = useState('');
+  const [model, setModel] = useState<tf.Sequential>(null);
   const consoleRef = useRef<HTMLTextAreaElement>(null);
 
 
@@ -59,6 +62,21 @@ const Console: React.FC = () => {
       type: Actions.ButtonClick,
       data: button,
     });
+  };
+
+  const consoleButtonHandler = async (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const target = evt.currentTarget;
+    const name = target.name;
+    const { modelConfigIdx, modelConfigs } = state;
+    const modelConfig = modelConfigs[modelConfigIdx];
+    switch (name) {
+      case 'save-model': {
+        await saveModelToIndexDB(model, modelConfig.name);
+        break;
+      }
+      default:
+        break;
+    }
   };
 
   useEffect(() => {
@@ -97,6 +115,8 @@ const Console: React.FC = () => {
             }
           }, iterParams);
           dispatchButton('');
+          setModel(model);
+          browser.runtime.sendMessage({type: 'train', data: {test: 123}});
           return;
         }
         default:
@@ -105,7 +125,12 @@ const Console: React.FC = () => {
     })();
   }, [state]);
 
-  return (<textarea id='console-text-area' value={message} readOnly ref={consoleRef}></textarea>)
+  return (<div id='console-container'>
+      <textarea id='console-text-area' value={message} readOnly ref={consoleRef}></textarea>
+      <div id='console-buttons'>
+        <button name='save-model' title='Save trained model' onClick={consoleButtonHandler}>Save Model</button>
+      </div>
+    </div>)
 };
 
 export default Console;

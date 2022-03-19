@@ -123,3 +123,18 @@ const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
 };
 
 browser.contextMenus.onClicked.addListener(contextMenuClickHandler);
+
+
+const messageHandler = (msg: any, sender: browser.Runtime.MessageSender) => {
+  const {type, data} = msg;
+  switch (type) {
+    case 'train': {
+      console.log(msg);
+      break;
+    }
+    default:
+      break;
+  }
+};
+
+browser.runtime.onMessage.addListener(messageHandler);

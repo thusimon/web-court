@@ -1,4 +1,15 @@
-#console-text-area {
+#console-container {
   height: 96%;
   width: 99%;
+  display: grid;
+  grid-template-columns: auto 100px;
+  grid-template-areas: 
+    "console buttons";
+  #console-text-area {
+    grid-area: console;
+    margin: 0px 10px 0px 0px;
+  }
+  #console-buttons {
+    grid-area: buttons;
+  }
 }

@@ -1,3 +1,4 @@
+import * as tf from '@tensorflow/tfjs';
 import { storage } from 'webextension-polyfill';
 import { GeneralFeature } from '../feature';
 import { LabelData } from '../message';
@@ -112,4 +113,14 @@ export const getAllData = async (): Promise<StorageData> => {
 export const clearAllData = async () => {
   await storage.local.clear();
   return {};
+};
+
+export const saveModelToIndexDB = async (model: tf.Sequential, modelName: string): Promise<tf.LayersModel> => {
+  await model.save(`indexeddb://${modelName}`);
+  return model;
+};
+
+export const loadModelInFromIndexDB = async (modelName: string): Promise<tf.LayersModel> => {
+  const model = await tf.loadLayersModel(`indexeddb://${modelName}`);
+  return model;
 };
