@@ -3,7 +3,7 @@ import {
   getPageUsernamePasswordGeoFeatures,
   getButtonFeatures
 } from './feature';
-import { addFeature, addFeatureBulk } from '../common/storage';
+import { addFeature, addFeatureBulk, loadModelInFromIndexDB } from '../common/storage';
 import {
   highlightLabeledDoms,
   restoreDomHighlight,
@@ -11,8 +11,11 @@ import {
   findVisibleInputs,
   findVisibleButtons
 } from './utils/dom';
-import { Message, CONTEXT_MENU_IDS, LabelResult, FeatureCategory } from '../constants';
+import { Message, CONTEXT_MENU_IDS, LabelResult, FeatureCategory, MessageType } from '../constants';
 import Overlay from './components/overlay';
+import { processButtonFeature } from '../pages/features/ai/utils/process-button-data';
+import { ButtonClass, getFeatureData } from '../pages/features/ai/utils/data';
+import { sendMessageToExtension } from '../common/tabs';
 
 const contextMenuActions = [
   CONTEXT_MENU_IDS.LABEL_USERNAME,
@@ -31,6 +34,10 @@ export interface LabelData {
   url?: string;
   label?: LabelResult; 
 };
+
+export interface PredictData {
+  category: string;
+}
 
 export const handleLabel = async (message: Message, dom: HTMLElement, overlay: Overlay): Promise<void> => {
   if (!dom) {
@@ -219,4 +226,32 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
     default:
       break;
   }
-}
+};
+
+export const handlePredict = async (message: Message): Promise<void> => {
+  const data = message.data as PredictData; 
+  const category = data.category
+  switch (category) {
+    case 'predict-btn': {
+      const allVisiableInputs = findVisibleInputs();
+      const allVisibleButtons = findVisibleButtons();
+      const allButtonFeatures = await Promise.all(allVisibleButtons.map(async button => {
+        const buttonFeature =  await getButtonFeatures(button, allVisiableInputs);
+        return {
+          ...buttonFeature,
+          label: LabelResult.other
+        }
+      }));
+      let buttonFeature = processButtonFeature(allButtonFeatures);
+      buttonFeature = getFeatureData(buttonFeature, ButtonClass, 0);
+      buttonFeature = buttonFeature[0];
+      sendMessageToExtension({
+        type: MessageType.FEATURE_PREDICT,
+        data: buttonFeature
+      });
+      break;
+    }
+    default:
+      break;
+  }
+};

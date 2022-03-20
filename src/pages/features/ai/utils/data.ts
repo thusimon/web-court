@@ -55,7 +55,7 @@ export const convertToTensors = (data: number[][], targets: number[], testSplit:
   const numTestExamples = Math.round(numExamples * testSplit);
   const numTrainExamples = numExamples - numTestExamples;
 
-  const xDims = shuffledData[0].length;
+  const xDims = (shuffledData[0] || []).length;
 
   // Create a 2D `tf.Tensor` to hold the feature data.
   const xs = tf.tensor2d(shuffledData, [numExamples, xDims]);

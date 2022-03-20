@@ -1,17 +1,30 @@
 import React from 'react';
-import { tabs, runtime } from 'webextension-polyfill';
+import { MessageType } from '../../../constants';
+import { createTab, getCurrentTab, sendMessageToTab } from '../../../common/tabs';
+import { runtime } from 'webextension-polyfill';
 
 import './content.scss';
 
 const Content: React.FC = () => {
-  const btnClickHandler = (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
-    switch (evt.currentTarget.name) {
+  const btnClickHandler = async (evt: React.MouseEvent<HTMLButtonElement, MouseEvent>) => {
+    const buttonName = evt.currentTarget.name;
+    switch (buttonName) {
       case 'features': {
-        tabs.create({url: runtime.getURL('pages/features/features.html')});
+        createTab(runtime.getURL('pages/features/features.html'));
         break;
       }
       case 'options': {
-        tabs.create({url: runtime.getURL('pages/options/options.html')});
+        createTab(runtime.getURL('pages/options/options.html'));
+        break;
+      }
+      case 'predict-btn': {
+        const currentTab = await getCurrentTab();
+        sendMessageToTab(currentTab.id, {
+          type: MessageType.FEATURE_COLLECT,
+          data: {
+            category: buttonName
+          }
+        });
         break;
       }
       default:
@@ -19,6 +32,10 @@ const Content: React.FC = () => {
     }
   }
   return (<div className='content'>
+    <div className='content-btn-group'>
+      <button className='content-btn' name='predict-btn' onClick={btnClickHandler}>Predict Buttons</button>
+    </div>
+    <hr></hr>
     <div className='content-btn-group'>
       <button className='content-btn' name='features' onClick={btnClickHandler}>Features</button>
       <button className='content-btn' name='options' onClick={btnClickHandler}>Options</button>

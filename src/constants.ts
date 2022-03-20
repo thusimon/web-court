@@ -43,12 +43,14 @@ export const DEFAULT_OVERLAY_SETTINGS = {
 };
 
 export enum MessageType {
-  CONTEXT_CLICK
+  CONTEXT_CLICK,
+  FEATURE_COLLECT,
+  FEATURE_PREDICT
 };
 
 export interface Message {
   type: MessageType;
-  action: string;
+  action?: string;
   data: object
 };
 

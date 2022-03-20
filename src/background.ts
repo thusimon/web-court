@@ -2,6 +2,7 @@ import * as browser from 'webextension-polyfill';
 import { Menus, Tabs } from 'webextension-polyfill';
 import { CONTEXT_MENU_IDS, MessageType } from './constants';
 import { loadModelInFromIndexDB } from './common/storage';
+import { sendMessageToTab } from './common/tabs';
 
 // create context menu
 
@@ -114,7 +115,7 @@ const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
   if (!tab.id) {
     console.log('no tab id, bail');
   }
-  browser.tabs.sendMessage(tab.id, {
+  sendMessageToTab(tab.id, {
     type: MessageType.CONTEXT_CLICK,
     action: info.menuItemId,
     data: {

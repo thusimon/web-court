@@ -9,7 +9,7 @@ import {
   clearOverlay,
   highlightLabeledDoms
 } from './utils/dom';
-import { handleLabel } from './message';
+import { handleLabel, handlePredict } from './message';
 import './components/overlay';
 import Overlay from './components/overlay';
 import { WEBCOURT_UID, Message, MessageType } from '../constants';
@@ -51,6 +51,10 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
   switch (message.type) {
     case MessageType.CONTEXT_CLICK: {
       handleLabel(message, currentSelectedDom, overlay);
+      break;
+    }
+    case MessageType.FEATURE_COLLECT: {
+      handlePredict(message);
       break;
     }
     default:

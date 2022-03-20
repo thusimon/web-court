@@ -6,7 +6,6 @@ import { getFeatureDataByCategory } from '../ai/utils/data';
 import { Actions, FeaturesType } from '../constants';
 import { AppContext } from '../context-provider';
 import { getAllFeatures, saveModelToIndexDB } from '../../../common/storage';
-import * as browser from 'webextension-polyfill';
 
 import './console.scss';
 

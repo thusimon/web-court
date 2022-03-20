@@ -79,7 +79,9 @@ export const getCategoricalFeatureRange = (features: GeneralFeature[]): FeatureV
   }, initVal);
   // sort each value list
   categoricalFeatureNames.forEach(cn => {
-    featureRanges[cn].sort();
+    if (featureRanges[cn]) {
+      featureRanges[cn].sort();
+    }
   });
   return featureRanges;
 };
