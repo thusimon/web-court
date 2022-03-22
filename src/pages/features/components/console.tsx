@@ -1,8 +1,8 @@
 import React, { useContext, useEffect, useState, useRef } from 'react';
 import * as tf from '@tensorflow/tfjs';
 import { FeatureCategory } from '../../../constants';
-import { trainModel } from '../ai/model';
-import { getFeatureDataByCategory } from '../ai/utils/data';
+import { trainModel } from '../../../common/ai/model';
+import { getFeatureDataByCategory } from '../../../common/ai/utils/data';
 import { Actions, FeaturesType } from '../constants';
 import { AppContext } from '../context-provider';
 import { getAllFeatures, saveModelToIndexDB } from '../../../common/storage';

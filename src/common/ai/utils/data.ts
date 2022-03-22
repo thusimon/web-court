@@ -1,7 +1,7 @@
 import _ from 'lodash';
 import * as tf from '@tensorflow/tfjs';
-import { GeneralFeatureLabeled } from '../../../../common/storage'
-import { FeatureCategory } from '../../../../constants';
+import { GeneralFeatureLabeled } from '../../storage'
+import { FeatureCategory } from '../../../constants';
 import { processButtonFeature } from './process-button-data';
 
 export const PageClass = ['login', 'other'];

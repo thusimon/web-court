@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { IterParam, ModelConfig } from '../../../constants';
+import { IterParam, ModelConfig } from '../../constants';
 export interface TrainCallback {
   (msg: string, logs: tf.Logs[], complete: boolean): void;
 };

@@ -13,8 +13,7 @@ import {
 } from './utils/dom';
 import { Message, CONTEXT_MENU_IDS, LabelResult, FeatureCategory, MessageType } from '../constants';
 import Overlay from './components/overlay';
-import { processButtonFeature } from '../pages/features/ai/utils/process-button-data';
-import { ButtonClass, getFeatureData } from '../pages/features/ai/utils/data';
+import { processButtonFeature } from '../common/ai/utils/process-button-data';
 import { sendMessageToExtension } from '../common/tabs';
 
 const contextMenuActions = [
@@ -235,6 +234,9 @@ export const handlePredict = async (message: Message): Promise<void> => {
     case 'predict-btn': {
       const allVisiableInputs = findVisibleInputs();
       const allVisibleButtons = findVisibleButtons();
+      if (allVisibleButtons.length < 1) {
+        break;
+      }
       const allButtonFeatures = await Promise.all(allVisibleButtons.map(async button => {
         const buttonFeature =  await getButtonFeatures(button, allVisiableInputs);
         return {
@@ -242,12 +244,13 @@ export const handlePredict = async (message: Message): Promise<void> => {
           label: LabelResult.other
         }
       }));
-      let buttonFeature = processButtonFeature(allButtonFeatures);
-      buttonFeature = getFeatureData(buttonFeature, ButtonClass, 0);
-      buttonFeature = buttonFeature[0];
+      const buttonsFeature = processButtonFeature(allButtonFeatures);
       sendMessageToExtension({
         type: MessageType.FEATURE_PREDICT,
-        data: buttonFeature
+        data: buttonsFeature
+      })
+      .then(predictResult => {
+        console.log(252, predictResult);
       });
       break;
     }

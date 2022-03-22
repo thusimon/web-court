@@ -1,8 +1,12 @@
 import * as browser from 'webextension-polyfill';
+import * as tf from '@tensorflow/tfjs';
 import { Menus, Tabs } from 'webextension-polyfill';
-import { CONTEXT_MENU_IDS, MessageType } from './constants';
+import { CONTEXT_MENU_IDS, Message, MessageType } from './constants';
 import { loadModelInFromIndexDB } from './common/storage';
 import { sendMessageToTab } from './common/tabs';
+import { GeneralFeature } from './content/feature';
+import { processButtonFeature } from './common/ai/utils/process-button-data';
+import { ButtonClass, getFeatureData } from './common/ai/utils/data';
 
 // create context menu
 
@@ -127,7 +131,36 @@ const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
 browser.contextMenus.onClicked.addListener(contextMenuClickHandler);
 
 
-const messageHandler = (msg: any, sender: browser.Runtime.MessageSender) => {};
+// do not use async listener callback, since it will block all the other messages, impairs performance
+// return promise inside the handler instead
+const messageHandler = (msg: Message, sender: browser.Runtime.MessageSender) => {
+  const {type, data} = msg;
+  switch (type) {
+    case MessageType.FEATURE_PREDICT: {
+      let buttonsFeature = data as GeneralFeature[];
+      buttonsFeature = processButtonFeature(buttonsFeature);
+      const buttonsFeatureTensorSplited = getFeatureData(buttonsFeature, ButtonClass, 0);
+      const buttonsFeatureTensor = buttonsFeatureTensorSplited[0];
+      return loadModelInFromIndexDB('btn-model')
+      .then(model => {
+        const predictTensor = model.predict(buttonsFeatureTensor) as tf.Tensor<tf.Rank>;
+        return predictTensor;
+      })
+      .then(rank => {
+        const classNum = rank.shape[1];
+        const predictResult: number[][] = [];
+        for (let classIdx = 0; classIdx < classNum; classIdx++) {
+          const classIProbabilitiesArr = rank.gather([classIdx], 1).dataSync() as Float32Array;
+          const classIProbabilities = Array.from(classIProbabilitiesArr);
+          predictResult.push(classIProbabilities)
+        }
+        return predictResult;
+      })
+    }
+    default:
+      break;
+  }
+};
 
 browser.runtime.onMessage.addListener(messageHandler);
 

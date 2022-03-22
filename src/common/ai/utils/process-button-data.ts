@@ -1,6 +1,6 @@
 import _ from 'lodash';
-import { GeneralFeature } from '../../../../content/feature';
-import { GeneralFeatureLabeled } from '../../../../common/storage';
+import { GeneralFeature } from '../../../content/feature';
+import { GeneralFeatureLabeled } from '../../storage';
 import { FeatureValueList } from './data';
 
 export enum ButtonFeatureType {

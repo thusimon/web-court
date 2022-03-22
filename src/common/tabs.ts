@@ -11,7 +11,7 @@ export const sendMessageToTab = (tabId: number, message: any) => {
 };
 
 export const sendMessageToExtension = (message: any) => {
-  browser.runtime.sendMessage(message);
+  return browser.runtime.sendMessage(message);
 }
 
 export const createTab = (url: string) => {
