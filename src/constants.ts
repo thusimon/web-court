@@ -1,5 +1,6 @@
 import { GeneralFeatureLabeled } from "./common/storage";
 import { ActivationIdentifier } from '@tensorflow/tfjs-layers/dist/keras_format/activation_config';
+import { OverlaySettingsType } from "@srccontent/components/overlay";
 
 export const WEBCOURT_UID = 'SrElXAlR4zOvfv8P';
 
@@ -35,11 +36,12 @@ export enum OVERLAY_MODE {
   EMPTY
 };
 
-export const DEFAULT_OVERLAY_SETTINGS = {
+export const DEFAULT_OVERLAY_SETTINGS: OverlaySettingsType = {
   mode: OVERLAY_MODE.EMPTY,
   text: '',
   top: 0,
-  left: 0
+  left: 0,
+  backgroundColor: 'cornsilk'
 };
 
 export enum MessageType {

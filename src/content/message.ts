@@ -9,7 +9,8 @@ import {
   restoreDomHighlight,
   clearOverlay,
   findVisibleInputs,
-  findVisibleButtons
+  findVisibleButtons,
+  addPredictResultAboveDom
 } from './utils/dom';
 import { Message, CONTEXT_MENU_IDS, LabelResult, FeatureCategory, MessageType } from '../constants';
 import Overlay from './components/overlay';
@@ -241,7 +242,7 @@ export const handlePredict = async (message: Message): Promise<void> => {
         const buttonFeature =  await getButtonFeatures(button, allVisiableInputs);
         return {
           ...buttonFeature,
-          label: LabelResult.other
+          label: LabelResult.field_submit
         }
       }));
       const buttonsFeature = processButtonFeature(allButtonFeatures);
@@ -250,7 +251,16 @@ export const handlePredict = async (message: Message): Promise<void> => {
         data: buttonsFeature
       })
       .then(predictResult => {
-        console.log(252, predictResult);
+        const [submitProbs, otherProbs] = predictResult as number[][];
+        const submitProbsSorted = submitProbs.slice().sort().reverse();
+        const submitProbsMap = submitProbs.map(prob => ({
+          prob,
+          order: submitProbsSorted.indexOf(prob)
+        }));
+        submitProbsMap.forEach((result, idx) => {
+          const button = allVisibleButtons[idx];
+          addPredictResultAboveDom(button, result.prob, result.order);
+        });
       });
       break;
     }

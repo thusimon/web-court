@@ -6,7 +6,8 @@ export type OverlaySettingsType = {
   mode: OVERLAY_MODE,
   text: string,
   top: number,
-  left: number
+  left: number,
+  backgroundColor: string
 };
 
 @customElement('wc-overlay')
@@ -25,7 +26,7 @@ class Overlay extends LitElement {
       position: absolute;
       font-size: 1.2rem;
       box-shadow: 0 3px 10px rgb(0 0 0 / 0.3);
-      background: cornsilk;
+      background: var(--settings-backgroundColor);
       width: max-content;
       padding: 0.2rem;
       top: var(--settings-top);
@@ -40,9 +41,10 @@ class Overlay extends LitElement {
   }
 
   get content() {
-    const {mode, text, top, left} = this.settings;
+    const {mode, text, top, left, backgroundColor} = this.settings;
     this.style.setProperty('--settings-top', `${top}px`);
     this.style.setProperty('--settings-left', `${left}px`);
+    this.style.setProperty('--settings-backgroundColor', backgroundColor);
     switch (mode) {
       case OVERLAY_MODE.TOOLTIP:
         return html`

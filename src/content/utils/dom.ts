@@ -2,6 +2,7 @@ import _ from 'lodash';
 import { MIN_ELEMENT_SIZE, MIN_ELEMENT_OPACITY, OVERLAY_MODE, InputFieldType, ImageDataCanvas } from  '../../constants';
 import Overlay, { OverlaySettingsType } from '../components/overlay';
 import html2canvas from 'html2canvas';
+import { toPrecision } from './numbers';
 export interface DomAttributeType {
   type?: string;
   name?: string;
@@ -218,10 +219,42 @@ export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
       top: domRect.top - overlayRect.top + domRect.height + 5,
       left: domRect.left - overlayRect.left,
       mode: OVERLAY_MODE.TOOLTIP,
-      text: getTagDescriptor(dom)
-    }
+      text: getTagDescriptor(dom),
+      backgroundColor: 'cornsilk'
+    };
     overlay.updateSettings(overlaySettings);
   }, 200);
+};
+
+export const colorMap = ['#90D090', '#96D5B3', '#D5F1E9', '#A89CB5', '#FAF5F8'];
+
+export const getColorByOrder = (order: number) => {
+  return colorMap[order] || '#FAF5F8';
+};
+
+export const addPredictResultAboveDom = (dom: HTMLElement, prob: number, order: number) => {
+  const predictOverlay = document.createElement('wc-overlay') as Overlay;
+  predictOverlay.className = 'wc-overlay-predict-result';
+  document.body.append(predictOverlay);
+  const domRect = dom.getBoundingClientRect();
+
+  const overlayRect = predictOverlay.getBoundingClientRect();
+  const overlaySettings: OverlaySettingsType = {
+    top: domRect.top - overlayRect.top - 5,
+    left: domRect.left - overlayRect.left,
+    mode: OVERLAY_MODE.TOOLTIP,
+    text: `${toPrecision(prob, 5)}`,
+    backgroundColor: getColorByOrder(order)
+  };
+  predictOverlay.updateSettings(overlaySettings);
+};
+
+export const removeAllPredictResult = () => {
+  const predictOverlays = document.getElementsByClassName('wc-overlay-predict-result');
+  for(const key in predictOverlays) {
+    const overlay = predictOverlays[key];
+    overlay.parentNode.removeChild(overlay);
+  }
 };
 
 export const clearOverlay = (overlay: Overlay) => {

@@ -98,12 +98,7 @@ export const getCategoricalFeatureRange = (features: GeneralFeature[]): FeatureV
 export const submitButtonContentRegexes: RegExp[] = [
   /^(?!.*forg[o|e]t).*(log\W*[i|o]n)/i,
   /^(?!.*forg[o|e]t).*(sign\W*[i|o]n)/i,
-  /continue\W*$/i,
-  /next\W*$/i,
-  /submit\W*$/i,
-  /go\W*$/i,
-  /ok\W*$/i,
-  /save\W*$/i,
+  /(?:\W+|^)submit|continue|next|go|ok|save(?:\W+|$)/i
 ];
 
 export const processStringFeature = (features: GeneralFeatureLabeled[]) => {
