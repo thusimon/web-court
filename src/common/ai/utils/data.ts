@@ -31,7 +31,7 @@ export const convertFeatureToArray = (features: GeneralFeatureLabeled[]): ValueT
   });
 };
 
-export const convertToTensors = (data: number[][], targets: number[], testSplit: number, classLength: number) => {
+export const convertToTensors = (data: number[][], targets: number[], testSplit: number, classLength: number, shuffle: boolean = true) => {
   const numExamples = data.length;
   if (numExamples !== targets.length) {
     throw new Error('data and split have different numbers of examples');
@@ -42,7 +42,9 @@ export const convertToTensors = (data: number[][], targets: number[], testSplit:
   for (let i = 0; i < numExamples; ++i) {
     indices.push(i);
   }
-  tf.util.shuffle(indices);
+  if (shuffle) {
+    tf.util.shuffle(indices);
+  }
 
   const shuffledData = [];
   const shuffledTargets = [];
@@ -72,7 +74,7 @@ export const convertToTensors = (data: number[][], targets: number[], testSplit:
   return [xTrain, yTrain, xTest, yTest];
 };
 
-export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses: string[], testSplit: number) => {
+export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses: string[], testSplit: number, shuffle: boolean = true) => {
   const arrData = convertFeatureToArray(features);
   const classLength = featureClasses.length;
   return tf.tidy(() => {
@@ -95,7 +97,7 @@ export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses
     const yTests = [];
     for (let i = 0; i < classLength; ++i) {
       const [xTrain, yTrain, xTest, yTest] =
-          convertToTensors(dataByClass[i], targetsByClass[i], testSplit, classLength);
+          convertToTensors(dataByClass[i], targetsByClass[i], testSplit, classLength, shuffle);
       xTrains.push(xTrain);
       yTrains.push(yTrain);
       xTests.push(xTest);
@@ -114,10 +116,10 @@ export const getFeatureDataByCategory = (features: GeneralFeatureLabeled[], feat
   switch (featureCategory) {
     case FeatureCategory.Page:
     case FeatureCategory.Inputs:
-      return getFeatureData(features, PageClass, testSplit);
+      return getFeatureData(features, PageClass, testSplit, true);
     case FeatureCategory.Buttons:
       const buttonFeatures = processButtonFeature(features);
-      return getFeatureData(buttonFeatures, ButtonClass, testSplit);
+      return getFeatureData(buttonFeatures, ButtonClass, testSplit, true);
     default:
       break;
   }

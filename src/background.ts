@@ -139,7 +139,7 @@ const messageHandler = (msg: Message, sender: browser.Runtime.MessageSender) => 
     case MessageType.FEATURE_PREDICT: {
       let buttonsFeature = data as GeneralFeature[];
       buttonsFeature = processButtonFeature(buttonsFeature);
-      const buttonsFeatureTensorSplited = getFeatureData(buttonsFeature, ButtonClass, 0);
+      const buttonsFeatureTensorSplited = getFeatureData(buttonsFeature, ButtonClass, 0, false);
       const buttonsFeatureTensor = buttonsFeatureTensorSplited[0];
       return loadModelInFromIndexDB('btn-model')
       .then(model => {

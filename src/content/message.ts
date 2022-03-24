@@ -251,13 +251,14 @@ export const handlePredict = async (message: Message): Promise<void> => {
         data: buttonsFeature
       })
       .then(predictResult => {
-        const [submitProbs, otherProbs] = predictResult as number[][];
-        const submitProbsSorted = submitProbs.slice().sort().reverse();
-        const submitProbsMap = submitProbs.map(prob => ({
+        console.log(predictResult);
+        const [submitLoss, otherLoss] = predictResult as number[][];
+        const otherLossSorted = otherLoss.slice().sort().reverse();
+        const otherLossMap = otherLoss.map(prob => ({
           prob,
-          order: submitProbsSorted.indexOf(prob)
+          order: otherLossSorted.indexOf(prob)
         }));
-        submitProbsMap.forEach((result, idx) => {
+        otherLossMap.forEach((result, idx) => {
           const button = allVisibleButtons[idx];
           addPredictResultAboveDom(button, result.prob, result.order);
         });

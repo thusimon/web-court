@@ -226,7 +226,7 @@ export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
   }, 200);
 };
 
-export const colorMap = ['#90D090', '#96D5B3', '#D5F1E9', '#A89CB5', '#FAF5F8'];
+export const colorMap = ['#8FC0A9', '#BCBF8E', '#D5F1E9', '#A89CB5', '#FAF5F8'];
 
 export const getColorByOrder = (order: number) => {
   return colorMap[order] || '#FAF5F8';
