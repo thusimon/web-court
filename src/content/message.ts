@@ -247,7 +247,7 @@ export const handlePredict = async (message: Message): Promise<void> => {
       }));
       const buttonsFeature = processButtonFeature(allButtonFeatures);
       sendMessageToExtension({
-        type: MessageType.FEATURE_PREDICT,
+        type: MessageType.BTN_FEATURE_PREDICT,
         data: buttonsFeature
       })
       .then(predictResult => {

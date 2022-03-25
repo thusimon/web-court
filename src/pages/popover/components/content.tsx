@@ -20,7 +20,7 @@ const Content: React.FC = () => {
       case 'predict-btn': {
         const currentTab = await getCurrentTab();
         sendMessageToTab(currentTab.id, {
-          type: MessageType.FEATURE_COLLECT,
+          type: MessageType.BTN_FEATURE_COLLECT,
           data: {
             category: buttonName
           }

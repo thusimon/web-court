@@ -115,11 +115,8 @@ export const processStringFeature = (features: GeneralFeatureLabeled[]) => {
     const className = feature.className as string;
     feature.className = submitButtonContentRegexes.some(submitRegex => submitRegex.test(className));
     // TODO add textContent string length feature
-    const textContent = feature.textContent as string;
+    const textContent = (feature.textContent || feature.value) as string;
     feature.textContent = submitButtonContentRegexes.some(submitRegex => submitRegex.test(textContent));
-    // TODO add value string length feature
-    const value = feature.value as string;
-    feature.value = submitButtonContentRegexes.some(submitRegex => submitRegex.test(value));
   });
   return features;
 }

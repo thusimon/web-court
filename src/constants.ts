@@ -46,8 +46,8 @@ export const DEFAULT_OVERLAY_SETTINGS: OverlaySettingsType = {
 
 export enum MessageType {
   CONTEXT_CLICK,
-  FEATURE_COLLECT,
-  FEATURE_PREDICT
+  BTN_FEATURE_COLLECT,
+  BTN_FEATURE_PREDICT
 };
 
 export interface Message {

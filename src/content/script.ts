@@ -53,7 +53,7 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
       handleLabel(message, currentSelectedDom, overlay);
       break;
     }
-    case MessageType.FEATURE_COLLECT: {
+    case MessageType.BTN_FEATURE_COLLECT: {
       handlePredict(message);
       break;
     }

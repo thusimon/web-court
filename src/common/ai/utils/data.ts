@@ -20,12 +20,15 @@ export const toOneHot = (feature: number[], classLength: number) => {
   return tf.oneHot(tf.tensor1d(feature).toInt(), classLength);
 };
 
+export const skipProps = (features: GeneralFeatureLabeled[], excludeProps: string[]): GeneralFeatureLabeled[] => {
+  return features.map(feature => _.omit(feature, excludeProps));
+}
+
 export const convertFeatureToArray = (features: GeneralFeatureLabeled[]): ValueType[][] => {
-  const excludeProps = ['label', 'url', 'tagDiscriptor'];
   const uniqueLabels = _.uniq(features.map(f => f.label));
   return features.map(feature => {
     const label = uniqueLabels.indexOf(feature.label);
-    const cleanedFeature = _.omit(feature, excludeProps);
+    const cleanedFeature = _.omit(feature, ['label']);
     const featureValues = _.values(cleanedFeature);
     return [...featureValues, label];
   });
@@ -115,11 +118,14 @@ export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses
 export const getFeatureDataByCategory = (features: GeneralFeatureLabeled[], featureCategory: FeatureCategory, testSplit: number = 0.1) => {
   switch (featureCategory) {
     case FeatureCategory.Page:
-    case FeatureCategory.Inputs:
-      return getFeatureData(features, PageClass, testSplit, true);
+    case FeatureCategory.Inputs: {
+      const cleanedFeatures = skipProps(features, ['url', 'tagDiscriptor']);
+      return getFeatureData(cleanedFeatures, PageClass, testSplit, true);
+    }
     case FeatureCategory.Buttons:
       const buttonFeatures = processButtonFeature(features);
-      return getFeatureData(buttonFeatures, ButtonClass, testSplit, true);
+      const cleanedFeatures = skipProps(buttonFeatures, ['url', 'tagDiscriptor', 'value', 'tagName', 'disabled', 'type']);
+      return getFeatureData(cleanedFeatures, ButtonClass, testSplit, true);
     default:
       break;
   }
