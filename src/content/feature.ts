@@ -16,7 +16,8 @@ import {
   getNearestInfo,
   getUsernamePasswordGeoFeature,
   SpacialType,
-  sortElementsByDistanceOnAxis
+  sortElementsByDistanceOnAxis,
+  getOffset
 } from './utils/geo';
 import { getDominateColor } from './utils/image';
 import {
@@ -70,24 +71,17 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
   // const buttonColor = getDominateColor(buttonCanvasFeatures);
   // get sorted username inputs
   const usernameInputs = findUsernameInputs(inputs);
-  const usernameInputsSortedX = sortElementsByDistanceOnAxis(button, usernameInputs, 0) as HTMLInputElement[];
-  const usernameInputsSortedY = sortElementsByDistanceOnAxis(button, usernameInputs, 1) as HTMLInputElement[];
-  const usernameInputNearestX = usernameInputsSortedX[0];
-  const usernameInputNearestY = usernameInputsSortedY[0];
-  const usernameInputNearestXGeo = getGeoFeature(usernameInputNearestX, useRatio, 'UX');
-  const usernameInputNearestYGeo = getGeoFeature(usernameInputNearestY, useRatio, 'UY');
-  // TODO add username and password input length and nearest input index
-  const sameUserXY = usernameInputNearestX instanceof HTMLInputElement && usernameInputNearestX === usernameInputNearestY;
+  const usernameInputsSortedByDistance = sortElementsByDistanceOnAxis(button, usernameInputs, true, 2) as HTMLInputElement[];
+  const usernameInputNearest = usernameInputsSortedByDistance[0];
+  const usernameInputNearestOffset = getOffset(usernameInputNearest, button, true, 'U');
 
+  // TODO add username and password input length and nearest input index
+  
   // get sorted password inputs
   const passwordInputs = findPasswordInputs(inputs);
-  const passwordInputsSortedX = sortElementsByDistanceOnAxis(button, passwordInputs, 0) as HTMLInputElement[];
-  const passwordInputsSortedY = sortElementsByDistanceOnAxis(button, passwordInputs, 1) as HTMLInputElement[];
-  const passwordInputNearestX = passwordInputsSortedX[0];
-  const passwordInputNearestY = passwordInputsSortedY[0];
-  const passwordInputNearestXGeo = getGeoFeature(passwordInputNearestX, useRatio, 'PX');
-  const passwordInputNearestYGeo = getGeoFeature(passwordInputNearestY, useRatio, 'PY');
-  const samePassXY = passwordInputNearestX instanceof HTMLInputElement && passwordInputNearestX === passwordInputNearestY;
+  const passwordInputsSortedByDistance = sortElementsByDistanceOnAxis(button, passwordInputs, true, 2) as HTMLInputElement[];
+  const passwordInputNearest = passwordInputsSortedByDistance[0];
+  const passwordInputNearestOffset = getOffset(passwordInputNearest, button, true, 'P');
   
   // merge all the features
 
@@ -100,14 +94,8 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
     //   colorG: buttonColor[1],
     //   colorB: buttonColor[2]
     // },
-    ...usernameInputNearestXGeo,
-    ...usernameInputNearestYGeo,
-    ...passwordInputNearestXGeo,
-    ...passwordInputNearestYGeo,
-    ...{
-      sameUserXY,
-      samePassXY
-    }
+    ...usernameInputNearestOffset,
+    ...passwordInputNearestOffset,
   };
 };
 

@@ -93,6 +93,21 @@ export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true, ke
   return useRatio ? geoP : geo;
 };
 
+export const getOffset = (source: HTMLElement, destination: HTMLElement, useRatio: boolean = true, keyPrefix: string = '') => {
+  const sourceGeo: GeoType = getGeoFeature(source, useRatio, '') as unknown as GeoType;
+  const destGeo: GeoType = getGeoFeature(destination, useRatio, '') as unknown as GeoType;
+  const sourceCenterX = sourceGeo.left + sourceGeo.width / 2;
+  const sourceCenterY = sourceGeo.top + sourceGeo.height / 2;
+  const destCenterX = destGeo.left + destGeo.width / 2;
+  const destCenterY = destGeo.top + destGeo.height / 2;
+  const offsetX = destCenterX - sourceCenterX;
+  const offsetY = destCenterY - sourceCenterY;
+  return {
+    [addKeyPrefix('offsetX', keyPrefix)]: toPrecision(offsetX),
+    [addKeyPrefix('offsetY', keyPrefix)]: toPrecision(offsetY)
+  };
+};
+
 /**
  * get the sorted elements by distance on axis
  * by default on x-axis 
@@ -100,13 +115,13 @@ export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true, ke
  * @param targets
  * @param axis
  */
-export const sortElementsByDistanceOnAxis = (element: HTMLElement, targets: HTMLElement[], axis: number = 0): HTMLElement[] => {
+export const sortElementsByDistanceOnAxis = (element: HTMLElement, targets: HTMLElement[], useRatio: boolean = true, axis: number = 0): HTMLElement[] => {
   const rect = getGeoFeature(element);
   const centerX = rect.left + rect.width / 2;
   const centerY = rect.top + rect.height / 2;
   const sortedTargets = targets.sort((a, b) => {
-    const rectA = getGeoFeature(a);
-    const rectB = getGeoFeature(b);
+    const rectA = getGeoFeature(a, useRatio);
+    const rectB = getGeoFeature(b, useRatio);
     const centerXA = rectA.left + rectA.width / 2;
     const centerYA = rectA.top + rectA.height / 2;
     const centerXB = rectB.left + rectB.width / 2;

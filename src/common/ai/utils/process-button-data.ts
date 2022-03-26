@@ -4,58 +4,68 @@ import { GeneralFeatureLabeled } from '../../storage';
 import { FeatureValueList } from './data';
 
 export enum ButtonFeatureType {
-  auxillary,
   label,
   number,
   string,
   category
 };
 
+export enum ButtonFeaturePriority {
+  active,
+  auxillary,
+  deprecated
+};
+
 export interface ButtonFeature {
   name: string,
-  type: ButtonFeatureType
+  type: ButtonFeatureType,
+  priority: ButtonFeaturePriority
 };
 
 // This varies when collect different features
 export const buttonFeatures: ButtonFeature[] = [
-  { name: 'label', type: ButtonFeatureType.label },
-  { name: 'url', type: ButtonFeatureType.auxillary },
-  { name: 'tagDiscriptor', type: ButtonFeatureType.auxillary },
-  { name: 'PXheight', type: ButtonFeatureType.number }, // nearest user name and password
-  { name: 'PXleft', type: ButtonFeatureType.number },
-  { name: 'PXtop', type: ButtonFeatureType.number },
-  { name: 'PXwidth', type: ButtonFeatureType.number },
-  { name: 'PYheight', type: ButtonFeatureType.number },
-  { name: 'PYleft', type: ButtonFeatureType.number },
-  { name: 'PYtop', type: ButtonFeatureType.number },
-  { name: 'PYwidth', type: ButtonFeatureType.number },
-  { name: 'UXheight', type: ButtonFeatureType.number },
-  { name: 'UXleft', type: ButtonFeatureType.number },
-  { name: 'UXtop', type: ButtonFeatureType.number },
-  { name: 'UXwidth', type: ButtonFeatureType.number },
-  { name: 'UYheight', type: ButtonFeatureType.number },
-  { name: 'UYleft', type: ButtonFeatureType.number },
-  { name: 'UYtop', type: ButtonFeatureType.number },
-  { name: 'UYwidth', type: ButtonFeatureType.number},
-  { name: 'borderRadius', type: ButtonFeatureType.number }, // css
-  { name: 'colorB', type: ButtonFeatureType.number },
-  { name: 'colorG', type: ButtonFeatureType.number },
-  { name: 'colorR', type: ButtonFeatureType.number },
-  { name: 'left', type: ButtonFeatureType.number }, // geometry
-  { name: 'top', type: ButtonFeatureType.number },
-  { name: 'width', type: ButtonFeatureType.number },
-  { name: 'height', type: ButtonFeatureType.number },
+  { name: 'label', type: ButtonFeatureType.label, priority: ButtonFeaturePriority.active },
+  { name: 'url', type: ButtonFeatureType.string, priority: ButtonFeaturePriority.auxillary },
+  { name: 'tagDiscriptor', type: ButtonFeatureType.string, priority: ButtonFeaturePriority.auxillary },
+  { name: 'PXheight', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated }, // nearest user name and password
+  { name: 'PXleft', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'PXtop', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'PXwidth', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'PYheight', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'PYleft', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'PYtop', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'PYwidth', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'UXheight', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'UXleft', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'UXtop', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'UXwidth', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'UYheight', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'UYleft', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'UYtop', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'UYwidth', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'UoffsetX', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.active },
+  { name: 'UoffsetY', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.active },
+  { name: 'PoffsetX', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.active },
+  { name: 'PoffsetX', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.active },
+  { name: 'borderRadius', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.active }, // css
+  { name: 'colorB', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'colorG', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'colorR', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.deprecated },
+  { name: 'left', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.active }, // geometry
+  { name: 'top', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.active },
+  { name: 'width', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.active },
+  { name: 'height', type: ButtonFeatureType.number, priority: ButtonFeaturePriority.active },
   // string and categorical feature
-  { name: 'id', type: ButtonFeatureType.string }, // dom
-  { name: 'name', type: ButtonFeatureType.string },
-  { name: 'tagName', type: ButtonFeatureType.category },
-  { name: 'value', type: ButtonFeatureType.string },
-  { name: 'textContent', type: ButtonFeatureType.string },
-  { name: 'type', type: ButtonFeatureType.category },
-  { name: 'className', type: ButtonFeatureType.string },
-  { name: 'disabled', type: ButtonFeatureType.category },
-  { name: 'samePassXY', type: ButtonFeatureType.category },
-  { name: 'sameUserXY', type: ButtonFeatureType.category }
+  { name: 'id', type: ButtonFeatureType.string, priority: ButtonFeaturePriority.active }, // dom
+  { name: 'name', type: ButtonFeatureType.string, priority: ButtonFeaturePriority.active },
+  { name: 'tagName', type: ButtonFeatureType.category, priority: ButtonFeaturePriority.active },
+  { name: 'value', type: ButtonFeatureType.string, priority: ButtonFeaturePriority.active },
+  { name: 'textContent', type: ButtonFeatureType.string, priority: ButtonFeaturePriority.active },
+  { name: 'type', type: ButtonFeatureType.category, priority: ButtonFeaturePriority.deprecated },
+  { name: 'className', type: ButtonFeatureType.string, priority: ButtonFeaturePriority.active },
+  { name: 'disabled', type: ButtonFeatureType.category, priority: ButtonFeaturePriority.deprecated },
+  { name: 'samePassXY', type: ButtonFeatureType.category, priority: ButtonFeaturePriority.deprecated },
+  { name: 'sameUserXY', type: ButtonFeatureType.category, priority: ButtonFeaturePriority.deprecated }
 ];
 
 export const getCategoricalFeatureRange = (features: GeneralFeature[]): FeatureValueList => {
@@ -106,6 +116,14 @@ export const submitButtonContentRegexes: RegExp[] = [
   /(?:\W+|^)save\W*$/i
 ];
 
+export const skipNonActiveProperties = (features: GeneralFeatureLabeled[]) => {
+  const deprecatedProps = buttonFeatures.filter(bf => bf.priority != ButtonFeaturePriority.active)
+    .map(bf => bf.name);
+  return features.map(feature => {
+    return _.omit(feature, deprecatedProps);
+  });
+};
+
 export const processStringFeature = (features: GeneralFeatureLabeled[]) => {
   features.forEach(feature => {
     const id = feature.id as string;
@@ -142,6 +160,7 @@ export const processCategoryFeature = (features: GeneralFeatureLabeled[]): Gener
 };
 
 export const processButtonFeature = _.flow([
+  skipNonActiveProperties,
   processStringFeature,
   processCategoryFeature
 ]);

@@ -24,13 +24,17 @@ export const skipProps = (features: GeneralFeatureLabeled[], excludeProps: strin
   return features.map(feature => _.omit(feature, excludeProps));
 }
 
-export const convertFeatureToArray = (features: GeneralFeatureLabeled[]): ValueType[][] => {
+export const convertFeatureToArray = (features: GeneralFeatureLabeled[], useLabel: boolean = true): ValueType[][] => {
   const uniqueLabels = _.uniq(features.map(f => f.label));
   return features.map(feature => {
     const label = uniqueLabels.indexOf(feature.label);
     const cleanedFeature = _.omit(feature, ['label']);
     const featureValues = _.values(cleanedFeature);
-    return [...featureValues, label];
+    if (useLabel) {
+      return [...featureValues, label];
+    } else {
+      return featureValues;
+    }
   });
 };
 
@@ -77,8 +81,8 @@ export const convertToTensors = (data: number[][], targets: number[], testSplit:
   return [xTrain, yTrain, xTest, yTest];
 };
 
-export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses: string[], testSplit: number, shuffle: boolean = true) => {
-  const arrData = convertFeatureToArray(features);
+export const getFeatureData = (features: GeneralFeatureLabeled[], featureClasses: string[], testSplit: number, shuffle: boolean = true, useLabel: boolean = true) => {
+  const arrData = convertFeatureToArray(features, useLabel);
   const classLength = featureClasses.length;
   return tf.tidy(() => {
     const dataByClass = [];
@@ -120,12 +124,11 @@ export const getFeatureDataByCategory = (features: GeneralFeatureLabeled[], feat
     case FeatureCategory.Page:
     case FeatureCategory.Inputs: {
       const cleanedFeatures = skipProps(features, ['url', 'tagDiscriptor']);
-      return getFeatureData(cleanedFeatures, PageClass, testSplit, true);
+      return getFeatureData(cleanedFeatures, PageClass, testSplit, true, true);
     }
     case FeatureCategory.Buttons:
       const buttonFeatures = processButtonFeature(features);
-      const cleanedFeatures = skipProps(buttonFeatures, ['url', 'tagDiscriptor', 'value', 'tagName', 'disabled', 'type']);
-      return getFeatureData(cleanedFeatures, ButtonClass, testSplit, true);
+      return getFeatureData(buttonFeatures, ButtonClass, testSplit, true, true);
     default:
       break;
   }

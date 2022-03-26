@@ -6,7 +6,7 @@ import { loadModelInFromIndexDB } from './common/storage';
 import { sendMessageToTab } from './common/tabs';
 import { GeneralFeature } from './content/feature';
 import { processButtonFeature } from './common/ai/utils/process-button-data';
-import { ButtonClass, getFeatureData, skipProps } from './common/ai/utils/data';
+import { ButtonClass, getFeatureData } from './common/ai/utils/data';
 
 // create context menu
 
@@ -137,10 +137,9 @@ const messageHandler = (msg: Message, sender: browser.Runtime.MessageSender) => 
   const {type, data} = msg;
   switch (type) {
     case MessageType.BTN_FEATURE_PREDICT: {
-      let buttonsFeature = data as GeneralFeature[];
-      buttonsFeature = processButtonFeature(buttonsFeature);
-      buttonsFeature = skipProps(buttonsFeature, ['url', 'tagDiscriptor', 'value', 'tagName', 'disabled', 'type']);
-      const buttonsFeatureTensorSplited = getFeatureData(buttonsFeature, ButtonClass, 0, false);
+      const buttonsFeature = data as GeneralFeature[];
+      const processedButtonsFeature = processButtonFeature(buttonsFeature);
+      const buttonsFeatureTensorSplited = getFeatureData(processedButtonsFeature, ButtonClass, 0, false, false);
       const buttonsFeatureTensor = buttonsFeatureTensorSplited[0];
       return loadModelInFromIndexDB('btn-model')
       .then(model => {
