@@ -60,9 +60,9 @@ export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true, ke
     };
     const geoP = {
       [addKeyPrefix('topP', keyPrefix)]: 0,
-        [addKeyPrefix('leftP', keyPrefix)]: 0,
-        [addKeyPrefix('widthP', keyPrefix)]: 0,
-        [addKeyPrefix('heightP', keyPrefix)]: 0
+      [addKeyPrefix('leftP', keyPrefix)]: 0,
+      [addKeyPrefix('widthP', keyPrefix)]: 0,
+      [addKeyPrefix('heightP', keyPrefix)]: 0
     };
     return useRatio ? geoP : geo;
   }
@@ -96,10 +96,18 @@ export const getGeoFeature = (element: HTMLElement, useRatio: boolean = true, ke
 export const getOffset = (source: HTMLElement, destination: HTMLElement, useRatio: boolean = true, keyPrefix: string = '') => {
   const sourceGeo: GeoType = getGeoFeature(source, useRatio, '') as unknown as GeoType;
   const destGeo: GeoType = getGeoFeature(destination, useRatio, '') as unknown as GeoType;
-  const sourceCenterX = sourceGeo.left + sourceGeo.width / 2;
-  const sourceCenterY = sourceGeo.top + sourceGeo.height / 2;
-  const destCenterX = destGeo.left + destGeo.width / 2;
-  const destCenterY = destGeo.top + destGeo.height / 2;
+  const sourceLeft = useRatio ? sourceGeo.leftP : sourceGeo.left;
+  const sourceWidth = useRatio ? sourceGeo.widthP : sourceGeo.width;
+  const sourceTop = useRatio ? sourceGeo.topP : sourceGeo.top;
+  const sourceHeight = useRatio ? sourceGeo.heightP : sourceGeo.height;
+  const destLeft = useRatio ? destGeo.leftP : destGeo.left;
+  const destWidth = useRatio ? destGeo.widthP : destGeo.width;
+  const destTop = useRatio ? destGeo.topP : destGeo.top;
+  const destHeight = useRatio ? destGeo.heightP : destGeo.height;
+  const sourceCenterX = sourceLeft + sourceWidth / 2;
+  const sourceCenterY = sourceTop + sourceHeight / 2;
+  const destCenterX = destLeft + destWidth / 2;
+  const destCenterY = destTop + destHeight / 2;
   const offsetX = destCenterX - sourceCenterX;
   const offsetY = destCenterY - sourceCenterY;
   return {

@@ -90,7 +90,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT_ONLY: {
       const allVisiableInputs = findVisibleInputs();
-      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs);
+      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs, false);
       const submitFeatureLabeled = {
         ...data,
         ...submitFeatures,
@@ -104,7 +104,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT_OTHER: {
       const allVisiableInputs = findVisibleInputs();
-      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs);
+      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs, false);
       const submitFeatureLabeled = {
         ...data,
         ...submitFeatures,
@@ -112,7 +112,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       };
       const otherButtons = findVisibleButtons().filter(button => button != dom);
       const otherButtonsFeatureLabeled = await Promise.all(otherButtons.map(async button => {
-        const buttonFeature = await getButtonFeatures(button, allVisiableInputs);
+        const buttonFeature = await getButtonFeatures(button, allVisiableInputs, false);
         return {
           ...data,
           ...buttonFeature,
@@ -129,7 +129,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
     }
     case CONTEXT_MENU_IDS.LABEL_BUTTON_OTHER: {
       const allVisiableInputs = findVisibleInputs();
-      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs);
+      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs, false);
       const submitFeatureLabeled = {
         ...data,
         ...submitFeatures,
@@ -143,7 +143,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
     }
     case CONTEXT_MENU_IDS.LABEL_BUTTON_OTHER_ALL: {
       const allVisiableInputs = findVisibleInputs();
-      const otherButtonFeatures = await getButtonFeatures(dom, allVisiableInputs);
+      const otherButtonFeatures = await getButtonFeatures(dom, allVisiableInputs, false);
       const otherFeatureLabeled = {
         ...data,
         ...otherButtonFeatures,
@@ -151,7 +151,7 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       };
       const restButtons = findVisibleButtons().filter(button => button != dom);
       const restButtonsFeatureLabeled = await Promise.all(restButtons.map(async button => {
-        const buttonFeature = await getButtonFeatures(button, allVisiableInputs);
+        const buttonFeature = await getButtonFeatures(button, allVisiableInputs, false);
         return {
           ...data,
           ...buttonFeature,
@@ -239,7 +239,7 @@ export const handlePredict = async (message: Message): Promise<void> => {
         break;
       }
       const allButtonFeatures = await Promise.all(allVisibleButtons.map(async button => {
-        const buttonFeature =  await getButtonFeatures(button, allVisiableInputs);
+        const buttonFeature =  await getButtonFeatures(button, allVisiableInputs, false);
         return {
           ...buttonFeature,
           label: LabelResult.field_submit

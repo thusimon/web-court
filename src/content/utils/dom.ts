@@ -169,9 +169,7 @@ export const getCSSProperties = (element: HTMLElement): CSSPropertyType => {
   const cssStyle = window.getComputedStyle(element);
   const textSecurity = cssStyle.getPropertyValue('-webkit-text-security');
   const fontFamily = cssStyle.getPropertyValue('font-family');
-  const rect = element.getBoundingClientRect();
-  const maxSize = _.max([rect.width, rect.height]);
-  const borderRadius = parseFloat(cssStyle.getPropertyValue('border-radius')) / maxSize;
+  const borderRadius = parseFloat(cssStyle.getPropertyValue('border-radius'));
   return {
     textSecurity,
     fontFamily,

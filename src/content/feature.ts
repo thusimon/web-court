@@ -71,17 +71,17 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
   // const buttonColor = getDominateColor(buttonCanvasFeatures);
   // get sorted username inputs
   const usernameInputs = findUsernameInputs(inputs);
-  const usernameInputsSortedByDistance = sortElementsByDistanceOnAxis(button, usernameInputs, true, 2) as HTMLInputElement[];
+  const usernameInputsSortedByDistance = sortElementsByDistanceOnAxis(button, usernameInputs, useRatio, 2) as HTMLInputElement[];
   const usernameInputNearest = usernameInputsSortedByDistance[0];
-  const usernameInputNearestOffset = getOffset(usernameInputNearest, button, true, 'U');
+  const usernameInputNearestOffset = getOffset(usernameInputNearest, button, useRatio, 'U');
 
   // TODO add username and password input length and nearest input index
   
   // get sorted password inputs
   const passwordInputs = findPasswordInputs(inputs);
-  const passwordInputsSortedByDistance = sortElementsByDistanceOnAxis(button, passwordInputs, true, 2) as HTMLInputElement[];
+  const passwordInputsSortedByDistance = sortElementsByDistanceOnAxis(button, passwordInputs, useRatio, 2) as HTMLInputElement[];
   const passwordInputNearest = passwordInputsSortedByDistance[0];
-  const passwordInputNearestOffset = getOffset(passwordInputNearest, button, true, 'P');
+  const passwordInputNearestOffset = getOffset(passwordInputNearest, button, useRatio, 'P');
   
   // merge all the features
 
