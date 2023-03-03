@@ -47,7 +47,8 @@ export const DEFAULT_OVERLAY_SETTINGS: OverlaySettingsType = {
 export enum MessageType {
   CONTEXT_CLICK,
   BTN_FEATURE_COLLECT,
-  BTN_FEATURE_PREDICT
+  BTN_FEATURE_PREDICT,
+  TAKE_SCREENSHOT
 };
 
 export interface Message {
@@ -121,5 +122,5 @@ export interface Model {
 };
 
 export interface ImageDataCanvas extends ImageData {
-  colorSpace: string;
+  colorSpace: PredefinedColorSpace;
 };

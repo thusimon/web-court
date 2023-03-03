@@ -24,7 +24,12 @@
     "contextMenus",
     "downloads",
     "storage",
-    "unlimitedStorage"
+    "unlimitedStorage",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://*/*",
+    "https://*/*"
   ],
   "action": {
     "default_icon": {

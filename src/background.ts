@@ -133,7 +133,7 @@ browser.contextMenus.onClicked.addListener(contextMenuClickHandler);
 
 // do not use async listener callback, since it will block all the other messages, impairs performance
 // return promise inside the handler instead
-const messageHandler = (msg: Message, sender: browser.Runtime.MessageSender) => {
+const messageHandler = async (msg: Message, sender: browser.Runtime.MessageSender) => {
   const {type, data} = msg;
   switch (type) {
     case MessageType.BTN_FEATURE_PREDICT: {
@@ -156,6 +156,15 @@ const messageHandler = (msg: Message, sender: browser.Runtime.MessageSender) => 
         }
         return predictResult;
       })
+    }
+    case MessageType.TAKE_SCREENSHOT: {
+      try {
+        const wholeImage = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
+        console.log(wholeImage);
+      } catch(e) {
+        console.log(e);
+      }
+      break;
     }
     default:
       break;
