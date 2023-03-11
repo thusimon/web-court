@@ -27,7 +27,8 @@ const contextMenuActions = [
   CONTEXT_MENU_IDS.LABEL_CHANGE_PASS,
   CONTEXT_MENU_IDS.LABEL_SIGNUP,
   CONTEXT_MENU_IDS.LABEL_PAGE_OTHER,
-  CONTEXT_MENU_IDS.LABEL_CLEAR_ALL
+  CONTEXT_MENU_IDS.LABEL_CLEAR_ALL,
+  CONTEXT_MENU_IDS.LABEL_IMAGE
 ]
 
 export interface LabelData {
@@ -222,6 +223,10 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       restoreDomHighlight([dom]);
       clearOverlay(overlay);
       return Promise.resolve();
+    }
+    case CONTEXT_MENU_IDS.LABEL_IMAGE: {
+      console.log('clicked label image');
+      return;
     }
     default:
       break;
