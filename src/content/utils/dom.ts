@@ -1,7 +1,6 @@
 import _ from 'lodash';
 import { MIN_ELEMENT_SIZE, MIN_ELEMENT_OPACITY, OVERLAY_MODE, InputFieldType, ImageDataCanvas } from  '../../constants';
 import Overlay, { OverlaySettingsType } from '../components/overlay';
-import html2canvas from 'html2canvas';
 import { toPrecision } from './numbers';
 export interface DomAttributeType {
   type?: string;
@@ -177,13 +176,6 @@ export const getCSSProperties = (element: HTMLElement): CSSPropertyType => {
   };
 };
 
-export const getCanvasImageData = async (element: HTMLElement): Promise<ImageDataCanvas> => {
-  const canvas = await html2canvas(element);
-  const context = canvas.getContext('2d');
-  const imageData = context.getImageData(0, 0, canvas.width, canvas.height) as ImageDataCanvas;
-  return imageData;
-}
-
 export const highlightLabeledDoms = (doms: HTMLElement[], color: string) => {
   if (!doms) {
     return;
@@ -223,6 +215,19 @@ export const addTooltipUnderDom = (dom: HTMLElement, overlay: Overlay) => {
     overlay.updateSettings(overlaySettings);
   }, 200);
 };
+
+export const addRectOnPage = (overlay: Overlay, top: number, left: number, text: string, width: number = 200, height: number = 200) => {
+  const overlaySettings: OverlaySettingsType = {
+    top,
+    left,
+    width,
+    height,
+    mode: OVERLAY_MODE.RECT,
+    text,
+    backgroundColor: 'rgba(51, 170, 51, .1)'
+  };
+  overlay.updateSettings(overlaySettings);
+}
 
 export const colorMap = ['#8FC0A9', '#BCBF8E', '#D5F1E9', '#A89CB5', '#FAF5F8'];
 

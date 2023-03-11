@@ -43,14 +43,21 @@ document.addEventListener('keyup', (evt) => {
 
 // add overlay at the bottom of the body
 const overlay = document.createElement('wc-overlay') as Overlay;
+const overlayRectForm = document.createElement('wc-overlay') as Overlay;
+const overlayRectButton = document.createElement('wc-overlay') as Overlay;
+
 overlay.id = `${WEBCOURT_UID}-overlay`;
-document.body.append(overlay);
+overlayRectForm.id = `${WEBCOURT_UID}-overlayForm`;
+overlayRectButton.id = `${WEBCOURT_UID}-overlayButton`;
+
+const overlays = [overlay, overlayRectForm, overlayRectButton];
+document.body.append(...overlays);
 
 // register message listener
 browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime.MessageSender) => {
   switch (message.type) {
     case MessageType.CONTEXT_CLICK: {
-      handleLabel(message, currentSelectedDom, overlay);
+      handleLabel(message, currentSelectedDom, overlays);
       break;
     }
     case MessageType.BTN_FEATURE_COLLECT: {

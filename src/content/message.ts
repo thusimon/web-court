@@ -10,7 +10,8 @@ import {
   clearOverlay,
   findVisibleInputs,
   findVisibleButtons,
-  addPredictResultAboveDom
+  addPredictResultAboveDom,
+  addRectOnPage
 } from './utils/dom';
 import { Message, CONTEXT_MENU_IDS, LabelResult, FeatureCategory, MessageType } from '../constants';
 import Overlay from './components/overlay';
@@ -40,7 +41,8 @@ export interface PredictData {
   category: string;
 }
 
-export const handleLabel = async (message: Message, dom: HTMLElement, overlay: Overlay): Promise<void> => {
+export const handleLabel = async (message: Message, dom: HTMLElement, overlays: Overlay[]): Promise<void> => {
+  const [overlay, overlayRectForm, overlayRectButton] = overlays;
   if (!dom) {
     return;
   }
@@ -225,7 +227,15 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlay: O
       return Promise.resolve();
     }
     case CONTEXT_MENU_IDS.LABEL_IMAGE: {
-      console.log('clicked label image');
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
+      const formLeft = Math.max(windowWidth / 2 - 250, 0);
+      const buttonLeft = Math.min(windowWidth / 2 + 250, windowWidth - 200);
+      const rectTop = windowHeight / 2 - 100;
+      const rectFormPos = overlayRectForm.getBoundingClientRect();
+      const rectButtonPos = overlayRectButton.getBoundingClientRect();
+      addRectOnPage(overlayRectForm, rectTop - rectFormPos.top, formLeft - rectFormPos.left, 'Login Form', 200, 200);
+      addRectOnPage(overlayRectButton, rectTop - rectButtonPos.top, buttonLeft - rectButtonPos.left, 'Submit Button', 150, 80);
       return;
     }
     default:

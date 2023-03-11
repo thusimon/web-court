@@ -6,8 +6,7 @@ import {
   findUsernameInputs,
   findPasswordInputs,
   getDomAttributes,
-  getCSSProperties,
-  getCanvasImageData
+  getCSSProperties
 } from './utils/dom';
 import {
   GeoType,

@@ -78,7 +78,7 @@ export const reducer = (state: AppContextType, action: ActionType) => {
   }
 };
 
-export const ContextProvider: React.FC = ({ children }) => {
+export const ContextProvider: React.FC<React.PropsWithChildren<any>> = ({ children }) => {
   const [state, dispatch] = useReducer(reducer, initContextState);
 
   return (

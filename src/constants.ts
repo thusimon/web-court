@@ -34,6 +34,7 @@ export const CONTEXT_MENU_IDS = {
 
 export enum OVERLAY_MODE {
   TOOLTIP,
+  RECT,
   EMPTY
 };
 
