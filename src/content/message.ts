@@ -234,8 +234,8 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlays: 
       const rectTop = windowHeight / 2 - 100;
       const rectFormPos = overlayRectForm.getBoundingClientRect();
       const rectButtonPos = overlayRectButton.getBoundingClientRect();
-      addRectOnPage(overlayRectForm, rectTop - rectFormPos.top, formLeft - rectFormPos.left, 'Login Form', 200, 200);
-      addRectOnPage(overlayRectButton, rectTop - rectButtonPos.top, buttonLeft - rectButtonPos.left, 'Submit Button', 150, 80);
+      addRectOnPage(overlayRectForm, rectTop - rectFormPos.top, formLeft - rectFormPos.left, 'WebCourt: Login Form', 200, 200);
+      addRectOnPage(overlayRectButton, rectTop - rectButtonPos.top, buttonLeft - rectButtonPos.left, 'WebCourt: Submit Button', 150, 80);
       return;
     }
     default:

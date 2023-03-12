@@ -41,11 +41,24 @@ class Overlay extends LitElement {
       justify-content: center;
       align-items: center;
       user-select: none;
-      cursor: pointer;
+      cursor: move;
+      border: 2px solid black;
+    }
+    .rect-anchor {
+      position: absolute;
+      top: calc(var(--settings-top) + var(--settings-height) + 5px);
+      left: calc(var(--settings-left) + var(--settings-width) + 5px);
+      width: 3px;
+      height: 3px;
+      border: 3px solid red;
+      border-radius: 50%;
+      cursor: crosshair;
+      background: red;
     }
   `;
 
   @state() public settings: OverlaySettingsType = DEFAULT_OVERLAY_SETTINGS
+  changeType: string;
 
   render() {
     return this.content;
@@ -62,11 +75,18 @@ class Overlay extends LitElement {
       case OVERLAY_MODE.TOOLTIP:
         return html`<div id="${WEBCOURT_UID}-tooltip" class="content">${text}</div>`;
       case OVERLAY_MODE.RECT:
-        return html`<div id="${WEBCOURT_UID}-rect" class="content rect" draggable="true"
-          @dragstart="${this.dragStart}"
-          @dragend="${this.dragEnd}"
-          @click="${this.dragStart}"
-        >${text}</div>`;
+        return html`<div id="${WEBCOURT_UID}-rect" class="content rect"
+          @mousedown="${this.mouseDown}"
+          @mouseup="${this.mouseUp}"
+          @mousemove="${this.mouseMove}"
+        >
+          ${text}
+        </div>
+        <div id="${WEBCOURT_UID}-rect-resize-anchor" class="rect-anchor"
+          @mousedown="${this.mouseDown}"
+          @mouseup="${this.mouseUp}"
+          @mousemove="${this.mouseMove}"
+        ></div>`;
       default:
         return html``;
     }
@@ -76,13 +96,49 @@ class Overlay extends LitElement {
     this.settings = settings;
   }
 
-  dragStart(evt: Event) {
-    console.log(79, evt);
+  mouseDown(evt: MouseEvent) {
+    const target = evt.target as HTMLElement;
+    switch (target.id) {
+      case `${WEBCOURT_UID}-rect`:
+        this.changeType = 'move';
+        break;
+      case `${WEBCOURT_UID}-rect-resize-anchor`:
+        this.changeType = 'resize';
+        break;
+      default:
+        this.changeType = '';
+        break;
+    }
   }
 
-  dragEnd(evt: Event) {
-    console.log(82, evt);
+  mouseUp(evt: MouseEvent) {
+    this.changeType = '';
   }
+
+  mouseMove(evt: MouseEvent) {
+    switch (this.changeType) {
+      case 'move': {
+        const { movementX, movementY } = evt;
+        this.settings.top += movementY;
+        this.settings.left += movementX;
+        this.style.setProperty('--settings-top', `${this.settings.top}px`);
+        this.style.setProperty('--settings-left', `${this.settings.left}px`);
+        break;
+      }
+      case 'resize': {
+        const { movementX, movementY } = evt;
+        this.settings.width += movementX;
+        this.settings.height += movementY;
+        this.style.setProperty('--settings-width', `${this.settings.width}px`);
+        this.style.setProperty('--settings-height', `${this.settings.height}px`);
+        break;
+      }
+      default: {
+        break;
+      }
+    }
+  }
+
   clear() {
     this.settings = DEFAULT_OVERLAY_SETTINGS;
   }
