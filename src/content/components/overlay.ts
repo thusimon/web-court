@@ -10,7 +10,8 @@ export type OverlaySettingsType = {
   left: number,
   width?: number,
   height?: number,
-  backgroundColor: string
+  backgroundColor: string,
+  callback?: (evt: MouseEvent) => void
 };
 
 @customElement('wc-overlay')
@@ -36,6 +37,9 @@ class Overlay extends LitElement {
       width: var(--settings-width);
       height: var(--settings-height);
     }
+    .btn {
+      cursor: pointer;
+    }
     .rect {
       display: flex;
       justify-content: center;
@@ -46,11 +50,10 @@ class Overlay extends LitElement {
     }
     .rect-anchor {
       position: absolute;
-      top: calc(var(--settings-top) + var(--settings-height) + 5px);
-      left: calc(var(--settings-left) + var(--settings-width) + 5px);
-      width: 3px;
-      height: 3px;
-      border: 3px solid red;
+      top: calc(var(--settings-top) + var(--settings-height) - 5px);
+      left: calc(var(--settings-left) + var(--settings-width) - 5px);
+      width: 20px;
+      height: 20px;
       border-radius: 50%;
       cursor: crosshair;
       background: red;
@@ -59,6 +62,7 @@ class Overlay extends LitElement {
 
   @state() public settings: OverlaySettingsType = DEFAULT_OVERLAY_SETTINGS
   changeType: string;
+  callback: (evt: MouseEvent) => void;
 
   render() {
     return this.content;
@@ -76,17 +80,21 @@ class Overlay extends LitElement {
         return html`<div id="${WEBCOURT_UID}-tooltip" class="content">${text}</div>`;
       case OVERLAY_MODE.RECT:
         return html`<div id="${WEBCOURT_UID}-rect" class="content rect"
-          @mousedown="${this.mouseDown}"
-          @mouseup="${this.mouseUp}"
-          @mousemove="${this.mouseMove}"
+          @mousedown="${this.onMouseDown}"
+          @mouseup="${this.onMouseUp}"
+          @mousemove="${this.onMouseMove}"
         >
           ${text}
         </div>
         <div id="${WEBCOURT_UID}-rect-resize-anchor" class="rect-anchor"
-          @mousedown="${this.mouseDown}"
-          @mouseup="${this.mouseUp}"
-          @mousemove="${this.mouseMove}"
+          @mousedown="${this.onMouseDown}"
+          @mouseup="${this.onMouseUp}"
+          @mousemove="${this.onMouseMove}"
         ></div>`;
+      case OVERLAY_MODE.BUTTON:
+        return html`<button id="${WEBCOURT_UID}-btn" class="content btn"
+          @click="${this.onClick}"
+        >${text}</button>`
       default:
         return html``;
     }
@@ -94,9 +102,12 @@ class Overlay extends LitElement {
 
   updateSettings(settings: OverlaySettingsType) {
     this.settings = settings;
+    if (settings.callback) {
+      this.callback = settings.callback;
+    }
   }
 
-  mouseDown(evt: MouseEvent) {
+  onMouseDown(evt: MouseEvent) {
     const target = evt.target as HTMLElement;
     switch (target.id) {
       case `${WEBCOURT_UID}-rect`:
@@ -111,11 +122,11 @@ class Overlay extends LitElement {
     }
   }
 
-  mouseUp(evt: MouseEvent) {
+  onMouseUp(evt: MouseEvent) {
     this.changeType = '';
   }
 
-  mouseMove(evt: MouseEvent) {
+  onMouseMove(evt: MouseEvent) {
     switch (this.changeType) {
       case 'move': {
         const { movementX, movementY } = evt;
@@ -136,6 +147,12 @@ class Overlay extends LitElement {
       default: {
         break;
       }
+    }
+  }
+
+  onClick(evt: MouseEvent) {
+    if(this.callback) {
+      this.callback(evt);
     }
   }
 

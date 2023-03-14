@@ -11,7 +11,8 @@ import {
   findVisibleInputs,
   findVisibleButtons,
   addPredictResultAboveDom,
-  addRectOnPage
+  addRectOnPage,
+  addButtonOnPage
 } from './utils/dom';
 import { Message, CONTEXT_MENU_IDS, LabelResult, FeatureCategory, MessageType } from '../constants';
 import Overlay from './components/overlay';
@@ -42,7 +43,7 @@ export interface PredictData {
 }
 
 export const handleLabel = async (message: Message, dom: HTMLElement, overlays: Overlay[]): Promise<void> => {
-  const [overlay, overlayRectForm, overlayRectButton] = overlays;
+  const [overlay, overlayRectForm, overlayRectButton, overlaySave] = overlays;
   if (!dom) {
     return;
   }
@@ -231,11 +232,17 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlays: 
       const windowHeight = window.innerHeight;
       const formLeft = Math.max(windowWidth / 2 - 250, 0);
       const buttonLeft = Math.min(windowWidth / 2 + 250, windowWidth - 200);
+      const saveLeft = Math.max(windowWidth - 60 - 40, 0);
       const rectTop = windowHeight / 2 - 100;
+      const saveTop = 20;
       const rectFormPos = overlayRectForm.getBoundingClientRect();
       const rectButtonPos = overlayRectButton.getBoundingClientRect();
+      const savePos = overlaySave.getBoundingClientRect();
       addRectOnPage(overlayRectForm, rectTop - rectFormPos.top, formLeft - rectFormPos.left, 'WebCourt: Login Form', 200, 200);
       addRectOnPage(overlayRectButton, rectTop - rectButtonPos.top, buttonLeft - rectButtonPos.left, 'WebCourt: Submit Button', 150, 80);
+      addButtonOnPage(overlaySave, saveTop - savePos.top, saveLeft - savePos.left, 'Label', (evt) => {
+        console.log('label button clicked!');
+      }, 60, 30);
       return;
     }
     default:

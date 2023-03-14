@@ -229,6 +229,20 @@ export const addRectOnPage = (overlay: Overlay, top: number, left: number, text:
   overlay.updateSettings(overlaySettings);
 }
 
+export const addButtonOnPage = (overlay: Overlay, top: number, left: number, text: string, callback: (evt: MouseEvent) => void, width: number = 80, height: number = 40) => {
+  const overlaySettings: OverlaySettingsType = {
+    top,
+    left,
+    width,
+    height,
+    mode: OVERLAY_MODE.BUTTON,
+    text,
+    backgroundColor: 'lightgray',
+    callback,
+  };
+  overlay.updateSettings(overlaySettings);
+}
+
 export const colorMap = ['#8FC0A9', '#BCBF8E', '#D5F1E9', '#A89CB5', '#FAF5F8'];
 
 export const getColorByOrder = (order: number) => {

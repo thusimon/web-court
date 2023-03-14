@@ -27,7 +27,7 @@ document.addEventListener('contextmenu', (evt) => {
   }
   currentSelectedDom = target;
   //highlightPendingDom(currentSelectedDom);
-  addTooltipUnderDom(currentSelectedDom, overlay);
+  //addTooltipUnderDom(currentSelectedDom, overlay);
 });
 
 setInterval(() => {
@@ -45,12 +45,14 @@ document.addEventListener('keyup', (evt) => {
 const overlay = document.createElement('wc-overlay') as Overlay;
 const overlayRectForm = document.createElement('wc-overlay') as Overlay;
 const overlayRectButton = document.createElement('wc-overlay') as Overlay;
+const overlaySaveButton = document.createElement('wc-overlay') as Overlay;
 
 overlay.id = `${WEBCOURT_UID}-overlay`;
 overlayRectForm.id = `${WEBCOURT_UID}-overlayForm`;
 overlayRectButton.id = `${WEBCOURT_UID}-overlayButton`;
+overlaySaveButton.id = `${WEBCOURT_UID}-overlaySave`;
 
-const overlays = [overlay, overlayRectForm, overlayRectButton];
+const overlays = [overlay, overlayRectForm, overlayRectButton, overlaySaveButton];
 document.body.append(...overlays);
 
 // register message listener
