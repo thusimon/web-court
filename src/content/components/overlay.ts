@@ -156,8 +156,15 @@ class Overlay extends LitElement {
     }
   }
 
-  clear() {
+  async clear() {
     this.settings = DEFAULT_OVERLAY_SETTINGS;
+    let complete = false;
+    try {
+      complete = await this.updateComplete
+    } catch (e) {
+      // 
+    }
+    return complete;
   }
 }
 

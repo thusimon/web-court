@@ -70,5 +70,3 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
       break;
   }
 });
-
-browser.runtime.sendMessage({type: MessageType.TAKE_SCREENSHOT});

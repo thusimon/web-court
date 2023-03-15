@@ -14,10 +14,11 @@ import {
   addRectOnPage,
   addButtonOnPage
 } from './utils/dom';
-import { Message, CONTEXT_MENU_IDS, LabelResult, FeatureCategory, MessageType } from '../constants';
+import { Message, CONTEXT_MENU_IDS, LabelResult, FeatureCategory, MessageType, WEBCOURT_UID, TAKE_SCREENSHOT_DELAY } from '../constants';
 import Overlay from './components/overlay';
 import { processButtonFeature } from '../common/ai/utils/process-button-data';
 import { sendMessageToExtension } from '../common/tabs';
+import { every, delay } from 'lodash';
 
 const contextMenuActions = [
   CONTEXT_MENU_IDS.LABEL_USERNAME,
@@ -240,8 +241,35 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlays: 
       const savePos = overlaySave.getBoundingClientRect();
       addRectOnPage(overlayRectForm, rectTop - rectFormPos.top, formLeft - rectFormPos.left, 'WebCourt: Login Form', 200, 200);
       addRectOnPage(overlayRectButton, rectTop - rectButtonPos.top, buttonLeft - rectButtonPos.left, 'WebCourt: Submit Button', 150, 80);
-      addButtonOnPage(overlaySave, saveTop - savePos.top, saveLeft - savePos.left, 'Label', (evt) => {
-        console.log('label button clicked!');
+      addButtonOnPage(overlaySave, saveTop - savePos.top, saveLeft - savePos.left, 'Label', async (evt) => {
+        /**
+         * should do the following
+         * collect all the rect position
+         * clear all the rect
+         * take screenshot at background
+         */
+        const formRectPos = overlayRectForm.shadowRoot.getElementById(`${WEBCOURT_UID}-rect`).getBoundingClientRect().toJSON();
+        const formButtonPos = overlayRectButton.shadowRoot.getElementById(`${WEBCOURT_UID}-rect`).getBoundingClientRect().toJSON();
+        const clearResults = await Promise.all([
+          overlayRectForm.clear(),
+          overlayRectButton.clear(),
+          overlaySave.clear()
+        ]);
+        if (!every(clearResults, result => result)) {
+          // do not label image since some overlay is not cleared
+          return;
+        }
+        // TODO: even if await here, but it still take some time for browser to actually render
+        // so need to wait for 200ms to take the screenshot
+        delay(sendMessageToExtension, TAKE_SCREENSHOT_DELAY, {
+          type: MessageType.LABEL_IMAGE,
+          data: {
+            labels: {
+              form: formRectPos,
+              button: formButtonPos
+            }
+          }
+        });
       }, 60, 30);
       return;
     }

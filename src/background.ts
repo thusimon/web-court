@@ -163,7 +163,8 @@ const messageHandler = async (msg: Message, sender: browser.Runtime.MessageSende
         return predictResult;
       })
     }
-    case MessageType.TAKE_SCREENSHOT: {
+    case MessageType.LABEL_IMAGE: {
+      console.log(data)
       try {
         const wholeImage = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
         console.log(wholeImage);

@@ -13,6 +13,8 @@ export const MIN_ELEMENT_OPACITY = 0.2;
 
 export const INPUT_TYPE_NONE = 'NONE';
 
+export const TAKE_SCREENSHOT_DELAY = 200;
+
 export const CONTEXT_MENU_IDS = {
   LABEL_INPUT: 'LABEL_INPUT',
   LABEL_USERNAME: 'LABEL_USERNAME',
@@ -51,7 +53,7 @@ export enum MessageType {
   CONTEXT_CLICK,
   BTN_FEATURE_COLLECT,
   BTN_FEATURE_PREDICT,
-  TAKE_SCREENSHOT
+  LABEL_IMAGE
 };
 
 export interface Message {
