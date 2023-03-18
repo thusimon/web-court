@@ -1,6 +1,6 @@
-import { GeneralFeatureLabeled } from "./common/storage";
+import { GeneralFeatureLabeled } from './common/storage';
 import { ActivationIdentifier } from '@tensorflow/tfjs-layers/dist/keras_format/activation_config';
-import { OverlaySettingsType } from "@srccontent/components/overlay";
+import { OverlaySettingsType } from './content/components/overlay';
 
 export const WEBCOURT_UID = 'SrElXAlR4zOvfv8P';
 
@@ -59,7 +59,7 @@ export enum MessageType {
 export interface Message {
   type: MessageType;
   action?: string;
-  data: object
+  data: any
 };
 
 export enum LabelResult {
@@ -82,7 +82,8 @@ export enum StorageCategory {
 export enum FeatureCategory {
   Inputs = 'Inputs',
   Page = 'Page',
-  Buttons = 'Buttons'
+  Buttons = 'Buttons',
+  Images = 'Images'
 };
 
 export type FeaturesType = {

@@ -1,4 +1,4 @@
-import _ from 'lodash';
+import { pick, omit, keys, concat } from 'lodash';
 import { 
   DomAttributeType,
   CSSPropertyType,
@@ -63,7 +63,7 @@ export const getButtonFeatures = async (button: HTMLElement, inputs: HTMLInputEl
   // get dom features
   const buttonDomFeatures = getDomAttributes(button);
   // get css features
-  const buttonCSSFeatures = _.pick(getCSSProperties(button), buttonCSSProperties);
+  const buttonCSSFeatures = pick(getCSSProperties(button), buttonCSSProperties);
   // get canvas features;
   // TODO: canvas feature has big overhead to collect. May skip it in production
   // const buttonCanvasFeatures = await getCanvasImageData(button);
@@ -150,12 +150,9 @@ export const getPageUsernamePasswordGeoFeatures = (): GeneralFeature => {
 
 export const constructPageFeatureOrdered = (feature: GeneralFeature) => {
   // extract the ordered key and value
-  const orderedKeys = ['label', 'url'];
-  Object.keys(feature).forEach(key => {
-    if (!orderedKeys.includes(key)) {
-      orderedKeys.push(key);
-    }
-  });
+  const firstFeature = pick(feature, ['id', 'label', 'url']);
+  const restFeature = omit(feature, ['id', 'label', 'url']);
+  const orderedKeys = keys(firstFeature).concat(keys(restFeature));
   const orderedValues = orderedKeys.map(key => feature[key]);
   return {
     key: orderedKeys,

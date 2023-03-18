@@ -46,7 +46,8 @@ const Console: React.FC = () => {
   const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
     Page: [],
     Inputs: [],
-    Buttons: []
+    Buttons: [],
+    Images: []
   });
 
   const refresh = async () => {
@@ -124,7 +125,7 @@ const Console: React.FC = () => {
   }, [state]);
 
   return (<div id='console-container'>
-      <textarea id='console-text-area' value={message} readOnly ref={consoleRef}></textarea>
+      <textarea id='console-text-area' value={message} readOnly ref={consoleRef} placeholder='Console'></textarea>
       <div id='console-buttons'>
         <button name='save-model' title='Save trained model' onClick={consoleButtonHandler}>Save Model</button>
       </div>

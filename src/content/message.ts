@@ -259,11 +259,12 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlays: 
           // do not label image since some overlay is not cleared
           return;
         }
-        // TODO: even if await here, but it still take some time for browser to actually render
+        // TODO: even if await here, but it still take some time for browser to actually re-render
         // so need to wait for 200ms to take the screenshot
         delay(sendMessageToExtension, TAKE_SCREENSHOT_DELAY, {
           type: MessageType.LABEL_IMAGE,
           data: {
+            url: document.URL,
             labels: {
               form: formRectPos,
               button: formButtonPos

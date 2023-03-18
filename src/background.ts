@@ -2,11 +2,12 @@ import * as browser from 'webextension-polyfill';
 import * as tf from '@tensorflow/tfjs';
 import { Menus, Tabs } from 'webextension-polyfill';
 import { CONTEXT_MENU_IDS, Message, MessageType } from './constants';
-import { loadModelInFromIndexDB } from './common/storage';
+import { loadModelInFromIndexDB, saveImageLabelData } from './common/storage';
 import { sendMessageToTab } from './common/tabs';
 import { GeneralFeature } from './content/feature';
 import { processButtonFeature } from './common/ai/utils/process-button-data';
 import { ButtonClass, getFeatureData } from './common/ai/utils/data';
+import { getCenter } from './common/misc';
 
 // create context menu
 
@@ -164,10 +165,26 @@ const messageHandler = async (msg: Message, sender: browser.Runtime.MessageSende
       })
     }
     case MessageType.LABEL_IMAGE: {
-      console.log(data)
+      const {labels, url} = data;
+      const {form, button} = labels;
+      /**
+       * get the feature array
+       * [
+       *   form center x
+       *   form center y
+       *   form width
+       *   form height
+       *   button center x
+       *   button center y
+       *   button width
+       *   button height
+       * ]
+       */
+      const feature = [...getCenter(form), ...getCenter(button)];
+      console.log(data, sender, feature);
       try {
         const wholeImage = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
-        console.log(wholeImage);
+        await saveImageLabelData(url, wholeImage, feature);
       } catch(e) {
         console.log(e);
       }
@@ -180,5 +197,4 @@ const messageHandler = async (msg: Message, sender: browser.Runtime.MessageSende
 
 browser.runtime.onMessage.addListener(messageHandler);
 
-loadModelInFromIndexDB('btn-model')
-.then(console.log);
+loadModelInFromIndexDB('btn-model');

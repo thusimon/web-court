@@ -4,6 +4,8 @@ import { GeneralFeature } from '../content/feature';
 import { LabelData } from '../content/message';
 import { FeatureCategory, FeaturesType, IterParam, ModelConfig, StorageCategory, StorageData } from '../constants';
 import { DefaultIterParam, DefaultModelConfig } from '../pages/features/constants';
+import { openDB } from 'idb';
+import { extend } from 'lodash';
 
 export type GeneralFeatureLabeled = GeneralFeature & LabelData;
 
@@ -45,10 +47,26 @@ export const getFeatures = async (category: FeatureCategory): Promise<Array<Gene
   }
 };
 
-export const getAllFeatures = async (): Promise<FeaturesType> => {
+export const getAllLocalStorageFeatures = async (): Promise<FeaturesType> => {
   const featureStorage = await storage.local.get(StorageCategory.Features);
   const features = featureStorage[StorageCategory.Features] || {};
   return features;
+}
+
+export const getAllIndexedDBFeatures = async (): Promise<any> => {
+  const imageFeature = await getImageLabelData();
+  return {
+    [FeatureCategory.Images]: imageFeature
+  };
+}
+
+export const getAllFeatures = async (): Promise<FeaturesType> => {
+  const [localStorageFeature, indexedDBFeature] = await Promise.all([
+    getAllLocalStorageFeatures(),
+    getAllIndexedDBFeatures()
+  ]);
+  const allFeatures = extend({}, localStorageFeature, indexedDBFeature) as FeaturesType;
+  return allFeatures;
 };
 
 export const setFeatures = async (category: FeatureCategory, newFeatures: Array<GeneralFeature>): Promise<Array<GeneralFeature>> => {
@@ -124,3 +142,45 @@ export const loadModelInFromIndexDB = async (modelName: string): Promise<tf.Laye
   const model = await tf.loadLayersModel(`indexeddb://${modelName}`);
   return model;
 };
+
+
+const WEBCOURT_DB_NAME = 'webcourt-db';
+const WEBCOURT_DB_LABEL_IMAGE_STORE = `${WEBCOURT_DB_NAME}-label-image-store`;
+
+export const openImageLabelDB = async () => {
+  return await openDB(WEBCOURT_DB_NAME, 2, {
+    upgrade(db) {
+      // Create a store of objects
+      db.createObjectStore(WEBCOURT_DB_LABEL_IMAGE_STORE, {
+        // The 'id' property of the object will be the key.
+        keyPath: 'id',
+        // If it isn't explicitly set, create a value by auto incrementing.
+        autoIncrement: true,
+      });
+    },
+  });
+};
+
+export const saveImageLabelData = async (url:string, imgUri: string, label: number[]) => {
+  try {
+    const db = await openImageLabelDB();
+    const result = await db.add(WEBCOURT_DB_LABEL_IMAGE_STORE, {
+      url,
+      date: new Date(),
+      imgUri,
+      label
+    });
+    console.log(result);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getImageLabelData = async () => {
+  try {
+    const db = await openImageLabelDB();
+    return await db.getAll(WEBCOURT_DB_LABEL_IMAGE_STORE);
+  } catch (e) {
+    console.log(e);
+  }
+}
