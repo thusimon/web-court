@@ -1,3 +1,5 @@
+import { runtime } from 'webextension-polyfill';
+
 /**
  * @param rect 
  * @returns [centerX, centerY, width, height]
@@ -10,3 +12,7 @@ export const getCenter = (rect: DOMRect): number[] => {
     rect.height
   ];
 };
+
+export const getSystemInfo = async () => {
+  return await runtime.getPlatformInfo();
+}

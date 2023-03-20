@@ -30,12 +30,12 @@ document.addEventListener('contextmenu', (evt) => {
   //addTooltipUnderDom(currentSelectedDom, overlay);
 });
 
-setInterval(() => {
-  const allVisiableInputs = findVisibleInputs();
-  const textInputs = findUsernameInputs(allVisiableInputs);
-  const passwordInputs = findPasswordInputs(allVisiableInputs);
-  highlightLabeledDoms([...textInputs, ...passwordInputs], 'green');
-}, 1000);
+// setInterval(() => {
+//   const allVisiableInputs = findVisibleInputs();
+//   const textInputs = findUsernameInputs(allVisiableInputs);
+//   const passwordInputs = findPasswordInputs(allVisiableInputs);
+//   highlightLabeledDoms([...textInputs, ...passwordInputs], 'green');
+// }, 1000);
 
 document.addEventListener('keyup', (evt) => {
   //TODO use +/- to navigate to parent/children

@@ -1,5 +1,5 @@
 import * as tf from '@tensorflow/tfjs';
-import { storage } from 'webextension-polyfill';
+import { storage, downloads, Downloads } from 'webextension-polyfill';
 import { GeneralFeature } from '../content/feature';
 import { LabelData } from '../content/message';
 import { FeatureCategory, FeaturesType, IterParam, ModelConfig, StorageCategory, StorageData } from '../constants';
@@ -147,7 +147,7 @@ export const loadModelInFromIndexDB = async (modelName: string): Promise<tf.Laye
 const WEBCOURT_DB_NAME = 'webcourt-db';
 const WEBCOURT_DB_LABEL_IMAGE_STORE = `${WEBCOURT_DB_NAME}-label-image-store`;
 
-export const openImageLabelDB = async () => {
+export const openIndexedDB = async () => {
   return await openDB(WEBCOURT_DB_NAME, 2, {
     upgrade(db) {
       // Create a store of objects
@@ -163,7 +163,7 @@ export const openImageLabelDB = async () => {
 
 export const saveImageLabelData = async (url:string, imgUri: string, label: number[]) => {
   try {
-    const db = await openImageLabelDB();
+    const db = await openIndexedDB();
     const result = await db.add(WEBCOURT_DB_LABEL_IMAGE_STORE, {
       url,
       date: new Date(),
@@ -178,9 +178,13 @@ export const saveImageLabelData = async (url:string, imgUri: string, label: numb
 
 export const getImageLabelData = async () => {
   try {
-    const db = await openImageLabelDB();
+    const db = await openIndexedDB();
     return await db.getAll(WEBCOURT_DB_LABEL_IMAGE_STORE);
   } catch (e) {
     console.log(e);
   }
 }
+
+export const downloadData = async (downloadOption: Downloads.DownloadOptionsType) => {
+  return downloads.download(downloadOption);
+};

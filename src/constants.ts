@@ -76,7 +76,8 @@ export enum StorageCategory {
   Features = 'Features',
   ModelConfigs = 'ModelConfigs',
   IterParams = 'IterParams',
-  Models = 'Models'
+  Models = 'Models',
+  Configs = 'Configs'
 };
 
 export enum FeatureCategory {

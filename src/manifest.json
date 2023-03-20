@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "WebCourt",
   "author": "Lu",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "Extract and collect login page features and classify the web sites",
   "content_scripts": [
     {
@@ -25,7 +25,8 @@
     "downloads",
     "storage",
     "unlimitedStorage",
-    "tabs"
+    "tabs",
+    "downloads"
   ],
   "host_permissions": [
     "<all_urls>"
