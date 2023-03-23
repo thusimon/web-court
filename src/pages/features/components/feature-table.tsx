@@ -1,6 +1,6 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
 import { AppContext } from '../context-provider';
-import { Actions } from '../constants';
+import { Actions, IMAGE_PNG_URI_PREFIX } from '../constants';
 import { FeatureCategory, FeaturesType } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
 import { clearAllData, deleteFeature, deleteFeatureCategory, getAllData, getAllFeatures, saveAllData } from '../../../common/storage';
@@ -15,17 +15,23 @@ export interface FeatureTablePropsType {
   selectFeatureIdx: number;
 }
 
-
 const parseFeatureTableValue = (featureValue: any) => {
-  if (isString(featureValue) && featureValue.startsWith('data:image/png;base64,')) {
+  if (isString(featureValue) && featureValue.startsWith(IMAGE_PNG_URI_PREFIX)) {
     // image feature
-    return <ImageFeature />
+    return <ImageFeature imgUri={featureValue}/>
   }
   if (isDate(featureValue)) {
     return featureValue.toLocaleDateString('en-US', {year: 'numeric', month: 'numeric', day: 'numeric', hour: 'numeric', minute: 'numeric', hour12: false});
   }
   return featureValue;
-}
+};
+
+const parseFeatureTableTitle = (featureValue: any) => {
+  if (isString(featureValue) && featureValue.startsWith(IMAGE_PNG_URI_PREFIX)) {
+    return ''
+  }
+  return featureValue;
+};
 
 const FeatureTable = () => {
   const { state, dispatch } = useContext(AppContext);
@@ -155,7 +161,11 @@ const FeatureTable = () => {
           selectedTable.map((feature, fidx) => <tr key={`${fidx}`}
             onClick={(evt) => onClickFeature(evt, fidx)}
             className={fidx === selectedFeatureIdx ? 'selected' : 'non-selected'}>{
-            constructPageFeatureOrdered(feature).value.map((fv, fvidx) => <td key={`${fidx}-${fvidx}`} title={`${fv}`}>{parseFeatureTableValue(fv)}</td>)
+            constructPageFeatureOrdered(feature).value.map((fv, fvidx) => <td
+              key={`${fidx}-${fvidx}`} 
+              title={parseFeatureTableTitle(fv)}>
+                {parseFeatureTableValue(fv)}
+            </td>)
           }</tr>)
         }
         </tbody>

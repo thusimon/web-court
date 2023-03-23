@@ -40,3 +40,5 @@ export const DefaultIterParam: IterParam = {
   epochs: 50,
   learningRate: 0.01
 }
+
+export const IMAGE_PNG_URI_PREFIX = 'data:image/png;base64,';

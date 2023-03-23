@@ -1,0 +1,21 @@
+.image-container {
+  span.show-border {
+    border: 1px solid #73AD21;
+  }
+  span.hide-border {
+    border: none;
+  }
+  img.show {
+    display: block;
+  }
+  img.hide {
+    display: none;
+  }
+  img.modal-img {
+    position: fixed;
+    top: 10vh;
+    left: 20vw;
+    width: 60vw;
+    border: 1px solid #73AD21;
+  }
+}
