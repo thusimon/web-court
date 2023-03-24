@@ -3,7 +3,7 @@ import { AppContext } from '../context-provider';
 import { Actions, IMAGE_PNG_URI_PREFIX } from '../constants';
 import { FeatureCategory, FeaturesType } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
-import { clearAllData, deleteFeature, deleteFeatureCategory, getAllData, getAllFeatures, saveAllData } from '../../../common/storage';
+import { clearAllData, deleteFeature, deleteFeatureCategory, deleteImageLabelData, getAllData, getAllFeatures, getAllImageLabelKeys, saveAllData } from '../../../common/storage';
 import { isString, isDate } from 'lodash';
 
 import './feature-table.scss';
@@ -65,7 +65,15 @@ const FeatureTable = () => {
       switch (button) {
         case 'delete-one': {
           //TODO add confirm dialog
-          await deleteFeature(featureCategory, selectedFeatureIdx);
+          if (featureCategory != FeatureCategory.Images) {
+            await deleteFeature(featureCategory, selectedFeatureIdx);
+          } else {
+            const imageFeature = allFeature[FeatureCategory.Images][selectedFeatureIdx];
+            if (!imageFeature) {
+              break;
+            }
+            await deleteImageLabelData(parseInt(imageFeature.id as any));
+          }
           await refresh();
           setSelectedFeatureIdx(-1);
           dispatchButton('refresh');

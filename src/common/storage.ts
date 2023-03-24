@@ -185,6 +185,23 @@ export const getImageLabelData = async () => {
   }
 }
 
+export const deleteImageLabelData = async (id: number) => {
+  try {
+    const db = await openIndexedDB();
+    return await db.delete(WEBCOURT_DB_LABEL_IMAGE_STORE, id);
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getAllImageLabelKeys = async () => {
+  try {
+    const db = await openIndexedDB();
+    return await db.getAllKeys(WEBCOURT_DB_LABEL_IMAGE_STORE);
+  } catch (e) {
+    console.log(e);
+  }
+}
 export const downloadData = async (downloadOption: Downloads.DownloadOptionsType) => {
   return downloads.download(downloadOption);
 };

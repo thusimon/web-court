@@ -1,4 +1,3 @@
-import React from 'react';
 import FeatureTable from './components/feature-table';
 import Model from './components/model';
 import Console from './components/console';
