@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "WebCourt",
   "author": "Lu",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Extract and collect login page features and classify the web sites",
   "content_scripts": [
     {
