@@ -32,9 +32,11 @@ const App = () => {
   const onDownloadImagesClick = async () => {
     const imageData = await getImageLabelData();
     return await Promise.all(imageData.map(image => {
+      const url = new URL(image.url);
       return downloadData({
         url: image.imgUri,
-        filename: `${downloadFolder}/${image.id}.png`
+        filename: `${downloadFolder}/${url.hostname}.png`,
+        conflictAction: 'overwrite'
       });
     }));
 
