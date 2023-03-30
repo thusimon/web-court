@@ -35,7 +35,7 @@ const App = () => {
       const url = new URL(image.url);
       return downloadData({
         url: image.imgUri,
-        filename: `${downloadFolder}/${url.hostname}.png`,
+        filename: `${downloadFolder}/${url.hostname}_${image.id}.png`,
         conflictAction: 'overwrite'
       });
     }));
