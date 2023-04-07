@@ -6,7 +6,9 @@ export enum Actions {
   ButtonClick,
   UpdateModelConfigs,
   UpdateModelConfigIdx,
-  UpdateIterParams
+  UpdateIterParams,
+  UpdateSearchProp,
+  UpdateSearchVal
 }
 
 export interface ActionType {

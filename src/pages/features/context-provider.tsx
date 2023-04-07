@@ -5,6 +5,8 @@ import { Actions, ActionType, DefaultIterParam, DefaultModelConfig } from './con
 export const initContextState: AppContextType = {
   featureCategory: FeatureCategory.Page,
   clickButton: 'info',
+  searchProp: null,
+  searchVal: null,
   modelConfigs: [DefaultModelConfig],
   modelConfigIdx: 0,
   iterParams: DefaultIterParam
@@ -13,6 +15,8 @@ export const initContextState: AppContextType = {
 export interface AppContextType {
   featureCategory: FeatureCategory;
   clickButton: string;
+  searchProp: string;
+  searchVal: string;
   modelConfigs: ModelConfig[],
   modelConfigIdx: number;
   iterParams: IterParam;
@@ -70,6 +74,24 @@ export const reducer = (state: AppContextType, action: ActionType) => {
         ...state,
         ...{
           iterParams
+        }
+      };
+    }
+    case Actions.UpdateSearchProp: {
+      const searchProp = action.data as string;
+      return {
+        ...state,
+        ...{
+          searchProp
+        }
+      };
+    }
+    case Actions.UpdateSearchVal: {
+      const searchVal = action.data as string;
+      return {
+        ...state,
+        ...{
+          searchVal
         }
       };
     }
