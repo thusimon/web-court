@@ -2,6 +2,8 @@ import { useContext, useRef } from "react";
 import { AppContext } from "../context-provider";
 import { Actions } from "../constants";
 
+import './search.scss';
+
 const Search = () => {
   const { dispatch } = useContext(AppContext);
   const inputPropRef = useRef(null);
@@ -22,7 +24,7 @@ const Search = () => {
       }
     });
   }
-  return <div className='feature-search-container'>
+  return <div className='search-container'>
     <label>Property</label>
     <input placeholder='property' ref={inputPropRef}></input>
     <label>Value</label>

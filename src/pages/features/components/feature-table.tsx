@@ -1,12 +1,11 @@
 import React, { useState, useContext, useEffect, useRef } from 'react';
-import { AppContext } from '../context-provider';
+import { AppContext, AppContextType } from '../context-provider';
 import { Actions, IMAGE_PNG_URI_PREFIX } from '../constants';
 import { FeatureCategory, FeaturesType } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
 import { clearAllData, deleteFeature, deleteFeatureCategory, deleteImageLabelData, getAllData, getAllFeatures, getAllImageLabelKeys, saveAllData } from '../../../common/storage';
 import { isString, isDate } from 'lodash';
 import ImageFeature from './image-feature';
-import Search from './search';
 
 import './feature-table.scss';
 
@@ -38,12 +37,13 @@ const FeatureTable = () => {
   const { state, dispatch } = useContext(AppContext);
   const [ selectedFeatureIdx, setSelectedFeatureIdx ] = useState(-1);
   const fileInput = useRef(null);
-  const [ allFeature, setAllFeatures ] = useState<FeaturesType>({
+  const [ allFeatures, setAllFeatures ] = useState<FeaturesType>({
     Page: [],
     Inputs: [],
     Buttons: [],
     Images: []
   });
+  const [filteredFeature, setFilteredFeature] = useState([]);
 
   const dispatchButton = (button: string) => {
     dispatch({
@@ -54,74 +54,101 @@ const FeatureTable = () => {
 
   const refresh = async () => {
     const allFeatures = await getAllFeatures();
+    const { featureCategory } = state;
+    const selectedTable = allFeatures[featureCategory] || [];
+    setFilteredFeature(selectedTable);
     setAllFeatures(allFeatures);
   };
+
+  const handleButton = async (state: AppContextType) => {
+    const {clickButton, featureCategory} = state;
+    switch (clickButton) {
+      case 'delete-one': {
+        //TODO add confirm dialog
+        if (featureCategory != FeatureCategory.Images) {
+          await deleteFeature(featureCategory, selectedFeatureIdx);
+        } else {
+          const imageFeature = allFeatures[FeatureCategory.Images][selectedFeatureIdx];
+          if (!imageFeature) {
+            break;
+          }
+          await deleteImageLabelData(parseInt(imageFeature.id as any));
+        }
+        await refresh();
+        setSelectedFeatureIdx(-1);
+        dispatchButton('refresh');
+        dispatchButton('');
+        break;
+      }
+      case 'delete-catetory': {
+        await deleteFeatureCategory(featureCategory);
+        await refresh();
+        setSelectedFeatureIdx(-1);
+        dispatchButton('refresh');
+        dispatchButton('');
+        break;
+      }
+      case 'export': {
+        const allStorageData = await getAllData();
+        const dataStr = JSON.stringify(allStorageData, null, ' ');
+        const blob = new Blob([dataStr], {type: "application/json"});
+        const url = URL.createObjectURL(blob);
+        const downloadLink = document.createElement('a');
+        downloadLink.style.display = 'none';
+        downloadLink.href = url;
+        downloadLink.download = "web-court-features.json";  
+        document.body.appendChild(downloadLink);
+        downloadLink.click();
+        downloadLink.remove();
+        dispatchButton('');
+        break;
+      }
+      case 'import': {
+        if (fileInput.current) {
+          fileInput.current.click();
+        }
+        dispatchButton('');
+      }
+      case 'refresh': {
+        await refresh();
+        dispatchButton('');
+      }
+      default:
+        break;
+    }
+  }
+
+  const handleSearch = async (state: AppContextType) => {
+    const {searchProp, searchVal, featureCategory} = state;
+    const selectedTable = allFeatures[featureCategory] || [];
+    if (!searchProp || !searchVal) {
+      setFilteredFeature(selectedTable);
+      return;
+    }
+    const filteredTable = selectedTable.filter(row => {
+      var rowVal = row[searchProp];
+      return rowVal && rowVal.toString().includes(searchVal);
+    });
+    setFilteredFeature(filteredTable);
+  }
 
   useEffect(() => {
     refresh();
   }, []);
+
   useEffect(() => {
-    (async () => {
-      const button = state.clickButton;
-      switch (button) {
-        case 'delete-one': {
-          //TODO add confirm dialog
-          if (featureCategory != FeatureCategory.Images) {
-            await deleteFeature(featureCategory, selectedFeatureIdx);
-          } else {
-            const imageFeature = allFeature[FeatureCategory.Images][selectedFeatureIdx];
-            if (!imageFeature) {
-              break;
-            }
-            await deleteImageLabelData(parseInt(imageFeature.id as any));
-          }
-          await refresh();
-          setSelectedFeatureIdx(-1);
-          dispatchButton('refresh');
-          dispatchButton('');
-          break;
-        }
-        case 'delete-catetory': {
-          await deleteFeatureCategory(featureCategory);
-          await refresh();
-          setSelectedFeatureIdx(-1);
-          dispatchButton('refresh');
-          dispatchButton('');
-          break;
-        }
-        case 'export': {
-          const allStorageData = await getAllData();
-          const dataStr = JSON.stringify(allStorageData, null, ' ');
-          const blob = new Blob([dataStr], {type: "application/json"});
-          const url = URL.createObjectURL(blob);
-          const downloadLink = document.createElement('a');
-          downloadLink.style.display = 'none';
-          downloadLink.href = url;
-          downloadLink.download = "web-court-features.json";  
-          document.body.appendChild(downloadLink);
-          downloadLink.click();
-          downloadLink.remove();
-          dispatchButton('');
-          break;
-        }
-        case 'import': {
-          if (fileInput.current) {
-            fileInput.current.click();
-          }
-          dispatchButton('');
-        }
-        case 'refresh': {
-          await refresh();
-          dispatchButton('');
-        }
-        default:
-          break;
-      }
-    })();
-  }, [state]);
-  
-  const { featureCategory } = state;
-  const selectedTable = allFeature[featureCategory] || [];
+    handleButton(state);
+  }, [state.clickButton]);
+
+  useEffect(() => {
+    handleSearch(state);
+  }, [state.searchProp, state.searchVal]);
+
+  useEffect(() => {
+    const { featureCategory } = state;
+    const selectedTable = allFeatures[featureCategory] || [];
+    setFilteredFeature(selectedTable);
+  }, [state.featureCategory]);
 
   const onClickFeature = (evt: React.MouseEvent<HTMLTableRowElement>, idx: number) => {
     setSelectedFeatureIdx(idx);
@@ -153,38 +180,33 @@ const FeatureTable = () => {
   }
 
   return (
+    filteredFeature && filteredFeature.length == 0 ?
     <div>
-      <Search />
-      {
-        selectedTable && selectedTable.length == 0 ?
-        <div>
-          <p>No feature collected</p>
-          <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
-        </div> :
-        <div>
-          <table className='feature-table'>
-            <thead>
-              <tr>
-                { constructPageFeatureOrdered(selectedTable[0]).key.map(key => <th key={key}>{key}</th>) }
-              </tr>
-            </thead>
-            <tbody>
-            {
-              selectedTable.map((feature, fidx) => <tr key={`${fidx}`}
-                onClick={(evt) => onClickFeature(evt, fidx)}
-                className={fidx === selectedFeatureIdx ? 'selected' : 'non-selected'}>{
-                constructPageFeatureOrdered(feature).value.map((fv, fvidx) => <td
-                  key={`${fidx}-${fvidx}`} 
-                  title={parseFeatureTableTitle(fv)}>
-                    {parseFeatureTableValue(fv)}
-                </td>)
-              }</tr>)
-            }
-            </tbody>
-          </table>
-          <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
-        </div>
-      }
+      <p>No feature collected</p>
+      <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
+    </div> :
+    <div>
+      <table className='feature-table'>
+        <thead>
+          <tr>
+            { constructPageFeatureOrdered(filteredFeature[0]).key.map(key => <th key={key}>{key}</th>) }
+          </tr>
+        </thead>
+        <tbody>
+        {
+          filteredFeature.map((feature, fidx) => <tr key={`${fidx}`}
+            onClick={(evt) => onClickFeature(evt, fidx)}
+            className={fidx === selectedFeatureIdx ? 'selected' : 'non-selected'}>{
+            constructPageFeatureOrdered(feature).value.map((fv, fvidx) => <td
+              key={`${fidx}-${fvidx}`} 
+              title={parseFeatureTableTitle(fv)}>
+                {parseFeatureTableValue(fv)}
+            </td>)
+          }</tr>)
+        }
+        </tbody>
+      </table>
+      <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
     </div>
   );
 };

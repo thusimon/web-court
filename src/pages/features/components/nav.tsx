@@ -2,6 +2,8 @@ import React, { useContext } from 'react'
 import { AppContext } from '../context-provider';
 import { FeatureCategory } from '../../../constants';
 import { Actions } from '../constants';
+import Search from './search';
+
 import './nav.scss'
 
 const Nav = () => {
@@ -61,6 +63,7 @@ const Nav = () => {
       <div className='controls'>
         <button title='Models' name='models' onClick={onClickHander}>🤖</button>
       </div>
+      <Search />
     </header>
   );
 };
