@@ -7,13 +7,12 @@ export enum Actions {
   UpdateModelConfigs,
   UpdateModelConfigIdx,
   UpdateIterParams,
-  UpdateSearchProp,
-  UpdateSearchVal
+  UpdateSearch
 }
 
 export interface ActionType {
   type: Actions;
-  data: number | string | boolean | ModelConfig[] | IterParam;
+  data: number | string | boolean | object | ModelConfig[] | IterParam;
 }
 
 export type FeaturesType = {

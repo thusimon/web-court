@@ -5,9 +5,10 @@ import { FeatureCategory, FeaturesType } from '../../../constants';
 import { constructPageFeatureOrdered } from '../../../content/feature';
 import { clearAllData, deleteFeature, deleteFeatureCategory, deleteImageLabelData, getAllData, getAllFeatures, getAllImageLabelKeys, saveAllData } from '../../../common/storage';
 import { isString, isDate } from 'lodash';
+import ImageFeature from './image-feature';
+import Search from './search';
 
 import './feature-table.scss';
-import ImageFeature from './image-feature';
 
 export interface FeatureTablePropsType {
   features: FeaturesType;
@@ -152,33 +153,38 @@ const FeatureTable = () => {
   }
 
   return (
-    selectedTable && selectedTable.length == 0 ?
     <div>
-      <p>No feature collected</p>
-      <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
-    </div> :
-    <div>
-      <table className='feature-table'>
-        <thead>
-          <tr>
-            { constructPageFeatureOrdered(selectedTable[0]).key.map(key => <th key={key}>{key}</th>) }
-          </tr>
-        </thead>
-        <tbody>
-        {
-          selectedTable.map((feature, fidx) => <tr key={`${fidx}`}
-            onClick={(evt) => onClickFeature(evt, fidx)}
-            className={fidx === selectedFeatureIdx ? 'selected' : 'non-selected'}>{
-            constructPageFeatureOrdered(feature).value.map((fv, fvidx) => <td
-              key={`${fidx}-${fvidx}`} 
-              title={parseFeatureTableTitle(fv)}>
-                {parseFeatureTableValue(fv)}
-            </td>)
-          }</tr>)
-        }
-        </tbody>
-      </table>
-      <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
+      <Search />
+      {
+        selectedTable && selectedTable.length == 0 ?
+        <div>
+          <p>No feature collected</p>
+          <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
+        </div> :
+        <div>
+          <table className='feature-table'>
+            <thead>
+              <tr>
+                { constructPageFeatureOrdered(selectedTable[0]).key.map(key => <th key={key}>{key}</th>) }
+              </tr>
+            </thead>
+            <tbody>
+            {
+              selectedTable.map((feature, fidx) => <tr key={`${fidx}`}
+                onClick={(evt) => onClickFeature(evt, fidx)}
+                className={fidx === selectedFeatureIdx ? 'selected' : 'non-selected'}>{
+                constructPageFeatureOrdered(feature).value.map((fv, fvidx) => <td
+                  key={`${fidx}-${fvidx}`} 
+                  title={parseFeatureTableTitle(fv)}>
+                    {parseFeatureTableValue(fv)}
+                </td>)
+              }</tr>)
+            }
+            </tbody>
+          </table>
+          <input type='file' id='import-file' accept='.json' onChange={onFileChange} ref={fileInput}/>
+        </div>
+      }
     </div>
   );
 };

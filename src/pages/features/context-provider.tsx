@@ -77,22 +77,11 @@ export const reducer = (state: AppContextType, action: ActionType) => {
         }
       };
     }
-    case Actions.UpdateSearchProp: {
-      const searchProp = action.data as string;
+    case Actions.UpdateSearch: {
+      const search = action.data as object;
       return {
         ...state,
-        ...{
-          searchProp
-        }
-      };
-    }
-    case Actions.UpdateSearchVal: {
-      const searchVal = action.data as string;
-      return {
-        ...state,
-        ...{
-          searchVal
-        }
+        ...search
       };
     }
     default:
