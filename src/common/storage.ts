@@ -54,7 +54,7 @@ export const getAllLocalStorageFeatures = async (): Promise<FeaturesType> => {
 }
 
 export const getAllIndexedDBFeatures = async (): Promise<any> => {
-  const imageFeature = await getImageLabelData();
+  const imageFeature = await getImageLabelData(null, null);
   return {
     [FeatureCategory.Images]: imageFeature
   };
@@ -146,6 +146,7 @@ export const loadModelInFromIndexDB = async (modelName: string): Promise<tf.Laye
 
 const WEBCOURT_DB_NAME = 'webcourt-db';
 const WEBCOURT_DB_LABEL_IMAGE_STORE = `${WEBCOURT_DB_NAME}-label-image-store`;
+const WEBCOURT_DB_LABEL_IMAGE_PRI_KEY = 'id';
 
 export const openIndexedDB = async () => {
   return await openDB(WEBCOURT_DB_NAME, 2, {
@@ -153,7 +154,7 @@ export const openIndexedDB = async () => {
       // Create a store of objects
       db.createObjectStore(WEBCOURT_DB_LABEL_IMAGE_STORE, {
         // The 'id' property of the object will be the key.
-        keyPath: 'id',
+        keyPath: WEBCOURT_DB_LABEL_IMAGE_PRI_KEY,
         // If it isn't explicitly set, create a value by auto incrementing.
         autoIncrement: true,
       });
@@ -176,10 +177,26 @@ export const saveImageLabelData = async (url:string, imgUri: string, label: numb
   }
 }
 
-export const getImageLabelData = async () => {
+export const getImageLabelData = async (lowBound: number, upBound: number) => {
   try {
     const db = await openIndexedDB();
-    return await db.getAll(WEBCOURT_DB_LABEL_IMAGE_STORE);
+    let bound: IDBKeyRange = null;
+    if (!Number.isInteger(lowBound) && !Number.isInteger(upBound)) {
+      // no low and up bound
+    } else if (Number.isInteger(lowBound) && !Number.isInteger(upBound)) {
+      // only has low bound
+      bound = IDBKeyRange.lowerBound(lowBound);
+    } else if (!Number.isInteger(lowBound) && Number.isInteger(upBound)) {
+      // only has up bound
+      bound = IDBKeyRange.upperBound(upBound);
+    } else {
+      // both low and up bound
+      bound = IDBKeyRange.bound(lowBound, upBound);
+    }
+    if (bound == null) {
+      return await db.getAll(WEBCOURT_DB_LABEL_IMAGE_STORE);
+    }
+    return db.getAllFromIndex(WEBCOURT_DB_LABEL_IMAGE_STORE, WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, bound)
   } catch (e) {
     console.log(e);
   }

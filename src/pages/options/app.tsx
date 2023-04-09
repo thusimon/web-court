@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { storage } from 'webextension-polyfill';
 import { StorageCategory } from '../../constants';
 import { getSystemInfo } from '../../common/misc';
@@ -8,6 +8,8 @@ import './app.scss';
 
 const App = () => {
   const [downloadFolder, setDownloadFolder] = useState('');
+  const rangeMinInput = useRef(null);
+  const rangeMaxInput = useRef(null);
 
   useEffect(() => {
     (async () => {
@@ -30,8 +32,22 @@ const App = () => {
   }, []);
 
   const onDownloadImagesClick = async () => {
-    const imageData = await getImageLabelData();
-    return await Promise.all(imageData.map(image => {
+    let lowBound = null;
+    let upBound = null;
+    if (rangeMinInput.current) {
+      const lowBoundParsed = Number.parseInt(rangeMinInput.current.value);
+      if (Number.isInteger(lowBoundParsed)) {
+        lowBound = lowBoundParsed;
+      }
+    }
+    if (rangeMaxInput.current) {
+      const upBoundParsed = Number.parseInt(rangeMaxInput.current.value);
+      if (Number.isInteger(upBoundParsed)) {
+        upBound = upBoundParsed;
+      }
+    }
+    const imageData = await getImageLabelData(lowBound, upBound);
+    return await Promise.all(imageData.map((image: any) => {
       const url = new URL(image.url);
       return downloadData({
         url: image.imgUri,
@@ -39,7 +55,6 @@ const App = () => {
         conflictAction: 'overwrite'
       });
     }));
-
   };
 
   const onConfirmClick = async () => {
@@ -59,9 +74,17 @@ const App = () => {
     </div>
     <hr></hr>
     <div className='downloads'>
-      <label>Download Folder Path: </label>
-      <input placeholder='Download folder' value={downloadFolder}
-        onChange={(evt) => {setDownloadFolder(evt.target.value);}}/>
+      <div>
+        <label>Download Folder Path: </label>
+        <input placeholder='Download folder' value={downloadFolder}
+          onChange={(evt) => {setDownloadFolder(evt.target.value);}}></input>
+      </div>
+      <div>
+        <label>Range</label>
+        <span>
+          From <input type='number' ref={rangeMinInput}></input> To <input type='number' ref={rangeMaxInput}></input>
+        </span> 
+      </div>
       <button onClick={onDownloadImagesClick}>Download Images</button>
     </div>
     <hr></hr>
