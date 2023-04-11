@@ -149,15 +149,22 @@ const WEBCOURT_DB_LABEL_IMAGE_STORE = `${WEBCOURT_DB_NAME}-label-image-store`;
 const WEBCOURT_DB_LABEL_IMAGE_PRI_KEY = 'id';
 
 export const openIndexedDB = async () => {
-  return await openDB(WEBCOURT_DB_NAME, 2, {
-    upgrade(db) {
-      // Create a store of objects
-      db.createObjectStore(WEBCOURT_DB_LABEL_IMAGE_STORE, {
-        // The 'id' property of the object will be the key.
-        keyPath: WEBCOURT_DB_LABEL_IMAGE_PRI_KEY,
-        // If it isn't explicitly set, create a value by auto incrementing.
-        autoIncrement: true,
-      });
+  return await openDB(WEBCOURT_DB_NAME, 3, {
+    upgrade(db, oldVersion, newVersion, transaction) {
+      var isNewDb = isNaN(oldVersion) || oldVersion === 0;
+      if (isNewDb) {
+        // Create a store of objects
+        const objectStore = db.createObjectStore(WEBCOURT_DB_LABEL_IMAGE_STORE, {
+          // The 'id' property of the object will be the key.
+          keyPath: WEBCOURT_DB_LABEL_IMAGE_PRI_KEY,
+          // If it isn't explicitly set, create a value by auto incrementing.
+          autoIncrement: true,
+        });
+        objectStore.createIndex(WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, { unique: true });
+      } else if (newVersion > oldVersion) {
+        const objectStore = transaction.objectStore(WEBCOURT_DB_LABEL_IMAGE_STORE);
+        objectStore.createIndex(WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, WEBCOURT_DB_LABEL_IMAGE_PRI_KEY);
+      }
     },
   });
 };
