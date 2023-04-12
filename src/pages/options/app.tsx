@@ -74,18 +74,20 @@ const App = () => {
     </div>
     <hr></hr>
     <div className='downloads'>
-      <div>
+      <div className='folder'>
         <label>Download Folder Path: </label>
         <input placeholder='Download folder' value={downloadFolder}
           onChange={(evt) => {setDownloadFolder(evt.target.value);}}></input>
       </div>
-      <div>
-        <label>Range</label>
+      <div className='range'>
+        <label>ID Range: </label>
         <span>
           From <input type='number' ref={rangeMinInput}></input> To <input type='number' ref={rangeMaxInput}></input>
         </span> 
       </div>
-      <button onClick={onDownloadImagesClick}>Download Images</button>
+      <div>
+        <button onClick={onDownloadImagesClick}>Download Images</button>
+      </div>
     </div>
     <hr></hr>
     <button onClick={onConfirmClick}>Confirm</button>

@@ -163,7 +163,7 @@ export const openIndexedDB = async () => {
         objectStore.createIndex(WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, { unique: true });
       } else if (newVersion > oldVersion) {
         const objectStore = transaction.objectStore(WEBCOURT_DB_LABEL_IMAGE_STORE);
-        objectStore.createIndex(WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, WEBCOURT_DB_LABEL_IMAGE_PRI_KEY);
+        objectStore.createIndex(WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, { unique: true });
       }
     },
   });
