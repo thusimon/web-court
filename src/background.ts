@@ -197,4 +197,8 @@ const messageHandler = async (msg: Message, sender: browser.Runtime.MessageSende
 
 browser.runtime.onMessage.addListener(messageHandler);
 
+browser.commands.onCommand.addListener((command) => {
+  console.log(`Command: ${command}`);
+});
+
 loadModelInFromIndexDB('btn-model');

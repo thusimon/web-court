@@ -42,5 +42,15 @@
   "options_ui": {
     "page": "pages/options/options.html",
     "open_in_tab": true
+  },
+  "commands": {
+    "capture-screen": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+Period",
+        "mac": "Command+Shift+Period",
+        "default": "Ctrl+Shift+Period"
+      },
+      "description": "capture screen on the current page."
+    }
   }
 }
