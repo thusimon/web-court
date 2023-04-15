@@ -197,8 +197,20 @@ const messageHandler = async (msg: Message, sender: browser.Runtime.MessageSende
 
 browser.runtime.onMessage.addListener(messageHandler);
 
-browser.commands.onCommand.addListener((command) => {
-  console.log(`Command: ${command}`);
-});
+const commandHandler = async (command: string, tab: Tabs.Tab) => {
+  switch(command) {
+    case 'capture-screen': {
+      const url = tab.url;
+      const feature = Array(8).fill(0);
+      const wholeImage = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
+      await saveImageLabelData(url, wholeImage, feature);
+      break;
+    }
+    default:
+      break;
+  }
+}
+
+browser.commands.onCommand.addListener(commandHandler);
 
 loadModelInFromIndexDB('btn-model');
