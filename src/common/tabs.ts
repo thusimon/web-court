@@ -7,7 +7,7 @@ export const getCurrentTab = async (): Promise<browser.Tabs.Tab> => {
 };
 
 export const sendMessageToTab = (tabId: number, message: any) => {
-  browser.tabs.sendMessage(tabId, message);
+  return browser.tabs.sendMessage(tabId, message);
 };
 
 export const sendMessageToExtension = (message: any) => {

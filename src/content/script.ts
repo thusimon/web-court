@@ -59,8 +59,7 @@ document.body.append(...overlays);
 browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime.MessageSender) => {
   switch (message.type) {
     case MessageType.CONTEXT_CLICK: {
-      handleLabel(message, currentSelectedDom, overlays);
-      break;
+      return handleLabel(message, currentSelectedDom, overlays);
     }
     case MessageType.BTN_FEATURE_COLLECT: {
       handlePredict(message);

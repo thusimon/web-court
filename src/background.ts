@@ -122,9 +122,13 @@ browser.contextMenus.create({
   id: CONTEXT_MENU_IDS.LABEL_IMAGE
 }, () => browser.runtime.lastError);
 
+let isLabeling = false;
 const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
   if (!tab.id) {
     console.log('no tab id, bail');
+  }
+  if (info.menuItemId === CONTEXT_MENU_IDS.LABEL_IMAGE) {
+    isLabeling = true;
   }
   sendMessageToTab(tab.id, {
     type: MessageType.CONTEXT_CLICK,
@@ -136,7 +140,6 @@ const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
 };
 
 browser.contextMenus.onClicked.addListener(contextMenuClickHandler);
-
 
 // do not use async listener callback, since it will block all the other messages, impairs performance
 // return promise inside the handler instead
@@ -165,6 +168,7 @@ const messageHandler = async (msg: Message, sender: browser.Runtime.MessageSende
       })
     }
     case MessageType.LABEL_IMAGE: {
+      isLabeling = false;
       const {labels, url} = data;
       const {form, button} = labels;
       /**
@@ -181,7 +185,6 @@ const messageHandler = async (msg: Message, sender: browser.Runtime.MessageSende
        * ]
        */
       const feature = [...getCenter(form), ...getCenter(button)];
-      console.log(data, sender, feature);
       try {
         const wholeImage = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
         await saveImageLabelData(url, wholeImage, feature);
@@ -200,6 +203,15 @@ browser.runtime.onMessage.addListener(messageHandler);
 const commandHandler = async (command: string, tab: Tabs.Tab) => {
   switch(command) {
     case 'capture-screen': {
+      if (!isLabeling) {
+        // not labeling should not capture
+        break;
+      }
+      const result = await sendMessageToTab(tab.id, {
+        type: MessageType.CONTEXT_CLICK,
+        action: CONTEXT_MENU_IDS.LABEL_CLEAR_ALL
+      });
+      console.log(result);
       const url = tab.url;
       const feature = Array(8).fill(0);
       const wholeImage = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});

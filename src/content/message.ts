@@ -43,7 +43,7 @@ export interface PredictData {
   category: string;
 }
 
-export const handleLabel = async (message: Message, dom: HTMLElement, overlays: Overlay[]): Promise<void> => {
+export const handleLabel = (message: Message, dom: HTMLElement, overlays: Overlay[]): Promise<void> => {
   const [overlay, overlayRectForm, overlayRectButton, overlaySave] = overlays;
   if (!dom) {
     return;
@@ -95,80 +95,93 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlays: 
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT_ONLY: {
       const allVisiableInputs = findVisibleInputs();
-      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs, false);
-      const submitFeatureLabeled = {
-        ...data,
-        ...submitFeatures,
-        label: LabelResult.field_submit
-      };
-      return addFeature(FeatureCategory.Buttons, submitFeatureLabeled)
-      .then(() => {
-        highlightLabeledDoms([dom], 'blue');
-        clearOverlay(overlay);
+
+      return getButtonFeatures(dom, allVisiableInputs, false)
+      .then(submitFeatures => {
+        const submitFeatureLabeled = {
+          ...data,
+          ...submitFeatures,
+          label: LabelResult.field_submit
+        };
+        return addFeature(FeatureCategory.Buttons, submitFeatureLabeled)
+        .then(() => {
+          highlightLabeledDoms([dom], 'blue');
+          clearOverlay(overlay);
+        });
       });
     }
     case CONTEXT_MENU_IDS.LABEL_SUBMIT_OTHER: {
       const allVisiableInputs = findVisibleInputs();
-      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs, false);
-      const submitFeatureLabeled = {
-        ...data,
-        ...submitFeatures,
-        label: LabelResult.field_submit
-      };
-      const otherButtons = findVisibleButtons().filter(button => button != dom);
-      const otherButtonsFeatureLabeled = await Promise.all(otherButtons.map(async button => {
-        const buttonFeature = await getButtonFeatures(button, allVisiableInputs, false);
-        return {
+      return getButtonFeatures(dom, allVisiableInputs, false)
+      .then(submitFeatures => {
+        const submitFeatureLabeled = {
           ...data,
-          ...buttonFeature,
-          label: LabelResult.other
-        }
-      }));
-      const allFeatures = [submitFeatureLabeled, ...otherButtonsFeatureLabeled]
-      return addFeatureBulk(FeatureCategory.Buttons, allFeatures)
-      .then(() => {
-        highlightLabeledDoms([dom], 'blue');
-        highlightLabeledDoms(otherButtons, 'red');
-        clearOverlay(overlay);
+          ...submitFeatures,
+          label: LabelResult.field_submit
+        };
+        const otherButtons = findVisibleButtons().filter(button => button != dom);
+        return Promise.all(otherButtons.map(async button => {
+          const buttonFeature = await getButtonFeatures(button, allVisiableInputs, false);
+          return {
+            ...data,
+            ...buttonFeature,
+            label: LabelResult.other
+          }
+        }))
+        .then(otherButtonsFeatureLabeled => {
+          const allFeatures = [submitFeatureLabeled, ...otherButtonsFeatureLabeled]
+          return addFeatureBulk(FeatureCategory.Buttons, allFeatures)
+          .then(() => {
+            highlightLabeledDoms([dom], 'blue');
+            highlightLabeledDoms(otherButtons, 'red');
+            clearOverlay(overlay);
+          });
+        });
       });
     }
     case CONTEXT_MENU_IDS.LABEL_BUTTON_OTHER: {
       const allVisiableInputs = findVisibleInputs();
-      const submitFeatures = await getButtonFeatures(dom, allVisiableInputs, false);
-      const submitFeatureLabeled = {
-        ...data,
-        ...submitFeatures,
-        label: LabelResult.other
-      };
-      return addFeature(FeatureCategory.Buttons, submitFeatureLabeled)
-      .then(() => {
-        highlightLabeledDoms([dom], 'red');
-        clearOverlay(overlay);
+      return getButtonFeatures(dom, allVisiableInputs, false)
+      .then(submitFeatures => {
+        const submitFeatureLabeled = {
+          ...data,
+          ...submitFeatures,
+          label: LabelResult.other
+        };
+        return addFeature(FeatureCategory.Buttons, submitFeatureLabeled)
+        .then(() => {
+          highlightLabeledDoms([dom], 'red');
+          clearOverlay(overlay);
+        });
       });
     }
     case CONTEXT_MENU_IDS.LABEL_BUTTON_OTHER_ALL: {
       const allVisiableInputs = findVisibleInputs();
-      const otherButtonFeatures = await getButtonFeatures(dom, allVisiableInputs, false);
-      const otherFeatureLabeled = {
-        ...data,
-        ...otherButtonFeatures,
-        label: LabelResult.other
-      };
-      const restButtons = findVisibleButtons().filter(button => button != dom);
-      const restButtonsFeatureLabeled = await Promise.all(restButtons.map(async button => {
-        const buttonFeature = await getButtonFeatures(button, allVisiableInputs, false);
-        return {
+      return getButtonFeatures(dom, allVisiableInputs, false)
+      .then(otherButtonFeatures => {
+        const otherFeatureLabeled = {
           ...data,
-          ...buttonFeature,
+          ...otherButtonFeatures,
           label: LabelResult.other
-        }
-      }));
-      const allFeatures = [otherFeatureLabeled, ...restButtonsFeatureLabeled]
-      return addFeatureBulk(FeatureCategory.Buttons, allFeatures)
-      .then(() => {
-        highlightLabeledDoms([dom], 'red');
-        highlightLabeledDoms(restButtons, 'red');
-        clearOverlay(overlay);
+        };
+        const restButtons = findVisibleButtons().filter(button => button != dom);
+        return Promise.all(restButtons.map(async button => {
+          const buttonFeature = await getButtonFeatures(button, allVisiableInputs, false);
+          return {
+            ...data,
+            ...buttonFeature,
+            label: LabelResult.other
+          }
+        }))
+        .then(restButtonsFeatureLabeled => {
+          const allFeatures = [otherFeatureLabeled, ...restButtonsFeatureLabeled]
+          return addFeatureBulk(FeatureCategory.Buttons, allFeatures)
+          .then(() => {
+            highlightLabeledDoms([dom], 'red');
+            highlightLabeledDoms(restButtons, 'red');
+            clearOverlay(overlay);
+          });
+        });
       });
     }
     case CONTEXT_MENU_IDS.LABEL_LOGIN: {
@@ -226,7 +239,12 @@ export const handleLabel = async (message: Message, dom: HTMLElement, overlays: 
     case CONTEXT_MENU_IDS.LABEL_CLEAR_ALL: {
       restoreDomHighlight([dom]);
       clearOverlay(overlay);
-      return Promise.resolve();
+      overlayRectForm.clear();
+      overlayRectButton.clear();
+      overlaySave.clear();
+      return new Promise((resolve) => {
+        delay(resolve, TAKE_SCREENSHOT_DELAY, 'Cleared');
+      });
     }
     case CONTEXT_MENU_IDS.LABEL_IMAGE: {
       const windowWidth = window.innerWidth;
