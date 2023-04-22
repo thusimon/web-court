@@ -9,7 +9,9 @@ export const initContextState: AppContextType = {
   searchVal: null,
   modelConfigs: [DefaultModelConfig],
   modelConfigIdx: 0,
-  iterParams: DefaultIterParam
+  iterParams: DefaultIterParam,
+  pageSize: 50,
+  pageIndex: 0
 };
 
 export interface AppContextType {
@@ -20,6 +22,8 @@ export interface AppContextType {
   modelConfigs: ModelConfig[],
   modelConfigIdx: number;
   iterParams: IterParam;
+  pageSize: number;
+  pageIndex: number;
 }
 
 export const AppContext = createContext<{

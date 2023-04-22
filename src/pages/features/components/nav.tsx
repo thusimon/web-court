@@ -3,6 +3,7 @@ import { AppContext } from '../context-provider';
 import { FeatureCategory } from '../../../constants';
 import { Actions } from '../constants';
 import Search from './search';
+import Paginate from './paginate';
 
 import './nav.scss'
 
@@ -63,7 +64,11 @@ const Nav = () => {
       <div className='controls'>
         <button title='Models' name='models' onClick={onClickHander}>🤖</button>
       </div>
-      <Search />
+      <div className='advanced-controls'>
+        <Search />
+        |
+        <Paginate />
+      </div>
     </header>
   );
 };
