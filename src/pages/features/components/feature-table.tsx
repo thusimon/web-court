@@ -54,8 +54,12 @@ const FeatureTable = () => {
 
   const refresh = async () => {
     const allFeatures = await getAllFeatures();
-    const { featureCategory } = state;
-    const selectedTable = allFeatures[featureCategory] || [];
+    const { pageSize, pageIndex, featureCategory } = state;
+    let selectedTable = allFeatures[featureCategory] || [];
+    if(pageSize > 1 && pageIndex >= 0) {
+      const startIndex = pageIndex * pageSize;
+      selectedTable = selectedTable.slice(startIndex, startIndex + pageSize);
+    }
     setFilteredFeature(selectedTable);
     setAllFeatures(allFeatures);
   };
@@ -132,6 +136,17 @@ const FeatureTable = () => {
     setFilteredFeature(filteredTable);
   }
 
+  const handlePaginate = async (state: AppContextType) => {
+    const {pageSize, pageIndex, featureCategory} = state;
+    const selectedTable = allFeatures[featureCategory] || [];
+    if(!Number.isInteger(pageSize) || !Number.isInteger(pageIndex) || pageSize < 1 || pageIndex < 0) {
+      return;
+    }
+    const startIndex = pageIndex * pageSize;
+    const filteredTable = selectedTable.slice(startIndex, startIndex + pageSize);
+    setFilteredFeature(filteredTable);
+  }
+
   useEffect(() => {
     refresh();
   }, []);
@@ -145,8 +160,16 @@ const FeatureTable = () => {
   }, [state.searchProp, state.searchVal]);
 
   useEffect(() => {
-    const { featureCategory } = state;
-    const selectedTable = allFeatures[featureCategory] || [];
+    handlePaginate(state);
+  }, [state.pageSize, state.pageIndex])
+
+  useEffect(() => {
+    const { featureCategory, pageSize, pageIndex } = state;
+    let selectedTable = allFeatures[featureCategory] || [];
+    if(pageSize > 1 && pageIndex >= 0) {
+      const startIndex = pageIndex * pageSize;
+      selectedTable = selectedTable.slice(startIndex, startIndex + pageSize);
+    }
     setFilteredFeature(selectedTable);
   }, [state.featureCategory]);
 

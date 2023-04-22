@@ -88,6 +88,20 @@ export const reducer = (state: AppContextType, action: ActionType) => {
         ...search
       };
     }
+    case Actions.UpdatePageSize: {
+      const pageSize = action.data as object;
+      return {
+        ...state,
+        ...pageSize
+      };
+    }
+    case Actions.UpdatePageIndex: {
+      const pageIndex = action.data as object;
+      return {
+        ...state,
+        ...pageIndex
+      };
+    }
     default:
       return state;
   }

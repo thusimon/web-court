@@ -7,7 +7,9 @@ export enum Actions {
   UpdateModelConfigs,
   UpdateModelConfigIdx,
   UpdateIterParams,
-  UpdateSearch
+  UpdateSearch,
+  UpdatePageSize,
+  UpdatePageIndex
 }
 
 export interface ActionType {
