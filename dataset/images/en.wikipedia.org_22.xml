@@ -1,7 +1,7 @@
 <annotation>
 	<folder>images</folder>
-	<filename>accounts.craigslist.org_124.png</filename>
-	<path>D:\Github\web-court\dataset\images\accounts.craigslist.org_124.png</path>
+	<filename>en.wikipedia.org_22.png</filename>
+	<path>D:\Github\web-court\dataset\images\en.wikipedia.org_22.png</path>
 	<source>
 		<database>Unknown</database>
 	</source>
@@ -17,10 +17,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>1430</xmin>
-			<ymin>302</ymin>
-			<xmax>2371</xmax>
-			<ymax>649</ymax>
+			<xmin>807</xmin>
+			<ymin>418</ymin>
+			<xmax>1488</xmax>
+			<ymax>902</ymax>
 		</bndbox>
 	</object>
 	<object>
@@ -29,10 +29,10 @@
 		<truncated>0</truncated>
 		<difficult>0</difficult>
 		<bndbox>
-			<xmin>2216</xmin>
-			<ymin>564</ymin>
-			<xmax>2333</xmax>
-			<ymax>630</ymax>
+			<xmin>822</xmin>
+			<ymin>816</ymin>
+			<xmax>1474</xmax>
+			<ymax>888</ymax>
 		</bndbox>
 	</object>
 </annotation>
