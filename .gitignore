@@ -4,5 +4,4 @@ yarn-error.log
 .DS_Store
 dist.zip
 .venv
-dataset/train
-dataset/test
+tf/workspace/images
