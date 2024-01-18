@@ -11,24 +11,30 @@ PRETRAINED_MODEL_URL = 'http://download.tensorflow.org/models/object_detection/t
 TF_RECORD_SCRIPT_NAME = 'generate_tfrecord.py'
 LABEL_MAP_NAME = 'label_map.pbtxt'
 
+paths = {
+  'WORKSPACE_PATH': tf / 'workspace',
+  'SCRIPTS_PATH': tf / 'scripts',
+  'APIMODEL_PATH': tf / 'models',
+  'ANNOTATION_PATH': tf / 'workspace' / 'annotations',
+  'IMAGE_PATH': tf / 'workspace' / 'images',
+  'MODEL_PATH': tf / 'workspace' / 'models',
+  'PRETRAINED_MODEL_PATH': tf / 'workspace' / 'pre-trained-models',
+  'CHECKPOINT_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME, 
+  'OUTPUT_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'export', 
+  'TFJS_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'tfjsexport', 
+  'TFLITE_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'tfliteexport', 
+  'PROTOC_PATH': tf / 'protoc'
+}
+files = {
+  'PIPELINE_CONFIG': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'pipeline.config',
+  'TF_RECORD_SCRIPT': paths['SCRIPTS_PATH'] / TF_RECORD_SCRIPT_NAME, 
+  'LABELMAP': paths['ANNOTATION_PATH'] / LABEL_MAP_NAME
+}
+
 def createFolders():
-  paths = {
-    'WORKSPACE_PATH': tf / 'workspace',
-    'SCRIPTS_PATH': tf / 'scripts',
-    'APIMODEL_PATH': tf / 'models',
-    'ANNOTATION_PATH': tf / 'workspace' / 'annotations',
-    'IMAGE_PATH': tf / 'workspace' / 'images',
-    'MODEL_PATH': tf / 'workspace' / 'models',
-    'PRETRAINED_MODEL_PATH': tf / 'workspace' / 'pre-trained-models',
-    'CHECKPOINT_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME, 
-    'OUTPUT_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'export', 
-    'TFJS_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'tfjsexport', 
-    'TFLITE_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'tfliteexport', 
-    'PROTOC_PATH': tf / 'protoc'
-  }
   for path in paths.values():
     if not os.path.exists(path):
-        os.makedirs(path)
+      os.makedirs(path)
 
 # create train and test folder and randomly fill images and labels
 dataPath = cwd / 'dataset'
@@ -64,7 +70,38 @@ def fillTrainTest(ratio: float):
     shutil.copy2(trainImage, trainPath)
     shutil.copy2(trainlabel, trainPath)
 
+def downloadAndInstallAll():
+  if os.name=='nt':
+    os.system('pip install wget')
+    import wget
+  objDetectPath = paths['APIMODEL_PATH'] / 'research' / 'object_detection'
+  if not objDetectPath.exists():
+    os.system(f'git clone https://github.com/tensorflow/models {paths["APIMODEL_PATH"]}')
+  if os.name=='posix':  
+    os.system('apt-get install protobuf-compiler')
+    os.system('cd tf/models/research && protoc object_detection/protos/*.proto --python_out=. && cp object_detection/packages/tf2/setup.py . && python -m pip install . ') 
+  if os.name=='nt':
+    url="https://github.com/protocolbuffers/protobuf/releases/download/v25.2/protoc-25.2-win64.zip"
+    wget.download(url)
+    os.system(f'move protoc-25.2-win64.zip {paths["PROTOC_PATH"]}')
+    os.system(f'cd {paths["PROTOC_PATH"]} && tar -xf protoc-25.2-win64.zip')
+    os.environ['PATH'] += os.pathsep + os.path.abspath(os.path.join(paths['PROTOC_PATH'], 'bin'))   
+    os.system('cd tf/models/research && protoc object_detection/protos/*.proto --python_out=. && copy object_detection\\packages\\tf2\\setup.py setup.py && python setup.py build && python setup.py install')
+    os.system('cd tf/models/research/slim && pip install -e .')
+    os.system('pip install tensorflow --upgrade')
+    os.system('pip install matplotlib')
+    os.system('pip install Pillow')
+    os.system('pip install PyYaml')
+    #os.system('pip install protobuf')
+
+def verifyTFAndModels():
+  VERIFICATION_SCRIPT = paths['APIMODEL_PATH'] / 'research' / 'object_detection' / 'builders' / 'model_builder_tf2_test.py'
+  # Verify Installation
+  os.system(f'python {VERIFICATION_SCRIPT}')
+  
 if __name__ == '__main__':
-    createFolders()
-    prepareTrainTest()
-    fillTrainTest(0.2)
+  #createFolders()
+  #prepareTrainTest()
+  #fillTrainTest(0.2)
+  #downloadAndInstallAll()
+  verifyTFAndModels()

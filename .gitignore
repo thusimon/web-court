@@ -5,3 +5,5 @@ yarn-error.log
 dist.zip
 .venv
 tf/workspace/images
+tf/models
+tf/protoc
