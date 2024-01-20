@@ -2,6 +2,7 @@ import os
 import shutil
 from pathlib import Path
 import numpy as np
+import wget
 
 cwd = Path.cwd()
 tf = cwd / 'tf'
@@ -70,7 +71,7 @@ def fillTrainTest(ratio: float):
     shutil.copy2(trainImage, trainPath)
     shutil.copy2(trainlabel, trainPath)
 
-def downloadAndInstallAll():
+def downloadAndInstallPackages():
   if os.name=='nt':
     os.system('pip install wget')
     import wget
@@ -94,14 +95,25 @@ def downloadAndInstallAll():
     os.system('pip install PyYaml')
     #os.system('pip install protobuf')
 
+def downloadModel():
+  if os.name == 'posix':
+    os.system(f'wget {PRETRAINED_MODEL_URL}')
+    os.system(f'mv {PRETRAINED_MODEL_NAME}.tar.gz {paths["PRETRAINED_MODEL_PATH"]}')
+    os.system(f'cd {paths["PRETRAINED_MODEL_PATH"]} && tar -zxvf {PRETRAINED_MODEL_NAME}.tar.gz')
+  if os.name == 'nt':
+    wget.download(PRETRAINED_MODEL_URL)
+    os.system(f'move {PRETRAINED_MODEL_NAME}.tar.gz {paths["PRETRAINED_MODEL_PATH"]}')
+    os.system(f'cd {paths["PRETRAINED_MODEL_PATH"]} && tar -zxvf {PRETRAINED_MODEL_NAME}.tar.gz')
+
 def verifyTFAndModels():
   VERIFICATION_SCRIPT = paths['APIMODEL_PATH'] / 'research' / 'object_detection' / 'builders' / 'model_builder_tf2_test.py'
   # Verify Installation
   os.system(f'python {VERIFICATION_SCRIPT}')
-  
+
 if __name__ == '__main__':
   #createFolders()
   #prepareTrainTest()
   #fillTrainTest(0.2)
-  #downloadAndInstallAll()
+  #downloadAndInstallPackages()
+  downloadModel()
   verifyTFAndModels()
