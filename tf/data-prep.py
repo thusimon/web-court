@@ -93,6 +93,7 @@ def downloadAndInstallPackages():
     os.system('pip install matplotlib')
     os.system('pip install Pillow')
     os.system('pip install PyYaml')
+    os.system('pip install pytz')
     #os.system('pip install protobuf')
 
 def downloadModel():
@@ -110,10 +111,34 @@ def verifyTFAndModels():
   # Verify Installation
   os.system(f'python {VERIFICATION_SCRIPT}')
 
+def createLabels():
+  labels = [{'name':'login_form', 'id':1}, {'name':'login_button', 'id':2}]
+  with open(files['LABELMAP'], 'w') as f:
+    for label in labels:
+      f.write('item { \n')
+      f.write('\tname:\'{}\'\n'.format(label['name']))
+      f.write('\tid:{}\n'.format(label['id']))
+      f.write('}\n')
+
+def createTFRecords():
+  ARCHIVE_FILES = paths['IMAGE_PATH'] / 'archive.tar.gz'
+  if ARCHIVE_FILES.exists():
+    os.system(f'tar -zxvf {ARCHIVE_FILES}')
+  if not files['TF_RECORD_SCRIPT'].exists():
+    shutil.copy2(tf / 'generate_tfrecord.py', paths['SCRIPTS_PATH'])
+  os.system(f'python {files["TF_RECORD_SCRIPT"]} -x {paths["IMAGE_PATH"] / "train"} -l {files["LABELMAP"]} -o {paths["ANNOTATION_PATH"] / "train.record"}')
+  os.system(f'python {files["TF_RECORD_SCRIPT"]} -x {paths["IMAGE_PATH"] / "test"} -l {files["LABELMAP"]} -o {paths["ANNOTATION_PATH"] / "test.record"}')
+
+def copyModalConfig():
+  shutil.copy2(paths['PRETRAINED_MODEL_PATH'] / PRETRAINED_MODEL_NAME / 'pipeline.config', paths['CHECKPOINT_PATH'])
+
 if __name__ == '__main__':
   #createFolders()
   #prepareTrainTest()
   #fillTrainTest(0.2)
   #downloadAndInstallPackages()
-  downloadModel()
-  verifyTFAndModels()
+  #downloadModel()
+  #verifyTFAndModels()
+  #createLabels()
+  #createTFRecords()
+  copyModalConfig()

@@ -8,3 +8,6 @@ tf/workspace/images
 tf/models
 tf/protoc
 tf/workspace/pre-trained-models
+tf/workspace/annotations
+tf/workspace/models
+tf/scripts
