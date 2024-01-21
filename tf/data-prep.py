@@ -3,9 +3,13 @@ import shutil
 from pathlib import Path
 import numpy as np
 import wget
+import tensorflow as tf
+from object_detection.utils import config_util
+from object_detection.protos import pipeline_pb2
+from google.protobuf import text_format
 
 cwd = Path.cwd()
-tf = cwd / 'tf'
+tfP = cwd / 'tf'
 CUSTOM_MODEL_NAME = 'my_ssd_mobnet' 
 PRETRAINED_MODEL_NAME = 'ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8'
 PRETRAINED_MODEL_URL = 'http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_mobilenet_v2_fpnlite_320x320_coco17_tpu-8.tar.gz'
@@ -13,21 +17,21 @@ TF_RECORD_SCRIPT_NAME = 'generate_tfrecord.py'
 LABEL_MAP_NAME = 'label_map.pbtxt'
 
 paths = {
-  'WORKSPACE_PATH': tf / 'workspace',
-  'SCRIPTS_PATH': tf / 'scripts',
-  'APIMODEL_PATH': tf / 'models',
-  'ANNOTATION_PATH': tf / 'workspace' / 'annotations',
-  'IMAGE_PATH': tf / 'workspace' / 'images',
-  'MODEL_PATH': tf / 'workspace' / 'models',
-  'PRETRAINED_MODEL_PATH': tf / 'workspace' / 'pre-trained-models',
-  'CHECKPOINT_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME, 
-  'OUTPUT_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'export', 
-  'TFJS_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'tfjsexport', 
-  'TFLITE_PATH': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'tfliteexport', 
-  'PROTOC_PATH': tf / 'protoc'
+  'WORKSPACE_PATH': tfP / 'workspace',
+  'SCRIPTS_PATH': tfP / 'scripts',
+  'APIMODEL_PATH': tfP / 'models',
+  'ANNOTATION_PATH': tfP / 'workspace' / 'annotations',
+  'IMAGE_PATH': tfP / 'workspace' / 'images',
+  'MODEL_PATH': tfP / 'workspace' / 'models',
+  'PRETRAINED_MODEL_PATH': tfP / 'workspace' / 'pre-trained-models',
+  'CHECKPOINT_PATH': tfP / 'workspace' / 'models' / CUSTOM_MODEL_NAME, 
+  'OUTPUT_PATH': tfP / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'export', 
+  'TFJS_PATH': tfP / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'tfjsexport', 
+  'TFLITE_PATH': tfP / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'tfliteexport', 
+  'PROTOC_PATH': tfP / 'protoc'
 }
 files = {
-  'PIPELINE_CONFIG': tf / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'pipeline.config',
+  'PIPELINE_CONFIG': tfP / 'workspace' / 'models' / CUSTOM_MODEL_NAME / 'pipeline.config',
   'TF_RECORD_SCRIPT': paths['SCRIPTS_PATH'] / TF_RECORD_SCRIPT_NAME, 
   'LABELMAP': paths['ANNOTATION_PATH'] / LABEL_MAP_NAME
 }
@@ -39,7 +43,7 @@ def createFolders():
 
 # create train and test folder and randomly fill images and labels
 dataPath = cwd / 'dataset'
-tfImagePath = tf / 'workspace' / 'images' 
+tfImagePath = tfP / 'workspace' / 'images' 
 trainPath = tfImagePath / 'train'
 testPath = tfImagePath / 'test'
 
@@ -89,11 +93,12 @@ def downloadAndInstallPackages():
     os.environ['PATH'] += os.pathsep + os.path.abspath(os.path.join(paths['PROTOC_PATH'], 'bin'))   
     os.system('cd tf/models/research && protoc object_detection/protos/*.proto --python_out=. && copy object_detection\\packages\\tf2\\setup.py setup.py && python setup.py build && python setup.py install')
     os.system('cd tf/models/research/slim && pip install -e .')
-    os.system('pip install tensorflow --upgrade')
+    os.system('pip install tensorflow=2.13.0') #higher version has error
     os.system('pip install matplotlib')
     os.system('pip install Pillow')
     os.system('pip install PyYaml')
     os.system('pip install pytz')
+    os.system('pip install gin-config')
     #os.system('pip install protobuf')
 
 def downloadModel():
@@ -111,8 +116,8 @@ def verifyTFAndModels():
   # Verify Installation
   os.system(f'python {VERIFICATION_SCRIPT}')
 
+labels = [{'name':'login_form', 'id':1}, {'name':'login_button', 'id':2}]
 def createLabels():
-  labels = [{'name':'login_form', 'id':1}, {'name':'login_button', 'id':2}]
   with open(files['LABELMAP'], 'w') as f:
     for label in labels:
       f.write('item { \n')
@@ -125,12 +130,39 @@ def createTFRecords():
   if ARCHIVE_FILES.exists():
     os.system(f'tar -zxvf {ARCHIVE_FILES}')
   if not files['TF_RECORD_SCRIPT'].exists():
-    shutil.copy2(tf / 'generate_tfrecord.py', paths['SCRIPTS_PATH'])
+    shutil.copy2(tfP / 'generate_tfrecord.py', paths['SCRIPTS_PATH'])
   os.system(f'python {files["TF_RECORD_SCRIPT"]} -x {paths["IMAGE_PATH"] / "train"} -l {files["LABELMAP"]} -o {paths["ANNOTATION_PATH"] / "train.record"}')
   os.system(f'python {files["TF_RECORD_SCRIPT"]} -x {paths["IMAGE_PATH"] / "test"} -l {files["LABELMAP"]} -o {paths["ANNOTATION_PATH"] / "test.record"}')
 
-def copyModalConfig():
+def copyAndConfigModal():
   shutil.copy2(paths['PRETRAINED_MODEL_PATH'] / PRETRAINED_MODEL_NAME / 'pipeline.config', paths['CHECKPOINT_PATH'])
+  config = config_util.get_configs_from_pipeline_file(files['PIPELINE_CONFIG'])
+  pipeline_config = pipeline_pb2.TrainEvalPipelineConfig()
+  with tf.io.gfile.GFile(files['PIPELINE_CONFIG'], 'r') as f:
+    proto_str = f.read()
+    text_format.Merge(proto_str, pipeline_config)
+  pipeline_config.model.ssd.num_classes = len(labels)
+  pipeline_config.train_config.batch_size = 4
+  pipeline_config.train_config.fine_tune_checkpoint = str(paths['PRETRAINED_MODEL_PATH'] / PRETRAINED_MODEL_NAME / 'checkpoint' / 'ckpt-0')
+  pipeline_config.train_config.fine_tune_checkpoint_type = 'detection'
+  pipeline_config.train_input_reader.label_map_path= str(files['LABELMAP'])
+  pipeline_config.train_input_reader.tf_record_input_reader.input_path[:] = [str(paths['ANNOTATION_PATH'] / 'train.record')]
+  pipeline_config.eval_input_reader[0].label_map_path = str(files['LABELMAP'])
+  pipeline_config.eval_input_reader[0].tf_record_input_reader.input_path[:] = [str(paths['ANNOTATION_PATH'] / 'test.record')]
+  config_text = text_format.MessageToString(pipeline_config)
+  with tf.io.gfile.GFile(files['PIPELINE_CONFIG'], 'wb') as f:
+    f.write(config_text)   
+
+def showCommands():
+  TRAINING_SCRIPT = paths['APIMODEL_PATH'] / 'research' / 'object_detection' / 'model_main_tf2.py'
+  trainCommand = f'python {TRAINING_SCRIPT} --model_dir={paths["CHECKPOINT_PATH"]} --pipeline_config_path={files["PIPELINE_CONFIG"]} --num_train_steps=2000'
+  testCommand = f'python {TRAINING_SCRIPT} --model_dir={paths["CHECKPOINT_PATH"]} --pipeline_config_path={files["PIPELINE_CONFIG"]} --checkpoint_dir={paths["CHECKPOINT_PATH"]}'
+  print('Training command:')
+  print(trainCommand)
+  print('Testing command')
+  print(testCommand)
+  #cd to model_dir/eval
+  tfBoardCommand = 'tensorboard --logdir=.'
 
 if __name__ == '__main__':
   #createFolders()
@@ -141,4 +173,5 @@ if __name__ == '__main__':
   #verifyTFAndModels()
   #createLabels()
   #createTFRecords()
-  copyModalConfig()
+  #copyAndConfigModal()
+  showCommands()
