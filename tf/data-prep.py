@@ -107,6 +107,7 @@ def downloadAndInstallPackages():
     os.system('pip install PyYaml')
     os.system('pip install pytz')
     os.system('pip install gin-config')
+    os.system('pip install tensorflowjs')
     #os.system('pip install protobuf')
 
 def downloadModel():
@@ -171,6 +172,13 @@ def showCommands():
   print(testCommand)
   #cd to model_dir/eval
   tfBoardCommand = 'tensorboard --logdir=.'
+  FREEZE_SCRIPT = paths['APIMODEL_PATH'] / 'research' / 'object_detection' / 'exporter_main_v2.py'
+  freezeCommand = f'python {FREEZE_SCRIPT} --input_type=image_tensor --pipeline_config_path={files["PIPELINE_CONFIG"]} --trained_checkpoint_dir={paths["CHECKPOINT_PATH"]} --output_directory={paths["OUTPUT_PATH"]}'
+  print('Freeze command')
+  print(freezeCommand)
+  tfjsCommand = f"tensorflowjs_converter --input_format=tf_saved_model --output_node_names='detection_boxes,detection_classes,detection_features,detection_multiclass_scores,detection_scores,num_detections,raw_detection_boxes,raw_detection_scores' --output_format=tfjs_graph_model --signature_name=serving_default {paths['OUTPUT_PATH'] / 'saved_model'} {paths['TFJS_PATH']}"
+  print('TFJS command')
+  print(tfjsCommand)
 
 if __name__ == '__main__':
   #createFolders()
