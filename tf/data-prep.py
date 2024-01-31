@@ -101,7 +101,7 @@ def downloadAndInstallPackages():
     os.environ['PATH'] += os.pathsep + os.path.abspath(os.path.join(paths['PROTOC_PATH'], 'bin'))   
     os.system('cd tf/models/research && protoc object_detection/protos/*.proto --python_out=. && copy object_detection\\packages\\tf2\\setup.py setup.py && python setup.py build && python setup.py install')
     os.system('cd tf/models/research/slim && pip install -e .')
-    os.system('pip install tensorflow=2.13.0') #higher version has error
+    os.system('pip install tensorflow==2.13.0') #higher version has error
     os.system('pip install matplotlib')
     os.system('pip install Pillow')
     os.system('pip install PyYaml')
