@@ -5,6 +5,7 @@ name = "pypi"
 
 [packages]
 opencv-python = "*"
+PyQt6 = 6.6.1
 
 [dev-packages]
 
