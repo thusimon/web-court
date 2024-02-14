@@ -1,0 +1,9 @@
+{
+  "name": "com.utticus.extension.host",
+  "description": "Native messaging test",
+  "path": "D:\\Github\\web-court\\host\\main-cli.bat",
+  "type": "stdio",
+  "allowed_origins": [
+    "chrome-extension://lcoobaclplmagkbnhifofdhaelemdidi/"
+  ]
+}
