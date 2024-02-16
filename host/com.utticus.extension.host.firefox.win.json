@@ -3,8 +3,7 @@
   "description": "Native messaging test",
   "path": "D:\\Github\\web-court\\host\\main-cli.bat",
   "type": "stdio",
-  "allowed_origins": [
-    "chrome-extension://llbondefcohmldhdnbpdcalhihkdmbak/",
-    "chrome-extension://moldgnombbhfalipbnfpabpakkmogcck/"
+  "allowed_extensions": [
+    "web-court@utticus.com"
   ]
 }

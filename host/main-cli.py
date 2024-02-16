@@ -8,6 +8,7 @@ import sys
 import json
 import struct
 import threading
+from datetime import datetime
 
 # Read a message from stdin and decode it.
 def getMessage():
@@ -39,19 +40,19 @@ def stdProcess():
   while True:
     receivedMessage = getMessage()
     if receivedMessage == 'ping':
-      sendMessage(encodeMessage('pong'))
+      sendMessage(encodeMessage(f'[{datetime.now()}]: pong'))
     else:
-      sendMessage(encodeMessage(receivedMessage))
+      sendMessage(encodeMessage(f'[{datetime.now()}]: relay - {receivedMessage}'))
 
 def sendEvery5S():
-   sendMessage(encodeMessage('From native host'))
+   sendMessage(encodeMessage(f'[{datetime.now()}]: From native host'))
    threading.Timer(5.0, sendEvery5S).start()
 
 def main():
+  sendEvery5S()
   thread = threading.Thread(target=stdProcess)
   thread.daemon = True
   thread.start()
 
 if __name__ == '__main__':
-  sendEvery5S()
   main()

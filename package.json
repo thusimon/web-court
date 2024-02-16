@@ -7,8 +7,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build.dev": "npx webpack --config webpack.config.dev.js",
-    "build.prod": "npx webpack --config webpack.config.prod.js",
+    "build.chrome.dev": "npx webpack --config webpack.config.chrome.dev.js",
+    "build.chrome.prod": "npx webpack --config webpack.config.chrome.prod.js",
+    "build.firefox.dev": "npx webpack --config webpack.config.firefox.dev.js",
+    "build.firefox.prod": "npx webpack --config webpack.config.firefox.prod.js",
     "jest": "jest",
     "lint": "web-ext --source-dir src lint"
   },

@@ -1,0 +1,63 @@
+{
+  "manifest_version": 3,
+  "name": "WebCourt",
+  "author": "Lu",
+  "version": "0.0.3.4",
+  "description": "Extract and collect login page features and classify the web sites",
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "web-court@utticus.com",
+      "strict_min_version": "109"
+    }
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "css": ["content/style.css"],
+      "js": ["content/script.js"],
+      "all_frames": true
+    }
+  ],
+  "background": {
+    "scripts": ["background.js"]
+  },
+  "icons": {
+    "16": "assets/icons/16.png",
+    "48": "assets/icons/48.png",
+    "128": "assets/icons/128.png"
+  },
+  "permissions": [
+    "contextMenus",
+    "downloads",
+    "storage",
+    "unlimitedStorage",
+    "tabs",
+    "nativeMessaging"
+  ],
+  "host_permissions": [
+    "<all_urls>"
+  ],
+  "action": {
+    "default_icon": {
+      "16": "assets/icons/16.png",
+      "24": "assets/icons/24.png",
+      "32": "assets/icons/32.png"
+    },
+    "default_title": "Web Court",
+    "default_popup": "pages/popover/popover.html"
+  },
+  "options_ui": {
+    "page": "pages/options/options.html",
+    "open_in_tab": true
+  },
+  "commands": {
+    "capture-screen": {
+      "suggested_key": {
+        "windows": "Ctrl+Shift+Period",
+        "mac": "Command+Shift+Period",
+        "default": "Ctrl+Shift+Period"
+      },
+      "description": "capture screen on the current page."
+    }
+  }
+}

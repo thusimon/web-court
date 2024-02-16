@@ -1,3 +1,4 @@
+const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
@@ -41,24 +42,109 @@ const htmlWebpackPlugins = pageChunks.map(config => new HtmlWebpackPlugin({
   inject: 'body'
 }));
 
-const copyWebpackPlugin = new CopyWebpackPlugin({
+const copyCommon = [
+  {
+    from: './src/content/style.css',
+    to: './content'
+  },
+  {
+    from: './src/assets',
+    to: './assets'
+  }
+];
+
+const copyWebpackPluginChrome = new CopyWebpackPlugin({
   patterns: [
     {
-      from: './src/manifest.json'
+      from: './src/manifest_chrome.json',
+      to: './manifest.json'
     },
-    {
-      from: './src/content/style.css',
-      to: './content'
-    },
-    {
-      from: './src/assets',
-      to: './assets'
-    }
+    ...copyCommon
   ]
 });
 
+const copyWebpackPluginFirefox = new CopyWebpackPlugin({
+  patterns: [
+    {
+      from: './src/manifest_firefox.json',
+      to: './manifest.json'
+    },
+    ...copyCommon
+  ]
+});
+
+const sassProdRule = {
+  test: /\.s[ac]ss$/i,
+  use: [
+    // Creates `style` nodes from JS strings
+    'style-loader',
+    // Translates CSS into CommonJS
+    'css-loader',
+    // Compiles Sass to CSS
+    'sass-loader'
+  ]
+};
+
+const sassDevRule = {
+  test: /\.s[ac]ss$/i,
+  use: [
+    // Creates `style` nodes from JS strings
+    'style-loader',
+    // Translates CSS into CommonJS
+    'css-loader',
+    // Compiles Sass to CSS
+    {
+      loader: "sass-loader",
+      options: {
+        sourceMap: false,
+        sassOptions: {
+          outputStyle: "compressed",
+        },
+      }
+    }
+  ]
+};
+
+const getWebpackConfig = (browser, prod) => {
+  const config = {
+    mode: prod ? 'production' : 'development',
+    devtool: prod ? false : 'inline-source-map',
+    entry: {
+      background: './src/background',
+      script: './src/content/script',
+      options: './src/pages/options/options',
+      features: './src/pages/features/features',
+      popover: './src/pages/popover/popover'
+    },
+    output: {
+      path: path.resolve(__dirname, `./dist/${browser}`),
+      filename: (pathData) => getBuildFilePathAndName(pathData.chunk.name),
+      clean: true
+    },
+    module: {
+      rules: [
+        {
+          test: /(?!\.spec)\.tsx?$/,
+          use: 'ts-loader',
+          exclude: /node_modules/,
+        },
+        prod ? sassProdRule : sassDevRule
+      ]
+    },
+    resolve: {
+      extensions: ['.ts', '.tsx', '.js']
+    },
+    experiments: {
+      topLevelAwait: true
+    }
+  };
+  
+  const copyWebpackPlugin = browser === 'chrome' ? copyWebpackPluginChrome : copyWebpackPluginFirefox;
+  config.plugins = [...htmlWebpackPlugins, copyWebpackPlugin];
+  return config;
+};
+
+
 module.exports = {
-  getBuildFilePathAndName,
-  htmlWebpackPlugins,
-  copyWebpackPlugin
+  getWebpackConfig
 };
