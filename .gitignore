@@ -11,3 +11,6 @@ tf/workspace/pre-trained-models
 tf/workspace/annotations
 #tf/workspace/models
 tf/scripts
+tf/yolo/data
+tf/yolo/login_detect
+tf/yolo/*.pt

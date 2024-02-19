@@ -163,6 +163,5 @@ def main(_):
         examples.to_csv(args.csv_path, index=None)
         print('Successfully created the CSV file: {}'.format(args.csv_path))
 
-
 if __name__ == '__main__':
     tf.app.run()

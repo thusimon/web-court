@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 opencv-python = "*"
 PyQt6 = 6.6.1
+ultralytics = 8.1.15
 
 [dev-packages]
 
