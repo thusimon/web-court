@@ -14,3 +14,4 @@ tf/scripts
 tf/yolo/data
 tf/yolo/login_detect
 tf/yolo/*.pt
+tf/yolo/calibration_image_sample_data_20x128x128x3_float32.npy

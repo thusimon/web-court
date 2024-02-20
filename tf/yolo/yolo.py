@@ -2,13 +2,13 @@ from ultralytics import YOLO
 
 #run at tf/yolo folder
 
-trainedModelPath = 'login_detect/train4/weights/best.pt'
+trainedModelPath = 'login_detect/train6/weights/best.pt'
 
 def train():
   #load a model
   #model = YOLO('yolov8n.yaml')  # build a new model from YAML
   # pretrained model choices: [yolov8n.pt, yolov8s.pt, yolov8m.pt, yolov8l.pt, yolov8x.pt]
-  model = YOLO('yolov8m.pt')  # load a pretrained model (recommended for training)
+  model = YOLO('yolov8l.pt')  # load a pretrained model (recommended for training)
   #model = YOLO('yolov8n.yaml').load('yolov8n.pt')  # build from YAML and transfer weights
 
   results = model.train(data='config.yaml', project='login_detect', epochs=50)
@@ -29,7 +29,12 @@ def predict():
   source = 'data/images/test'
   model.predict(source=source, project='login_detect', save=True, conf=0.25)
 
+def exportTFJS():
+  model = YOLO(trainedModelPath)
+  model.export(format="tfjs")
+
 if __name__ == '__main__':
-  train()
+  #train()
   #validate()
   #predict()
+  exportTFJS()
