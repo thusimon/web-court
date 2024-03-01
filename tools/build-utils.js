@@ -1,3 +1,4 @@
+const fsp = require('fs/promises');
 const path = require('path');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
@@ -50,6 +51,10 @@ const copyCommon = [
   {
     from: './src/assets',
     to: './assets'
+  },
+  {
+    from: './tf/yolo/best_web_model',
+    to: './model'
   }
 ];
 
@@ -144,7 +149,11 @@ const getWebpackConfig = (browser, prod) => {
   return config;
 };
 
+const copyFolder = async (src, dest) => {
+  await fsp.cp(src, dest, { recursive: true });
+};
 
 module.exports = {
-  getWebpackConfig
+  getWebpackConfig,
+  copyFolder
 };

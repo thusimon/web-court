@@ -29,6 +29,14 @@ def predict():
   source = 'data/images/test'
   model.predict(source=source, project='login_detect', save=True, conf=0.25)
 
+def predictImg(img):
+  model = YOLO(trainedModelPath)
+  # Define path to the image file
+  source = f'data/images/test/{img}'
+  result = model.predict(source, project='login_detect', save=True, conf=0.25)
+  resultJSON = result[0].tojson()
+  print(resultJSON)
+
 def exportTFJS():
   model = YOLO(trainedModelPath)
   model.export(format="tfjs")

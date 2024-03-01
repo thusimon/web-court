@@ -15,7 +15,7 @@
     "lint": "web-ext --source-dir src lint"
   },
   "dependencies": {
-    "@tensorflow/tfjs": "^4.2.0",
+    "@tensorflow/tfjs": "^4.17.0",
     "@webcomponents/webcomponentsjs": "^2.7.0",
     "html2canvas": "^1.4.1",
     "idb": "^7.1.1",

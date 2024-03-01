@@ -7,7 +7,9 @@ import { sendMessageToTab } from './common/tabs';
 import { GeneralFeature } from './content/feature';
 import { processButtonFeature } from './common/ai/utils/process-button-data';
 import { ButtonClass, getFeatureData } from './common/ai/utils/data';
-import { getCenter } from './common/misc';
+import { getCenter, dataURLtoBlob, dataURItoBlob, blobToDataURI } from './common/misc';
+
+let localModel: tf.GraphModel;
 
 // create context menu
 
@@ -122,21 +124,57 @@ browser.contextMenus.create({
   id: CONTEXT_MENU_IDS.LABEL_IMAGE
 }, () => browser.runtime.lastError);
 
+browser.contextMenus.create({
+  title: 'Predict',
+  contexts: ['all'],
+  id: CONTEXT_MENU_IDS.PRIDICT_IMAGE
+}, () => browser.runtime.lastError);
+
 let isLabeling = false;
-const contextMenuClickHandler = (info: Menus.OnClickData, tab: Tabs.Tab) => {
+const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) => {
   if (!tab.id) {
     console.log('no tab id, bail');
+    return;
   }
-  if (info.menuItemId === CONTEXT_MENU_IDS.LABEL_IMAGE) {
-    isLabeling = true;
-  }
-  sendMessageToTab(tab.id, {
-    type: MessageType.CONTEXT_CLICK,
-    action: info.menuItemId,
-    data: {
-      url: tab.url
+  switch (info.menuItemId) {
+    case CONTEXT_MENU_IDS.PRIDICT_IMAGE: {
+      const imageDataUri = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
+      const blob = await dataURItoBlob(imageDataUri);
+      const bitmap = await createImageBitmap(blob);
+      //const canvas = new OffscreenCanvas(640, 640);
+      //const ctx = canvas.getContext('2d');
+      //ctx.drawImage(bitmap, 0, 0, 640, 640);
+      //const resizedImgData = ctx.getImageData(0, 0, 640, 640);
+      //const resizedBlob = await canvas.convertToBlob();
+      //const resizedImageUri = await blobToDataURI(resizedBlob);
+      const imageTensor = tf.browser.fromPixels(bitmap);
+      const resizedTensor = tf.image.resizeBilinear(imageTensor, [640, 640], true);
+      //const resized = tf.cast(resizedTensor, 'float32');
+      //const t4d = tf.tensor4d(Array.from(resized.dataSync()),[1, 640, 640, 3])
+      if (!localModel) {
+        return;
+      }
+      tf.tidy(function() {
+        //const predictTensor = localModel.predict(resizedTensor.expandDims()) as tf.Tensor<tf.Rank>;
+        //const result = predictTensor.dataSync();
+        const result = localModel.predict(resizedTensor.expandDims());
+        console.log(result)
+      })
+      break;
     }
-  });
+    case CONTEXT_MENU_IDS.LABEL_IMAGE: {
+      isLabeling = true;
+    }
+    default: {
+      sendMessageToTab(tab.id, {
+        type: MessageType.CONTEXT_CLICK,
+        action: info.menuItemId,
+        data: {
+          url: tab.url
+        }
+      });
+    }
+  }
 };
 
 browser.contextMenus.onClicked.addListener(contextMenuClickHandler);
@@ -225,4 +263,15 @@ const commandHandler = async (command: string, tab: Tabs.Tab) => {
 
 browser.commands.onCommand.addListener(commandHandler);
 
-loadModelInFromIndexDB('btn-model');
+(async () => {
+  const url = browser.runtime.getURL('model/model.json');
+  localModel = await tf.loadGraphModel(url);
+  console.log('local model loaded');
+
+  try {
+    await loadModelInFromIndexDB('btn-model');
+  } catch (err) {
+    console.log(`failed to load model from indexDB, err: ${err}`);
+  }
+
+})()
