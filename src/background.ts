@@ -171,6 +171,7 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       const imageDataUri = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
       const blob = await dataURItoBlob(imageDataUri);
       const bitmap = await createImageBitmap(blob);
+      console.log(`get image: ${Date.now() - startTime}ms`);
       //const canvas = new OffscreenCanvas(640, 640);
       //const ctx = canvas.getContext('2d');
       //ctx.drawImage(bitmap, 0, 0, 640, 640);
@@ -185,13 +186,14 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       if (!localModel) {
         return;
       }
+      console.log(`preprocess: ${Date.now() - startTime}`);
       // tf.tidy(function() {
       //   //const predictTensor = localModel.predict(resizedTensor.expandDims()) as tf.Tensor<tf.Rank>;
       //   //const result = predictTensor.dataSync();
       //   const result = localModel.predict(resizedTensor.expandDims());
       //   console.log(result)
       // })
-      const res = await localModel.executeAsync(input); // inference model
+      const res = localModel.execute(input); // inference model
       console.log(`Spend: ${Date.now() - startTime}ms`);
       console.log(res);
       break;
@@ -298,7 +300,7 @@ const commandHandler = async (command: string, tab: Tabs.Tab) => {
 browser.commands.onCommand.addListener(commandHandler);
 
 (async () => {
-  const url = browser.runtime.getURL('model/yolov8s/model.json');
+  const url = browser.runtime.getURL('model/yolov8m/model.json');
   localModel = await tf.loadGraphModel(url);
   console.log('local model loaded');
 
