@@ -53,7 +53,7 @@ const copyCommon = [
     to: './assets'
   },
   {
-    from: './tf/yolo/best_web_model',
+    from: './tf/yolo/tfjs-models',
     to: './model'
   }
 ];

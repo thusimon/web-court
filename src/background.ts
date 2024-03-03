@@ -131,6 +131,34 @@ browser.contextMenus.create({
 }, () => browser.runtime.lastError);
 
 let isLabeling = false;
+
+const preprocess = (source: ImageBitmap, modelWidth: number, modelHeight: number) => {
+  let xRatio, yRatio; // ratios for boxes
+
+  const input = tf.tidy(() => {
+    const imgTensor = tf.browser.fromPixels(source);
+
+    // padding image to square => [n, m] to [n, n], n > m
+    // const [h, w] = img.shape.slice(0, 2); // get source width and height
+    // const maxSize = Math.max(w, h); // get max size
+    // const imgPadded = img.pad([
+    //   [0, maxSize - h], // padding y [bottom only]
+    //   [0, maxSize - w], // padding x [right only]
+    //   [0, 0],
+    // ]);
+
+    // xRatio = maxSize / w; // update xRatio
+    // yRatio = maxSize / h; // update yRatio
+
+    return tf.image
+      .resizeBilinear(imgTensor, [modelWidth, modelHeight]) // resize frame
+      .div(255.0) // normalize
+      .expandDims(0); // add batch
+  });
+
+  return [input, xRatio, yRatio];
+};
+
 const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) => {
   if (!tab.id) {
     console.log('no tab id, bail');
@@ -138,6 +166,8 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
   }
   switch (info.menuItemId) {
     case CONTEXT_MENU_IDS.PRIDICT_IMAGE: {
+      const startTime = Date.now();
+      console.log(`start: ${startTime}`);
       const imageDataUri = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
       const blob = await dataURItoBlob(imageDataUri);
       const bitmap = await createImageBitmap(blob);
@@ -147,19 +177,23 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       //const resizedImgData = ctx.getImageData(0, 0, 640, 640);
       //const resizedBlob = await canvas.convertToBlob();
       //const resizedImageUri = await blobToDataURI(resizedBlob);
-      const imageTensor = tf.browser.fromPixels(bitmap);
-      const resizedTensor = tf.image.resizeBilinear(imageTensor, [640, 640], true);
+      //const imageTensor = tf.browser.fromPixels(bitmap);
+      //const resizedTensor = tf.image.resizeBilinear(imageTensor, [640, 640], true);
       //const resized = tf.cast(resizedTensor, 'float32');
       //const t4d = tf.tensor4d(Array.from(resized.dataSync()),[1, 640, 640, 3])
+      const [input] = preprocess(bitmap, 640, 640);
       if (!localModel) {
         return;
       }
-      tf.tidy(function() {
-        //const predictTensor = localModel.predict(resizedTensor.expandDims()) as tf.Tensor<tf.Rank>;
-        //const result = predictTensor.dataSync();
-        const result = localModel.predict(resizedTensor.expandDims());
-        console.log(result)
-      })
+      // tf.tidy(function() {
+      //   //const predictTensor = localModel.predict(resizedTensor.expandDims()) as tf.Tensor<tf.Rank>;
+      //   //const result = predictTensor.dataSync();
+      //   const result = localModel.predict(resizedTensor.expandDims());
+      //   console.log(result)
+      // })
+      const res = await localModel.executeAsync(input); // inference model
+      console.log(`Spend: ${Date.now() - startTime}ms`);
+      console.log(res);
       break;
     }
     case CONTEXT_MENU_IDS.LABEL_IMAGE: {
@@ -264,7 +298,7 @@ const commandHandler = async (command: string, tab: Tabs.Tab) => {
 browser.commands.onCommand.addListener(commandHandler);
 
 (async () => {
-  const url = browser.runtime.getURL('model/model.json');
+  const url = browser.runtime.getURL('model/yolov8s/model.json');
   localModel = await tf.loadGraphModel(url);
   console.log('local model loaded');
 
