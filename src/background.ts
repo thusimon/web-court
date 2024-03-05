@@ -159,6 +159,41 @@ const preprocess = (source: ImageBitmap, modelWidth: number, modelHeight: number
   return [input, xRatio, yRatio];
 };
 
+const yolo_classes = [
+  'login_form',
+  'login_button'
+];
+
+function process_output(output: any, img_width: number, img_height: number) {
+  let boxes: any = [];
+  for (let index=0;index<8400;index++) {
+      const [class_id,prob] = [...Array(80).keys()]
+          .map(col => [col, output[8400*(col+4)+index]])
+          .reduce((accum, item) => item[1]>accum[1] ? item : accum,[0,0]);
+      if (prob < 0.5) {
+          continue;
+      }
+      const label = yolo_classes[class_id];
+      const xc = output[index];
+      const yc = output[8400+index];
+      const w = output[2*8400+index];
+      const h = output[3*8400+index];
+      const x1 = (xc-w/2)/640*img_width;
+      const y1 = (yc-h/2)/640*img_height;
+      const x2 = (xc+w/2)/640*img_width;
+      const y2 = (yc+h/2)/640*img_height;
+      boxes.push([x1,y1,x2,y2,label,prob]);
+  }
+
+  // boxes = boxes.sort((box1,box2) => box2[5]-box1[5])
+  // const result = [];
+  // while (boxes.length>0) {
+  //     result.push(boxes[0]);
+  //     boxes = boxes.filter(box => iou(boxes[0],box)<0.7);
+  // }
+  // return result;
+}
+
 const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) => {
   if (!tab.id) {
     console.log('no tab id, bail');
@@ -193,9 +228,44 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       //   const result = localModel.predict(resizedTensor.expandDims());
       //   console.log(result)
       // })
-      const res = localModel.execute(input); // inference model
+      const res = localModel.execute(input) as tf.Tensor<tf.Rank>; // inference model
+      const transRes = res.transpose([0, 2, 1]); // transpose result [b, det, n] => [b, n, det]
+      console.log(transRes)
+      const boxes = tf.tidy(() => {
+        const w = transRes.slice([0, 0, 2], [-1, -1, 1]); // get width
+        const h = transRes.slice([0, 0, 3], [-1, -1, 1]); // get height
+        const x1 = tf.sub(transRes.slice([0, 0, 0], [-1, -1, 1]), tf.div(w, 2)); // x1
+        const y1 = tf.sub(transRes.slice([0, 0, 1], [-1, -1, 1]), tf.div(h, 2)); // y1
+        return tf
+          .concat(
+            [
+              y1,
+              x1,
+              tf.add(y1, h), //y2
+              tf.add(x1, w), //x2
+            ],
+            2
+          )
+          .squeeze();
+      });
+      console.log(251, boxes)
+
+      const [scores, classes] = tf.tidy(() => {
+        // class scores
+        const rawScores = transRes.slice([0, 0, 4], [-1, -1, yolo_classes.length]).squeeze(); // #6 only squeeze axis 0 to handle only 1 class models
+        return [rawScores.max(1), rawScores.argMax(1)];
+      }); // get max scores and classes index
+      console.log(258, scores, classes)
+
+      const nms = await tf.image.nonMaxSuppressionAsync(boxes as tf.Tensor2D, scores, 500, 0.45, 0.2); // NMS to filter boxes
+
+      const boxes_data = boxes.gather(nms, 0).dataSync(); // indexing boxes by nms index
+      const scores_data = scores.gather(nms, 0).dataSync(); // indexing scores by nms index
+      const classes_data = classes.gather(nms, 0).dataSync(); // indexing classes by nms index
+
+      console.log(266, boxes_data, scores_data, classes_data);
       console.log(`Spend: ${Date.now() - startTime}ms`);
-      console.log(res);
+      
       break;
     }
     case CONTEXT_MENU_IDS.LABEL_IMAGE: {
