@@ -6,7 +6,7 @@ import { downloadData, getImageLabelData } from '../../common/storage';
 
 import './app.scss';
 
-const HOST_ID = 'com.utticus.extension.host';
+const HOST_ID = 'com.utticus.net.host';
 
 const App = () => {
   const [downloadFolder, setDownloadFolder] = useState('');
