@@ -246,7 +246,7 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
           2
         ).squeeze();
       });
-      console.log(251, boxes)
+      console.log(251, boxes);
 
       const [scores, classes] = tf.tidy(() => {
         // class scores
