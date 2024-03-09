@@ -253,7 +253,7 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
         const rawScores = transRes.slice([0, 0, 4], [-1, -1, yolo_classes.length]).squeeze(); // #6 only squeeze axis 0 to handle only 1 class models
         return [rawScores.max(1), rawScores.argMax(1)];
       }); // get max scores and classes index
-      console.log(258, scores, classes)
+      console.log(258, scores, classes);
 
       const nms = await tf.image.nonMaxSuppressionAsync(boxes as tf.Tensor2D, scores, 500, 0.45, 0.2); // NMS to filter boxes
 
