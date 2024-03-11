@@ -13,13 +13,23 @@ print(matrix_product)
 print(matrix_sum)
 
 matrix_3 = np.array([(2,7,2),(1,4,2),(9,0,2)],dtype = 'float32')
-print (matrix_3)
+print(matrix_3)
 
 matrix_det = tf.linalg.det(matrix_3)
-with tf.Session() as sess:
-  result1 = sess.run(matrix_product)
-  result2 = sess.run(matrix_sum)
-  result3 = sess.run(matrix_det)
-  print (result1)
-  print (result2)
-  print (result3)
+print(matrix_det)
+
+aconst = tf.constant(3.0)
+b = tf.Variable(3, name="b")
+x = tf.Variable(2, name="x")
+z = tf.Variable(5*x, name="z")
+W = tf.Variable(20)
+lm = tf.Variable(W*x + b, name="lm")
+
+x = tf.constant(5,name="x")
+y = tf.constant(8,name="y")
+@tf.function
+def calc_prod(x, y):
+  z = 2*x + 3*y
+  return z
+result = calc_prod(x, y)
+print('result =',result)
