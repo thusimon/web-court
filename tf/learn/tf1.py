@@ -33,3 +33,4 @@ def calc_prod(x, y):
   return z
 result = calc_prod(x, y)
 print('result =',result)
+
