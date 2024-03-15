@@ -71,3 +71,19 @@ print("m1: ", m1)
 print("m1 + 50: ", m1 + 50)
 print("m1 * 2: ", m1 * 2)
 print("tf.square(m1): ", tf.square(m1))
+
+m1 = tf.constant([[3., 3.]]) # 1x2
+m2 = tf.constant([[2.],[2.]]) # 2x1
+p1 = tf.matmul(m1, m2)
+print('p1:',p1)
+
+x1 = np.array([[1.,2.],[3.,4.]])
+x2 = tf.convert_to_tensor(value=x1, dtype=tf.float32)
+print ('x1:',x1)
+print ('x2:',x2)
+
+try:
+  sum1 = tf.constant(1) + tf.constant(1.0)
+  print(sum1)
+except tf.errors.InvalidArgumentError as ex:
+  print(ex)
