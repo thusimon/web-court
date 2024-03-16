@@ -87,3 +87,4 @@ try:
   print(sum1)
 except tf.errors.InvalidArgumentError as ex:
   print(ex)
+
