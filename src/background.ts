@@ -194,6 +194,28 @@ function process_output(output: any, img_width: number, img_height: number) {
   // return result;
 }
 
+function iou(box1: number[],box2: number[]) {
+  return intersection(box1,box2)/union(box1,box2);
+}
+
+function union(box1: number[],box2: number[]) {
+  const [box1_x1,box1_y1,box1_x2,box1_y2] = box1;
+  const [box2_x1,box2_y1,box2_x2,box2_y2] = box2;
+  const box1_area = (box1_x2-box1_x1)*(box1_y2-box1_y1)
+  const box2_area = (box2_x2-box2_x1)*(box2_y2-box2_y1)
+  return box1_area + box2_area - intersection(box1,box2)
+}
+
+function intersection(box1: number[],box2: number[]) {
+  const [box1_x1,box1_y1,box1_x2,box1_y2] = box1;
+  const [box2_x1,box2_y1,box2_x2,box2_y2] = box2;
+  const x1 = Math.max(box1_x1,box2_x1);
+  const y1 = Math.max(box1_y1,box2_y1);
+  const x2 = Math.min(box1_x2,box2_x2);
+  const y2 = Math.min(box1_y2,box2_y2);
+  return (x2-x1)*(y2-y1)
+}
+
 const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) => {
   if (!tab.id) {
     console.log('no tab id, bail');
@@ -228,6 +250,15 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       //   const result = localModel.predict(resizedTensor.expandDims());
       //   console.log(result)
       // })
+
+      /*
+      height: 1780
+      width: 3841
+      300.73516845703125
+      243.2948455810547
+      450.6767883300781
+      392.83746337890625
+      */
       const res = localModel.execute(input) as tf.Tensor<tf.Rank>; // inference model
       const transRes = res.transpose([0, 2, 1]); // transpose result [b, det, n] => [b, n, det]
       console.log(transRes)
