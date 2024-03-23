@@ -261,7 +261,7 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       */
       const res = localModel.execute(input) as tf.Tensor<tf.Rank>; // inference model
       const transRes = res.transpose([0, 2, 1]); // transpose result [b, det, n] => [b, n, det]
-      console.log(transRes)
+      console.log(transRes);
       const boxes = tf.tidy(() => {
         const w = transRes.slice([0, 0, 2], [-1, -1, 1]); // get width
         const h = transRes.slice([0, 0, 3], [-1, -1, 1]); // get height
