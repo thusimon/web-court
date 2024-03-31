@@ -65,6 +65,24 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
       handlePredict(message);
       break;
     }
+    case MessageType.PREDICT_RESULT: {
+      const data = message.data;
+      const windowWidth = window.screen.width;
+      const windowHeight = window.screen.height;
+      data.forEach((d: any) => {
+        debugger;
+        const {box, klass, score, ratios} = d;
+        const {imgWidth, imgHeight} = ratios;
+        const xr = windowWidth / imgWidth;
+        const yr = windowHeight / imgHeight;
+        box[0] *= xr; // x
+        box[1] *= yr; // y
+        box[2] *= xr; // width
+        box[3] *= yr; // height
+      })
+      console.log(69, message)
+      break;
+    }
     default:
       break;
   }

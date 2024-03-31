@@ -54,7 +54,8 @@ export enum MessageType {
   CONTEXT_CLICK,
   BTN_FEATURE_COLLECT,
   BTN_FEATURE_PREDICT,
-  LABEL_IMAGE
+  LABEL_IMAGE,
+  PREDICT_RESULT
 };
 
 export interface Message {
