@@ -225,8 +225,10 @@ const findBoxes = (boxes_data: Float32Array, scores_data: Float32Array, classes_
     const score = (scores_data[i] * 100).toFixed(1);
 
     let [y1, x1, y2, x2] = boxes_data.slice(i * 4, (i + 1) * 4);
-    const xr = ratios.imgWidth / ratios.modelWidth;
-    const yr = ratios.imgHeight / ratios.modelHeight;
+    // const xr = ratios.imgWidth / ratios.modelWidth;
+    // const yr = ratios.imgHeight / ratios.modelHeight;
+    const xr = ratios.xRatio;
+    const yr = ratios.yRatio;
     x1 *= xr;
     x2 *= xr;
     y1 *= yr;
@@ -269,7 +271,7 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       //const resizedTensor = tf.image.resizeBilinear(imageTensor, [640, 640], true);
       //const resized = tf.cast(resizedTensor, 'float32');
       //const t4d = tf.tensor4d(Array.from(resized.dataSync()),[1, 640, 640, 3])
-      const [input] = preprocess(bitmap, 640, 640);
+      const [input, xRatio, yRatio] = preprocess(bitmap, 640, 640);
       if (!localModel) {
         return;
       }
@@ -299,6 +301,8 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       693.4374938964845, 517.8707885742188, 307.0417282104492, 50.35249328613281
       */
       const ratio = {
+        xRatio: xRatio,
+        yRatio: yRatio,
         imgWidth: bitmap.width,
         imgHeight: bitmap.height,
         modelWidth: 640,

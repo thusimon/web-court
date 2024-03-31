@@ -69,6 +69,7 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
       const data = message.data;
       const windowWidth = window.screen.width;
       const windowHeight = window.screen.height;
+      console.log(72, message);
       data.forEach((d: any) => {
         debugger;
         const {box, klass, score, ratios} = d;
