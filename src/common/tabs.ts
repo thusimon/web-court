@@ -10,6 +10,10 @@ export const sendMessageToTab = (tabId: number, message: any) => {
   return browser.tabs.sendMessage(tabId, message);
 };
 
+export const sendMessageToTabTopFrame = (tabId: number,message: any) => {
+  return browser.tabs.sendMessage(tabId, message, {frameId: 0});
+};
+
 export const sendMessageToExtension = (message: any) => {
   return browser.runtime.sendMessage(message);
 }

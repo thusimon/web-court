@@ -3,7 +3,7 @@ import * as tf from '@tensorflow/tfjs';
 import { Menus, Tabs } from 'webextension-polyfill';
 import { CONTEXT_MENU_IDS, Message, MessageType } from './constants';
 import { loadModelInFromIndexDB, saveImageLabelData } from './common/storage';
-import { sendMessageToTab } from './common/tabs';
+import { sendMessageToTab, sendMessageToTabTopFrame } from './common/tabs';
 import { GeneralFeature } from './content/feature';
 import { processButtonFeature } from './common/ai/utils/process-button-data';
 import { ButtonClass, getFeatureData } from './common/ai/utils/data';
@@ -151,7 +151,7 @@ const preprocess = (source: ImageBitmap, modelWidth: number, modelHeight: number
     yRatio = maxSize / h; // update yRatio
 
     return tf.image
-      .resizeBilinear(imgPadded, [modelWidth, modelHeight]) // resize frame
+      .resizeBilinear(imgTensor, [modelWidth, modelHeight]) // resize frame
       .div(255.0) // normalize
       .expandDims(0); // add batch
   });
@@ -222,24 +222,24 @@ const findBoxes = (boxes_data: Float32Array, scores_data: Float32Array, classes_
   for (let i = 0; i < scores_data.length; ++i) {
     // filter based on class threshold
     const klass = yolo_classes[classes_data[i]];
-    const score = (scores_data[i] * 100).toFixed(1);
+    const score = scores_data[i];
 
     let [y1, x1, y2, x2] = boxes_data.slice(i * 4, (i + 1) * 4);
     // const xr = ratios.imgWidth / ratios.modelWidth;
     // const yr = ratios.imgHeight / ratios.modelHeight;
-    const xr = ratios.xRatio;
-    const yr = ratios.yRatio;
-    x1 *= xr;
-    x2 *= xr;
-    y1 *= yr;
-    y2 *= yr;
-    const width = x2 - x1;
-    const height = y2 - y1;
+    // const xr = ratios.xRatio;
+    // const yr = ratios.yRatio;
+    // x1 *= xr;
+    // x2 *= xr;
+    // y1 *= yr;
+    // y2 *= yr;
+    // const width = x2 - x1;
+    // const height = y2 - y1;
 
     // draw box.
     
     results.push({
-      box: [x1, y1, width, height],
+      box: [x1, y1, x2, y2],
       klass: klass,
       score: score,
       ratios: ratios
@@ -258,6 +258,7 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       const startTime = Date.now();
       console.log(`start: ${startTime}`);
       const imageDataUri = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
+      console.log(261, imageDataUri);
       const blob = await dataURItoBlob(imageDataUri);
       const bitmap = await createImageBitmap(blob);
       console.log(`get image: ${Date.now() - startTime}ms`);
@@ -347,7 +348,7 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       console.log(266, boxes_data, scores_data, classes_data);
       console.log(`Spend: ${Date.now() - startTime}ms`);
       const results = findBoxes(boxes_data, scores_data, classes_data, ratio);
-      sendMessageToTab(tab.id, {
+      sendMessageToTabTopFrame(tab.id, {
         type: MessageType.PREDICT_RESULT,
         data: results
       });

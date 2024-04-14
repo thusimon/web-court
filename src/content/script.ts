@@ -69,17 +69,26 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
       const data = message.data;
       const windowWidth = window.screen.width;
       const windowHeight = window.screen.height;
-      console.log(72, message);
+      console.log(72, message, windowWidth, windowHeight, window.innerWidth, window.innerHeight);
       data.forEach((d: any) => {
-        debugger;
         const {box, klass, score, ratios} = d;
-        const {imgWidth, imgHeight} = ratios;
-        const xr = windowWidth / imgWidth;
-        const yr = windowHeight / imgHeight;
-        box[0] *= xr; // x
-        box[1] *= yr; // y
-        box[2] *= xr; // width
-        box[3] *= yr; // height
+        const {modelWidth, modelHeight} = ratios;
+        let [x1, y1, x2, y2] = box;
+        // rescale 640*640 coordinates to windowWidth*windowHeight
+        const modelRatio = modelWidth / modelHeight;
+        //const windowRatio = windowWidth / windowHeight;
+        const windowRatio = window.innerWidth / window.innerHeight
+        const windowModelRatio = windowRatio / modelRatio;
+        x1 *= windowModelRatio;
+        x2 *= windowModelRatio;
+        const newModelWidth = windowModelRatio * modelWidth;
+        const scaler = windowWidth / newModelWidth;
+        x1 *= scaler;
+        y1 *= scaler;
+        x2 *= scaler;
+        y2 *= scaler;
+        // rescale 
+        d.box = [x1, y1, x2, y2];
       })
       console.log(69, message)
       break;
