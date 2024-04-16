@@ -6,7 +6,7 @@
 * `.\.venv\Scripts\activate`
 * `pip list`
 * `pipenv install`
-* <details open>
+* <details>
     <summary>pip list</summary>
     absl-py                      2.1.0
 
