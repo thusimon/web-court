@@ -229,6 +229,26 @@ export const addRectOnPage = (overlay: Overlay, top: number, left: number, text:
   overlay.updateSettings(overlaySettings);
 }
 
+export const getColorByConfidence = (prob: number) => {
+  const red = 1 - prob;
+  const green = prob;
+  return `rgba(${Math.floor(red * 255)}, ${Math.floor(green * 255)}, 0, 1)`;
+};
+
+export const addLabelOnPage = (overlay: Overlay, top: number, left: number, text: string, width: number, height: number, index: number = 0, color: string = '#000000') => {
+  const overlaySettings: OverlaySettingsType = {
+    top,
+    left,
+    width,
+    height,
+    mode: OVERLAY_MODE.LABEL,
+    text,
+    backgroundColor: 'transparent',
+    color
+  };
+  overlay.updateSettings(overlaySettings);
+}
+
 export const addButtonOnPage = (overlay: Overlay, top: number, left: number, text: string, callback: (evt: MouseEvent) => void, width: number = 80, height: number = 40) => {
   const overlaySettings: OverlaySettingsType = {
     top,

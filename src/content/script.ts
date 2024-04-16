@@ -7,7 +7,9 @@ import {
   restoreDomHighlight,
   addTooltipUnderDom,
   clearOverlay,
-  highlightLabeledDoms
+  highlightLabeledDoms,
+  addLabelOnPage,
+  getColorByConfidence
 } from './utils/dom';
 import { handleLabel, handlePredict } from './message';
 import './components/overlay';
@@ -52,6 +54,13 @@ overlayRectForm.id = `${WEBCOURT_UID}-overlayForm`;
 overlayRectButton.id = `${WEBCOURT_UID}-overlayButton`;
 overlaySaveButton.id = `${WEBCOURT_UID}-overlaySave`;
 
+const createPersistOverlay = (index: number) => {
+  const overlay = document.createElement('wc-overlay') as Overlay;
+  overlay.id = `${WEBCOURT_UID}-overlay-persist-${index}`;
+  document.body.append(overlay);
+  return overlay;
+};
+
 const overlays = [overlay, overlayRectForm, overlayRectButton, overlaySaveButton];
 document.body.append(...overlays);
 
@@ -70,7 +79,7 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
       const windowWidth = window.screen.width;
       const windowHeight = window.screen.height;
       console.log(72, message, windowWidth, windowHeight, window.innerWidth, window.innerHeight);
-      data.forEach((d: any) => {
+      data.forEach((d: any, index: number) => {
         const {box, klass, score, ratios} = d;
         const {modelWidth, modelHeight} = ratios;
         let [x1, y1, x2, y2] = box;
@@ -89,8 +98,12 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
         y2 *= scaler;
         // rescale 
         d.box = [x1, y1, x2, y2];
+        const overlay = createPersistOverlay(index);
+        const overlayPos = overlay.getBoundingClientRect();
+        const color = getColorByConfidence(score);
+        addLabelOnPage(overlay, y1 - overlayPos.top, x1 - overlayPos.left, `${klass}: ${score.toFixed(5)}`, x2 - x1, y2 - y1, index, color);
       })
-      console.log(69, message)
+      console.log(69, message);
       break;
     }
     default:

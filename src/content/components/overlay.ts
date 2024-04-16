@@ -10,7 +10,9 @@ export type OverlaySettingsType = {
   left: number,
   width?: number,
   height?: number,
+  index?: number,
   backgroundColor: string,
+  color?: string,
   callback?: (evt: MouseEvent) => void
 };
 
@@ -48,6 +50,17 @@ class Overlay extends LitElement {
       cursor: move;
       border: 2px solid black;
     }
+    .label {
+      border-width: 2px;
+      border-style: solid;
+      border-color: var(--settings-color);
+    }
+    .label-title {
+      top: -28px;
+      position: relative;
+      left: 0px;
+      color: var(--settings-color);
+    }
     .rect-anchor {
       position: absolute;
       top: calc(var(--settings-top) + var(--settings-height) - 5px);
@@ -69,12 +82,13 @@ class Overlay extends LitElement {
   }
 
   get content() {
-    const {mode, text, top, left, width, height, backgroundColor} = this.settings;
+    const {mode, text, top, left, width, height, backgroundColor, index, color} = this.settings;
     this.style.setProperty('--settings-top', `${top}px`);
     this.style.setProperty('--settings-left', `${left}px`);
     this.style.setProperty('--settings-width', parseToPixels(width, 'max-content'));
     this.style.setProperty('--settings-height', parseToPixels(height, 'auto'));
     this.style.setProperty('--settings-backgroundColor', backgroundColor);
+    this.style.setProperty('--settings-color', color);
     switch (mode) {
       case OVERLAY_MODE.TOOLTIP:
         return html`<div id="${WEBCOURT_UID}-tooltip" class="content">${text}</div>`;
@@ -95,6 +109,10 @@ class Overlay extends LitElement {
         return html`<button id="${WEBCOURT_UID}-btn" class="content btn"
           @click="${this.onClick}"
         >${text}</button>`
+      case OVERLAY_MODE.LABEL:
+        return html`<div id="${WEBCOURT_UID}-label-${index}" class="content label">
+          <div class="label-title">${text}</div>
+        </div>`
       default:
         return html``;
     }

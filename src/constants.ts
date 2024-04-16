@@ -39,6 +39,7 @@ export enum OVERLAY_MODE {
   TOOLTIP,
   RECT,
   BUTTON,
+  LABEL,
   EMPTY
 };
 
@@ -47,7 +48,9 @@ export const DEFAULT_OVERLAY_SETTINGS: OverlaySettingsType = {
   text: '',
   top: 0,
   left: 0,
-  backgroundColor: 'cornsilk'
+  index: 0,
+  backgroundColor: 'cornsilk',
+  color: 'black'
 };
 
 export enum MessageType {
