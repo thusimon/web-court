@@ -76,17 +76,15 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
     }
     case MessageType.PREDICT_RESULT: {
       const data = message.data;
-      const windowWidth = window.screen.width;
-      const windowHeight = window.screen.height;
-      console.log(72, message, windowWidth, windowHeight, window.innerWidth, window.innerHeight);
+      const windowWidth = window.innerWidth;
+      const windowHeight = window.innerHeight;
       data.forEach((d: any, index: number) => {
         const {box, klass, score, ratios} = d;
         const {modelWidth, modelHeight} = ratios;
         let [x1, y1, x2, y2] = box;
         // rescale 640*640 coordinates to windowWidth*windowHeight
         const modelRatio = modelWidth / modelHeight;
-        //const windowRatio = windowWidth / windowHeight;
-        const windowRatio = window.innerWidth / window.innerHeight
+        const windowRatio = windowWidth / windowHeight;
         const windowModelRatio = windowRatio / modelRatio;
         x1 *= windowModelRatio;
         x2 *= windowModelRatio;
@@ -102,8 +100,7 @@ browser.runtime.onMessage.addListener((message: Message, sender: browser.Runtime
         const overlayPos = overlay.getBoundingClientRect();
         const color = getColorByConfidence(score);
         addLabelOnPage(overlay, y1 - overlayPos.top, x1 - overlayPos.left, `${klass}: ${score.toFixed(5)}`, x2 - x1, y2 - y1, index, color);
-      })
-      console.log(69, message);
+      });
       break;
     }
     default:
