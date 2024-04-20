@@ -7,7 +7,7 @@ import { sendMessageToTab, sendMessageToTabTopFrame } from './common/tabs';
 import { GeneralFeature } from './content/feature';
 import { processButtonFeature } from './common/ai/utils/process-button-data';
 import { ButtonClass, getFeatureData } from './common/ai/utils/data';
-import { getCenter, dataURLtoBlob, dataURItoBlob, blobToDataURI } from './common/misc';
+import { getCenter, dataURItoBlob } from './common/misc';
 
 let localModel: tf.GraphModel;
 
@@ -133,22 +133,8 @@ browser.contextMenus.create({
 let isLabeling = false;
 
 const preprocess = (source: ImageBitmap, modelWidth: number, modelHeight: number) => {
-  let xRatio, yRatio; // ratios for boxes
-
-  const input = tf.tidy(() => {
+  const resizedTensor = tf.tidy(() => {
     const imgTensor = tf.browser.fromPixels(source);
-
-    //padding image to square => [n, m] to [n, n], n > m
-    const [h, w] = imgTensor.shape.slice(0, 2); // get source width and height
-    const maxSize = Math.max(w, h); // get max size
-    const imgPadded = imgTensor.pad([
-      [0, maxSize - h], // padding y [bottom only]
-      [0, maxSize - w], // padding x [right only]
-      [0, 0],
-    ]) as unknown as tf.TensorLike;
-
-    xRatio = maxSize / w; // update xRatio
-    yRatio = maxSize / h; // update yRatio
 
     return tf.image
       .resizeBilinear(imgTensor, [modelWidth, modelHeight]) // resize frame
@@ -156,65 +142,13 @@ const preprocess = (source: ImageBitmap, modelWidth: number, modelHeight: number
       .expandDims(0); // add batch
   });
 
-  return [input, xRatio, yRatio];
+  return resizedTensor;
 };
 
 const yolo_classes = [
   'login_form',
   'login_button'
 ];
-
-function process_output(output: any, img_width: number, img_height: number) {
-  let boxes: any = [];
-  for (let index=0;index<8400;index++) {
-      const [class_id,prob] = [...Array(80).keys()]
-          .map(col => [col, output[8400*(col+4)+index]])
-          .reduce((accum, item) => item[1]>accum[1] ? item : accum,[0,0]);
-      if (prob < 0.5) {
-          continue;
-      }
-      const label = yolo_classes[class_id];
-      const xc = output[index];
-      const yc = output[8400+index];
-      const w = output[2*8400+index];
-      const h = output[3*8400+index];
-      const x1 = (xc-w/2)/640*img_width;
-      const y1 = (yc-h/2)/640*img_height;
-      const x2 = (xc+w/2)/640*img_width;
-      const y2 = (yc+h/2)/640*img_height;
-      boxes.push([x1,y1,x2,y2,label,prob]);
-  }
-
-  // boxes = boxes.sort((box1,box2) => box2[5]-box1[5])
-  // const result = [];
-  // while (boxes.length>0) {
-  //     result.push(boxes[0]);
-  //     boxes = boxes.filter(box => iou(boxes[0],box)<0.7);
-  // }
-  // return result;
-}
-
-function iou(box1: number[],box2: number[]) {
-  return intersection(box1,box2)/union(box1,box2);
-}
-
-function union(box1: number[],box2: number[]) {
-  const [box1_x1,box1_y1,box1_x2,box1_y2] = box1;
-  const [box2_x1,box2_y1,box2_x2,box2_y2] = box2;
-  const box1_area = (box1_x2-box1_x1)*(box1_y2-box1_y1);
-  const box2_area = (box2_x2-box2_x1)*(box2_y2-box2_y1);
-  return box1_area + box2_area - intersection(box1,box2);
-}
-
-function intersection(box1: number[],box2: number[]) {
-  const [box1_x1,box1_y1,box1_x2,box1_y2] = box1;
-  const [box2_x1,box2_y1,box2_x2,box2_y2] = box2;
-  const x1 = Math.max(box1_x1,box2_x1);
-  const y1 = Math.max(box1_y1,box2_y1);
-  const x2 = Math.min(box1_x2,box2_x2);
-  const y2 = Math.min(box1_y2,box2_y2);
-  return (x2-x1)*(y2-y1);
-}
 
 const findBoxes = (boxes_data: Float32Array, scores_data: Float32Array, classes_data: Int32Array, ratios: any) => {
   const results = [];
@@ -224,20 +158,7 @@ const findBoxes = (boxes_data: Float32Array, scores_data: Float32Array, classes_
     const klass = yolo_classes[classes_data[i]];
     const score = scores_data[i];
 
-    let [y1, x1, y2, x2] = boxes_data.slice(i * 4, (i + 1) * 4);
-    // const xr = ratios.imgWidth / ratios.modelWidth;
-    // const yr = ratios.imgHeight / ratios.modelHeight;
-    // const xr = ratios.xRatio;
-    // const yr = ratios.yRatio;
-    // x1 *= xr;
-    // x2 *= xr;
-    // y1 *= yr;
-    // y2 *= yr;
-    // const width = x2 - x1;
-    // const height = y2 - y1;
-
-    // draw box.
-    
+    let [y1, x1, y2, x2] = boxes_data.slice(i * 4, (i + 1) * 4);    
     results.push({
       box: [x1, y1, x2, y2],
       klass: klass,
@@ -256,65 +177,21 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
   switch (info.menuItemId) {
     case CONTEXT_MENU_IDS.PRIDICT_IMAGE: {
       const startTime = Date.now();
-      console.log(`start: ${startTime}`);
       const imageDataUri = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
-      console.log(261, imageDataUri);
       const blob = await dataURItoBlob(imageDataUri);
       const bitmap = await createImageBitmap(blob);
-      console.log(`get image: ${Date.now() - startTime}ms`);
-      //const canvas = new OffscreenCanvas(640, 640);
-      //const ctx = canvas.getContext('2d');
-      //ctx.drawImage(bitmap, 0, 0, 640, 640);
-      //const resizedImgData = ctx.getImageData(0, 0, 640, 640);
-      //const resizedBlob = await canvas.convertToBlob();
-      //const resizedImageUri = await blobToDataURI(resizedBlob);
-      //const imageTensor = tf.browser.fromPixels(bitmap);
-      //const resizedTensor = tf.image.resizeBilinear(imageTensor, [640, 640], true);
-      //const resized = tf.cast(resizedTensor, 'float32');
-      //const t4d = tf.tensor4d(Array.from(resized.dataSync()),[1, 640, 640, 3])
-      const [input, xRatio, yRatio] = preprocess(bitmap, 640, 640);
+      const imgTensor = preprocess(bitmap, 640, 640);
       if (!localModel) {
         return;
       }
-      console.log(`preprocess: ${Date.now() - startTime}`);
-      // tf.tidy(function() {
-      //   //const predictTensor = localModel.predict(resizedTensor.expandDims()) as tf.Tensor<tf.Rank>;
-      //   //const result = predictTensor.dataSync();
-      //   const result = localModel.predict(resizedTensor.expandDims());
-      //   console.log(result)
-      // })
-
-      /*
-      height: 1780
-      width: 3841
-      300.73516845703125
-      243.2948455810547
-      450.6767883300781
-      392.83746337890625
-
-      button 1464.9256727457048 1167.8929462432861 865.1421394109727 83.6456184387207
-      form 1460.1492216825486 836.4196872711182 897.4893671274185 417.0251302719116
-
-      button [651.035699915886, 629.8748474121094, 384.4825909852982, 45.11224365234375]
-      form [648.9129709482194, 451.1027526855469, 398.8582009077072, 224.9124298095703]
-
-      681.9426141500473, 371.5785827636719, 327.3259219408035, 199.58056640625
-      693.4374938964845, 517.8707885742188, 307.0417282104492, 50.35249328613281
-      */
       const ratio = {
-        xRatio: xRatio,
-        yRatio: yRatio,
         imgWidth: bitmap.width,
         imgHeight: bitmap.height,
         modelWidth: 640,
         modelHeight: 640
       };
-      const res = localModel.execute(input) as tf.Tensor<tf.Rank>; // inference model
+      const res = localModel.execute(imgTensor) as tf.Tensor<tf.Rank>; // inference model
       const transRes = res.transpose([0, 2, 1]) as tf.Tensor; // transpose result [b, det, n] => [b, n, det]
-      // const boxesRaw = tf.squeeze(transRes, [0]);
-      // console.log(265, boxesRaw);
-      // const [rowNum, colNum] = boxesRaw.shape;
-      //console.log(transRes);
       const boxes = tf.tidy(() => {
         const w = transRes.slice([0, 0, 2], [-1, -1, 1]); // get width
         const h = transRes.slice([0, 0, 3], [-1, -1, 1]); // get height
@@ -330,24 +207,19 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
           2
         ).squeeze();
       });
-      console.log(251, boxes);
-
       const [scores, classes] = tf.tidy(() => {
         // class scores
-        const rawScores = transRes.slice([0, 0, 4], [-1, -1, yolo_classes.length]).squeeze(); // #6 only squeeze axis 0 to handle only 1 class models
+        const rawScores = transRes.slice([0, 0, 4], [-1, -1, yolo_classes.length]).squeeze();
         return [rawScores.max(1), rawScores.argMax(1)];
       }); // get max scores and classes index
-      console.log(258, scores, classes);
-
+ 
       const nms = await tf.image.nonMaxSuppressionAsync(boxes as tf.Tensor2D, scores, 500, 0.45, 0.2); // NMS to filter boxes
 
       const boxes_data = boxes.gather(nms, 0).dataSync() as Float32Array; // indexing boxes by nms index
       const scores_data = scores.gather(nms, 0).dataSync(); // indexing scores by nms index
       const classes_data = classes.gather(nms, 0).dataSync(); // indexing classes by nms index
-
-      console.log(266, boxes_data, scores_data, classes_data);
-      console.log(`Spend: ${Date.now() - startTime}ms`);
       const results = findBoxes(boxes_data, scores_data, classes_data, ratio);
+      console.log(`Spend: ${Date.now() - startTime}ms`);
       sendMessageToTabTopFrame(tab.id, {
         type: MessageType.PREDICT_RESULT,
         data: results
