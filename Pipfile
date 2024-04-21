@@ -4,9 +4,12 @@ verify_ssl = true
 name = "pypi"
 
 [packages]
-opencv-python = "*"
+opencv-python = "==4.8.*"
 PyQt6 = 6.6.1
-ultralytics = 8.1.15
+ultralytics = 8.2.2
+tensorflow = 2.13.1
+tensorflow-decision-forest = 1.8.1
+tensorflowjs = 4.18.0
 
 [dev-packages]
 
