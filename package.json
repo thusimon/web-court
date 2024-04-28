@@ -7,7 +7,7 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build.chrome.dev": "npx webpack --config webpack.config.chrome.dev.js",
+    "build.chrome.dev": "npx webpack --config webpack.config.chrome.dev.js -- --browser=chrome --build=dev --model=yolov8m",
     "build.chrome.prod": "npx webpack --config webpack.config.chrome.prod.js",
     "build.firefox.dev": "npx webpack --config webpack.config.firefox.dev.js",
     "build.firefox.prod": "npx webpack --config webpack.config.firefox.prod.js",
@@ -47,7 +47,8 @@
     "typescript": "^4.9.5",
     "web-ext": "^7.5.0",
     "webpack": "^5.76.1",
-    "webpack-cli": "^5.0.1"
+    "webpack-cli": "^5.0.1",
+    "yargs": "^17.7.2"
   },
   "browserslist": [
     "last 2 Chrome versions"

@@ -122,7 +122,7 @@ const App = () => {
           onChange={(evt) => {setDownloadFolder(evt.target.value);}}></input>
       </div>
       <div className='range'>
-        <label>ID Range: (when specified, will only download images in the index range, when not specified, will download all images)</label>
+        <label>ID Range (if specified, will only download images within the ID range, if not specified, will download all images): </label>
         <span>
           From <input type='number' ref={rangeMinInput}></input> To <input type='number' ref={rangeMaxInput}></input>
         </span> 

@@ -52,11 +52,33 @@ const copyCommon = [
     from: './src/assets',
     to: './assets'
   },
-  {
-    from: './tf/yolo/tfjs-models',
-    to: './model'
-  }
 ];
+
+const copyChromeManifset = {
+  from: './src/manifest_chrome.json',
+  to: './manifest.json'
+};
+
+const copyFirefoxManifest = {
+  from: './src/manifest_firefox.json',
+  to: './manifest.json'
+};
+
+const getCopyConfigs = (browser, model) => {
+  const copyManifest = browser === 'chrome' ? copyChromeManifset : copyFirefoxManifest;
+  const copyModel =  {
+    from: `./tf/yolo/tfjs-models/${model}`,
+    to: `./model/${model}`
+  }
+  return new CopyWebpackPlugin({
+    patterns: [
+      copyManifest,
+      copyModel,
+      ...copyCommon
+    ]
+  });
+}
+
 
 const copyWebpackPluginChrome = new CopyWebpackPlugin({
   patterns: [
@@ -110,7 +132,7 @@ const sassDevRule = {
   ]
 };
 
-const getWebpackConfig = (browser, prod) => {
+const getWebpackConfig = (browser, prod, model) => {
   const config = {
     mode: prod ? 'production' : 'development',
     devtool: prod ? false : 'inline-source-map',
@@ -144,8 +166,9 @@ const getWebpackConfig = (browser, prod) => {
     }
   };
   
-  const copyWebpackPlugin = browser === 'chrome' ? copyWebpackPluginChrome : copyWebpackPluginFirefox;
+  const copyWebpackPlugin = getCopyConfigs(browser, model);
   config.plugins = [...htmlWebpackPlugins, copyWebpackPlugin];
+  console.log(config);
   return config;
 };
 
