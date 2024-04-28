@@ -149,7 +149,7 @@ const WEBCOURT_DB_LABEL_IMAGE_STORE = `${WEBCOURT_DB_NAME}-label-image-store`;
 const WEBCOURT_DB_LABEL_IMAGE_PRI_KEY = 'id';
 
 export const openIndexedDB = async () => {
-  return await openDB(WEBCOURT_DB_NAME, 3, {
+  return await openDB(WEBCOURT_DB_NAME, 1, {
     upgrade(db, oldVersion, newVersion, transaction) {
       var isNewDb = isNaN(oldVersion) || oldVersion === 0;
       if (isNewDb) {
@@ -178,7 +178,8 @@ export const saveImageLabelData = async (url:string, imgUri: string, label: numb
       imgUri,
       label
     });
-    console.log(result);
+    console.log(`id = ${result} is added`);
+    db.close();
   } catch (e) {
     console.log(e);
   }
@@ -200,10 +201,14 @@ export const getImageLabelData = async (lowBound: number, upBound: number) => {
       // both low and up bound
       bound = IDBKeyRange.bound(lowBound, upBound);
     }
+    let result;
     if (bound == null) {
-      return await db.getAll(WEBCOURT_DB_LABEL_IMAGE_STORE);
+      result = await db.getAll(WEBCOURT_DB_LABEL_IMAGE_STORE);
+    } else {
+      result = await db.getAllFromIndex(WEBCOURT_DB_LABEL_IMAGE_STORE, WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, bound)
     }
-    return db.getAllFromIndex(WEBCOURT_DB_LABEL_IMAGE_STORE, WEBCOURT_DB_LABEL_IMAGE_PRI_KEY, bound)
+    db.close();
+    return result;
   } catch (e) {
     console.log(e);
   }
@@ -212,7 +217,9 @@ export const getImageLabelData = async (lowBound: number, upBound: number) => {
 export const deleteImageLabelData = async (id: number) => {
   try {
     const db = await openIndexedDB();
-    return await db.delete(WEBCOURT_DB_LABEL_IMAGE_STORE, id);
+    await db.delete(WEBCOURT_DB_LABEL_IMAGE_STORE, id);
+    console.log(`id = ${id} is deleted`);
+    db.close();
   } catch (e) {
     console.log(e);
   }
@@ -221,7 +228,20 @@ export const deleteImageLabelData = async (id: number) => {
 export const getAllImageLabelKeys = async () => {
   try {
     const db = await openIndexedDB();
-    return await db.getAllKeys(WEBCOURT_DB_LABEL_IMAGE_STORE);
+    const result = await db.getAllKeys(WEBCOURT_DB_LABEL_IMAGE_STORE);
+    db.close()
+    return result;
+  } catch (e) {
+    console.log(e);
+  }
+}
+
+export const getAllImageAcount = async () => {
+  try {
+    const db = await openIndexedDB();
+    const count = db.count(WEBCOURT_DB_LABEL_IMAGE_STORE);
+    db.close();
+    return count;
   } catch (e) {
     console.log(e);
   }

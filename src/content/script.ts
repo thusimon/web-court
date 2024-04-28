@@ -1,3 +1,10 @@
+declare global {
+  interface Window {
+    emitLitDebugLogEvents: boolean;
+  }
+}
+
+window.emitLitDebugLogEvents = false;
 import '@webcomponents/webcomponentsjs';
 import * as browser from 'webextension-polyfill';
 import {

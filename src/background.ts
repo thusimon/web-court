@@ -125,6 +125,12 @@ browser.contextMenus.create({
 }, () => browser.runtime.lastError);
 
 browser.contextMenus.create({
+  title: 'Capture Tab Image', 
+  contexts: ['all'], 
+  id: CONTEXT_MENU_IDS.CAPTURE_TAB_IMAGE
+}, () => browser.runtime.lastError);
+
+browser.contextMenus.create({
   title: 'Predict',
   contexts: ['all'],
   id: CONTEXT_MENU_IDS.PRIDICT_IMAGE
@@ -228,6 +234,20 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
     }
     case CONTEXT_MENU_IDS.LABEL_IMAGE: {
       isLabeling = true;
+      break;
+    }
+    case CONTEXT_MENU_IDS.CAPTURE_TAB_IMAGE: {
+      const url = tab.url;
+      const form = [0, 0, 0, 0];
+      const button = [0, 0, 0, 0];
+      const feature = [...form, ...button];
+      try {
+        const wholeImage = await browser.tabs.captureVisibleTab(browser.windows.WINDOW_ID_CURRENT, {format: 'png'});
+        await saveImageLabelData(url, wholeImage, feature);
+      } catch(e) {
+        console.log(e);
+      }
+      break;
     }
     default: {
       sendMessageToTab(tab.id, {
@@ -330,12 +350,12 @@ browser.commands.onCommand.addListener(commandHandler);
 (async () => {
   const url = browser.runtime.getURL('model/yolov8m/model.json');
   localModel = await tf.loadGraphModel(url);
-  console.log('local model loaded');
+  console.log('local yolo model loaded');
 
   try {
     await loadModelInFromIndexDB('btn-model');
   } catch (err) {
-    console.log(`failed to load model from indexDB, err: ${err}`);
+    // console.log(`failed to load model from indexDB, err: ${err}`);
   }
 
 })()
