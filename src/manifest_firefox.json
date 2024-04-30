@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "WebCourt",
   "author": "Lu",
-  "version": "0.0.4",
+  "version": "0.1.0",
   "description": "Extract and collect login page features and classify the web sites",
   "browser_specific_settings": {
     "gecko": {

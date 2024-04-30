@@ -168,7 +168,6 @@ const getWebpackConfig = (browser, prod, model) => {
   
   const copyWebpackPlugin = getCopyConfigs(browser, model);
   config.plugins = [...htmlWebpackPlugins, copyWebpackPlugin];
-  console.log(config);
   return config;
 };
 

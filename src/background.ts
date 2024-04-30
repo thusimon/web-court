@@ -232,10 +232,6 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
       });
       break;
     }
-    case CONTEXT_MENU_IDS.LABEL_IMAGE: {
-      isLabeling = true;
-      break;
-    }
     case CONTEXT_MENU_IDS.CAPTURE_TAB_IMAGE: {
       const url = tab.url;
       const form = [0, 0, 0, 0];
@@ -248,6 +244,9 @@ const contextMenuClickHandler = async (info: Menus.OnClickData, tab: Tabs.Tab) =
         console.log(e);
       }
       break;
+    }
+    case CONTEXT_MENU_IDS.LABEL_IMAGE: {
+      isLabeling = true;
     }
     default: {
       sendMessageToTab(tab.id, {

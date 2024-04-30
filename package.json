@@ -7,10 +7,10 @@
   "license": "MIT",
   "private": true,
   "scripts": {
-    "build.chrome.dev": "npx webpack --config webpack.config.chrome.dev.js -- --browser=chrome --build=dev --model=yolov8m",
-    "build.chrome.prod": "npx webpack --config webpack.config.chrome.prod.js",
-    "build.firefox.dev": "npx webpack --config webpack.config.firefox.dev.js",
-    "build.firefox.prod": "npx webpack --config webpack.config.firefox.prod.js",
+    "build.chrome.dev": "npx webpack --config webpack.config.js --env --browser=chrome --env --build=dev --env --model=yolov8m",
+    "build.chrome.prod": "npx webpack --config webpack.config.js --env --browser=chrome --env --build=prod --env --model=yolov8m",
+    "build.firefox.dev": "npx webpack --config webpack.config.js --env --browser=firefox --env --build=dev --env --model=yolov8m",
+    "build.firefox.prod": "npx webpack --config webpack.config.js --env --browser=firefox --env --build=prod --env --model=yolov8m",
     "jest": "jest",
     "lint": "web-ext --source-dir src lint"
   },

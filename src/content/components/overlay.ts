@@ -23,9 +23,10 @@ class Overlay extends LitElement {
       display: inline-block !important;
       position: relative !important;
       height: 0px !important;
-      width: auto !important;
+      width: 0px !important;
       padding: 0px !important;
       margin: 0px !important;
+      border: 0 !important;
       z-index: 2147483647 !important;
     }
     .content {
