@@ -1,6 +1,9 @@
 # WebCourt
+1. train a yolo model based on 100+ images
+2. convert the pytorch yolo model to tfjs
+3. use the tfjs model in browser extension
 
-## Python (Windows)
+## Training
 * python version 3.11.7, but 3.10 should work as well
 * `python -m venv .venv`
 * `pipenv install`

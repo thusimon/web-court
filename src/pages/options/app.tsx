@@ -6,7 +6,7 @@ import { downloadData, getImageLabelData, getAllImageAcount } from '../../common
 
 import './app.scss';
 
-const HOST_ID = 'com.utticus.net.host';
+const HOST_ID = 'com.utticus.net.host.v2';
 
 const App = () => {
   const [downloadFolder, setDownloadFolder] = useState('');
@@ -39,7 +39,6 @@ const App = () => {
       }
     })();
 
-    /*
     const port = runtime.connectNative(HOST_ID);
     setPort(port);
     setPortConnect(true);
@@ -57,7 +56,6 @@ const App = () => {
       const err = runtime.lastError?.message
       consoleInput.current.value += `Err: ${err}\n`;
     });
-    */
   }, []);
 
   const onDownloadImagesClick = async () => {

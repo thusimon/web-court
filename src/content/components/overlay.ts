@@ -52,14 +52,43 @@ class Overlay extends LitElement {
       border: 2px solid black;
     }
     .label {
+      position: absolute;
+      font-size: 16px;
+    }
+    .label-border {
       border-width: 2px;
       border-style: solid;
       border-color: var(--settings-color);
     }
+    .label-border-top {
+      top: var(--settings-top);
+      left: var(--settings-left);
+      width: var(--settings-width);
+      height: 0px;
+    }
+    .label-border-right {
+      top: var(--settings-top);
+      left: var(--settings-right);
+      width: 0px;
+      height: var(--settings-height);
+    }
+    .label-border-bottom {
+      top: var(--settings-bottom);
+      left: var(--settings-left);
+      width: var(--settings-width);
+      height: 0px;
+    }
+    .label-border-left {
+      top: var(--settings-top);
+      left: var(--settings-left);
+      width: 0px;
+      height: var(--settings-height);
+    }
     .label-title {
-      top: -28px;
-      position: relative;
-      left: 0px;
+      top: var(--settings-top-label);
+      left: var(--settings-left);
+      width: 160px;
+      height: 20px;
       color: var(--settings-color);
     }
     .rect-anchor {
@@ -85,7 +114,10 @@ class Overlay extends LitElement {
   get content() {
     const {mode, text, top, left, width, height, backgroundColor, index, color} = this.settings;
     this.style.setProperty('--settings-top', `${top}px`);
+    this.style.setProperty('--settings-top-label', `${top-28}px`);
     this.style.setProperty('--settings-left', `${left}px`);
+    this.style.setProperty('--settings-right', `${left + width}px`);
+    this.style.setProperty('--settings-bottom', `${top + height}px`);
     this.style.setProperty('--settings-width', parseToPixels(width, 'max-content'));
     this.style.setProperty('--settings-height', parseToPixels(height, 'auto'));
     this.style.setProperty('--settings-backgroundColor', backgroundColor);
@@ -111,9 +143,11 @@ class Overlay extends LitElement {
           @click="${this.onClick}"
         >${text}</button>`
       case OVERLAY_MODE.LABEL:
-        return html`<div id="${WEBCOURT_UID}-label-${index}" class="content label">
-          <div class="label-title">${text}</div>
-        </div>`
+        return html`<div id="${WEBCOURT_UID}-label-${index}-top" class="label label-border label-border-top"></div>
+          <div id="${WEBCOURT_UID}-label-${index}-right" class="label label-border label-border-right"></div>
+          <div id="${WEBCOURT_UID}-label-${index}-bottom" class="label label-border label-border-bottom"></div>
+          <div id="${WEBCOURT_UID}-label-${index}-left" class="label label-border label-border-left"></div>
+          <div class="label label-title">${text}</div>`
       default:
         return html``;
     }
