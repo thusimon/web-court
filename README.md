@@ -4,14 +4,6 @@
 3. use the tfjs model in browser extension
 
 ## Training
-* python version 3.11.7, but 3.10 should work as well
-* `python -m venv .venv`
-* `pipenv install`
-* `.\.venv\Scripts\activate`
-* <details>
-    <summary>some packages version</summary>
+Follow this [Google Colab](https://colab.research.google.com/drive/1MxZjsieH3T6Wv3np1CU9aYsTfoOnses3?usp=sharing) to train and convert to tfjs
 
-    - ultralytics 8.2.2 prompt warning that tensorflow should <=2.13.1 when converting to tfjs
-
-    - tensorflow-decision-forests 1.8.1 works when converting to tfjs, otherwise there is an error about the decision forests' inference.so not found
-  </details>
+## Extension build and usage

@@ -44,6 +44,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('--target', help='choose from [train, validate, predict, convert_tfjs]')
 parser.add_argument('--train-model-size', help='choose from [n, s, m, l, x]')
 parser.add_argument('--train-epoch', type=int, help='epoch time for training')
+parser.add_argument('--config', help='the config yaml file')
 parser.add_argument('--model-folder', help='model folder')
 parser.add_argument('--predict-img', help='image to predict')
 
