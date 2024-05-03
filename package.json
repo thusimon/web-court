@@ -4,7 +4,9 @@
   "description": "Extract feature of web page and classify it",
   "repository": "https://github.com/thusimon/web-court",
   "author": "Lu",
-  "license": "MIT",
+  "engines": {
+    "node": ">=20.10.0"
+  },
   "private": true,
   "scripts": {
     "build.chrome.dev": "npx webpack --config webpack.config.js --env --browser=chrome --env --build=dev --env --model=yolov8m",
