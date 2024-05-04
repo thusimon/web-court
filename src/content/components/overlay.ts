@@ -87,9 +87,11 @@ class Overlay extends LitElement {
     .label-title {
       top: var(--settings-top-label);
       left: var(--settings-left);
-      width: 160px;
+      width: 180px;
       height: 20px;
       color: var(--settings-color);
+      padding: 0px;
+      margin: 0px;
     }
     .rect-anchor {
       position: absolute;
@@ -114,7 +116,7 @@ class Overlay extends LitElement {
   get content() {
     const {mode, text, top, left, width, height, backgroundColor, index, color} = this.settings;
     this.style.setProperty('--settings-top', `${top}px`);
-    this.style.setProperty('--settings-top-label', `${top-28}px`);
+    this.style.setProperty('--settings-top-label', `${top-20}px`);
     this.style.setProperty('--settings-left', `${left}px`);
     this.style.setProperty('--settings-right', `${left + width}px`);
     this.style.setProperty('--settings-bottom', `${top + height}px`);

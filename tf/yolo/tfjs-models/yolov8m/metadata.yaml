@@ -1,8 +1,9 @@
-description: Ultralytics best model trained on config.yaml
+description: Ultralytics best model trained on config-colab.yaml
 author: Ultralytics
-license: AGPL-3.0 https://ultralytics.com/license
-date: '2024-02-29T01:16:29.054691'
-version: 8.1.19
+date: '2024-05-02T02:47:29.536742'
+version: 8.2.2
+license: AGPL-3.0 License (https://ultralytics.com/license)
+docs: https://docs.ultralytics.com
 stride: 32
 task: detect
 batch: 1

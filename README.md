@@ -20,16 +20,16 @@ Currently use yolov8m model for extension
 1. Go to a website
 2. Context menu -> WebCourt -> Predict
 <p align="center">
-  <img align="center" src="./demo/predict.png" width="300" height="auto" center/>
+  <img align="center" src="./demo/predict.png" width="480" height="auto" center/>
 </p>
 
 #### save and download tab screenshot
 1. Go to a website
 2. Context menu -> WebCourt -> Capture Tab Image
 3. The Tab screenshot will be saved to extension's indexedDB, you can repeat 1 and 2 to save as many as screenshots
-4. Click extension popover -> Options
+4. Click extension popup -> Options
 5. Click `Download Images`
     - the images will be downloaded to Chrome `<current download folder>/web-court-download`
-    - if no indexes specified, all screenshots will be downloaded and overwrite existing
+    - if no indexes specified, all screenshots will be downloaded and overwrite the existing
     - the indexes would be helpful if you have a lot of screenshots or you capture screenshots incrementally and only need to download the newly captured ones
 
