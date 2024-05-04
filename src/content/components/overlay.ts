@@ -20,7 +20,7 @@ export type OverlaySettingsType = {
 class Overlay extends LitElement {
   static styles = css`
     :host {
-      display: inline-block !important;
+      display: block !important;
       position: relative !important;
       height: 0px !important;
       width: 0px !important;

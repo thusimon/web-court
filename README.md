@@ -1,12 +1,15 @@
 # WebCourt
-1. train a yolo model based on 100+ images
+1. train a yolo model with dataset of about 120 images
 2. convert the pytorch yolo model to tfjs
 3. use the tfjs model in browser extension
 
 ## Training
+
+Labeling tool [labelImg](https://github.com/HumanSignal/labelImg)
+
 Follow this [Google Colab](https://colab.research.google.com/drive/1MxZjsieH3T6Wv3np1CU9aYsTfoOnses3?usp=sharing) to train and convert to tfjs
 
-After converted to tfjs, put the model in `./tf/yolo/tfjs-models/yolov8{model-size}`, e.g `./tf/yolo/tfjs-models/yolov8m`
+After converted to tfjs, download and put the model in `./tf/yolo/tfjs-models/yolov8{model-size}`, e.g `./tf/yolo/tfjs-models/yolov8m`
 
 ## Extension build and usage
 Currently use yolov8m model for extension
